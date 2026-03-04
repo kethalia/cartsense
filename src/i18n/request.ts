@@ -8,9 +8,14 @@ export default getRequestConfig(async ({ requestLocale }) => {
     ? requested
     : routing.defaultLocale
 
+  const messages =
+    locale === 'ro'
+      ? (await import('../messages/ro.json')).default
+      : (await import('../messages/en.json')).default
+
   return {
     locale,
-    messages: (await import(`../../messages/${locale}.json`)).default,
+    messages,
     timeZone: 'Europe/Bucharest',
     formats: {
       number: {
