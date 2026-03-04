@@ -1,0 +1,52 @@
+{
+  "Sidebar": {
+    "navigation": "Navigation",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "Dashboard": {
+    "title": "Dashboard",
+    "emptyState": "No receipts yet. Tap the camera button to capture your first receipt!",
+    "receiptSaved": "Receipt saved! Processing coming soon."
+  },
+  "Auth": {
+    "signIn": "Sign in",
+    "email": "Email address",
+    "enterCode": "Enter verification code",
+    "codeSent": "We sent a code to {email}",
+    "verify": "Verify",
+    "continueWithGoogle": "Continue with Google",
+    "or": "or"
+  },
+  "Camera": {
+    "capture": "Capture Receipt",
+    "useThis": "Use this",
+    "retake": "Retake",
+    "saved": "Receipt saved!"
+  },
+  "Settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "logout": "Log out",
+    "language": "Language",
+    "theme": "Theme"
+  },
+  "LocaleSwitcher": {
+    "en": "English",
+    "ro": "Română"
+  },
+  "Theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "Common": {
+    "appName": "CartSense",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "cancel": "Cancel",
+    "save": "Save"
+  }
+}

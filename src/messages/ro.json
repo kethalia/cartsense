@@ -1,0 +1,52 @@
+{
+  "Sidebar": {
+    "navigation": "Navigare",
+    "dashboard": "Panou principal",
+    "settings": "Setări",
+    "language": "Limbă",
+    "theme": "Temă"
+  },
+  "Dashboard": {
+    "title": "Panou principal",
+    "emptyState": "Niciun bon încă. Apasă butonul camerei pentru a captura primul bon!",
+    "receiptSaved": "Bon salvat! Procesarea vine în curând."
+  },
+  "Auth": {
+    "signIn": "Autentificare",
+    "email": "Adresă de email",
+    "enterCode": "Introduceți codul de verificare",
+    "codeSent": "Am trimis un cod la {email}",
+    "verify": "Verifică",
+    "continueWithGoogle": "Continuă cu Google",
+    "or": "sau"
+  },
+  "Camera": {
+    "capture": "Capturează bon",
+    "useThis": "Folosește",
+    "retake": "Refă",
+    "saved": "Bon salvat!"
+  },
+  "Settings": {
+    "title": "Setări",
+    "profile": "Profil",
+    "logout": "Deconectare",
+    "language": "Limbă",
+    "theme": "Temă"
+  },
+  "LocaleSwitcher": {
+    "en": "English",
+    "ro": "Română"
+  },
+  "Theme": {
+    "light": "Luminos",
+    "dark": "Întunecat",
+    "system": "Sistem"
+  },
+  "Common": {
+    "appName": "CartSense",
+    "loading": "Se încarcă...",
+    "error": "Ceva nu a funcționat",
+    "cancel": "Anulează",
+    "save": "Salvează"
+  }
+}
