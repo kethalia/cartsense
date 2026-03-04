@@ -19,7 +19,7 @@ This roadmap delivers CartSense as a comprehensive receipt intelligence platform
 **Plans:** 5 plans in 4 waves
 
 Plans:
-- [ ] 01-01-PLAN.md — Project scaffold with Next.js 15, Prisma schema, all dependencies
+- [x] 01-01-PLAN.md — Project scaffold with Next.js 15, Prisma schema, all dependencies
 - [ ] 01-02-PLAN.md — Internationalization (Romanian/English) and theme system (light/dark/system)
 - [ ] 01-03-PLAN.md — Clerk authentication with email OTP and Google OAuth
 - [ ] 01-04-PLAN.md — App shell with sidebar, combined middleware, language/theme selectors

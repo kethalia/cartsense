@@ -51,11 +51,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Localization
 
-- [ ] **L10N-01**: System supports Lei (RON) as primary currency
+- [x] **L10N-01**: System supports Lei (RON) as primary currency
 - [ ] **L10N-02**: UI is available in Romanian with full diacritics support
 - [ ] **L10N-03**: UI is available in English as secondary language
 - [ ] **L10N-04**: User can switch between Romanian and English languages
-- [ ] **L10N-05**: All currency formatting follows Romanian conventions
+- [x] **L10N-05**: All currency formatting follows Romanian conventions
 
 ### User Experience
 
@@ -159,11 +159,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ANLZ-06 | Phase 8: Advanced Analytics | Pending | User can set budgets and track actual vs budget spending |
 | ANLZ-07 | Phase 8: Advanced Analytics | Pending | User can track product price changes over time |
 | ANLZ-09 | Phase 8: Advanced Analytics | Pending | System provides spending insights |
-| L10N-01 | Phase 1: Foundation | Pending | System supports Lei (RON) as primary currency |
+| L10N-01 | Phase 1: Foundation | Complete | System supports Lei (RON) as primary currency |
 | L10N-02 | Phase 1: Foundation | Pending | UI is available in Romanian with full diacritics support |
 | L10N-03 | Phase 1: Foundation | Pending | UI is available in English as secondary language |
 | L10N-04 | Phase 1: Foundation | Pending | User can switch between Romanian and English languages |
-| L10N-05 | Phase 1: Foundation | Pending | All currency formatting follows Romanian conventions |
+| L10N-05 | Phase 1: Foundation | Complete | All currency formatting follows Romanian conventions |
 | UX-04 | Phase 1: Foundation | Pending | Mobile camera integration works smoothly |
 
 **Coverage Analysis:**
