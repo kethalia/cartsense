@@ -14,11 +14,19 @@
   "Auth": {
     "signIn": "Autentificare",
     "email": "Adresă de email",
+    "emailPlaceholder": "tu@exemplu.ro",
+    "continue": "Continuă",
     "enterCode": "Introduceți codul de verificare",
     "codeSent": "Am trimis un cod la {email}",
     "verify": "Verifică",
+    "resendCode": "Retrimite codul",
     "continueWithGoogle": "Continuă cu Google",
-    "or": "sau"
+    "or": "sau",
+    "tagline": "Inteligență pentru bonuri fiscale",
+    "invalidCode": "Cod invalid, vă rugăm încercați din nou",
+    "genericError": "Ceva nu a funcționat. Vă rugăm încercați din nou.",
+    "sending": "Se trimite...",
+    "verifying": "Se verifică..."
   },
   "Camera": {
     "capture": "Capturează bon",

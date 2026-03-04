@@ -14,11 +14,19 @@
   "Auth": {
     "signIn": "Sign in",
     "email": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "continue": "Continue",
     "enterCode": "Enter verification code",
     "codeSent": "We sent a code to {email}",
     "verify": "Verify",
+    "resendCode": "Resend code",
     "continueWithGoogle": "Continue with Google",
-    "or": "or"
+    "or": "or",
+    "tagline": "Receipt intelligence for your pocket",
+    "invalidCode": "Invalid code, please try again",
+    "genericError": "Something went wrong. Please try again.",
+    "sending": "Sending...",
+    "verifying": "Verifying..."
   },
   "Camera": {
     "capture": "Capture Receipt",
