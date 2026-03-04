@@ -9,10 +9,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can create account with email and password
-- [ ] **AUTH-02**: User can log in and stay logged in across sessions
-- [ ] **AUTH-03**: User can reset password via email link
-- [ ] **AUTH-04**: User session persists across browser refresh
+- [x] **AUTH-01**: User can create account with email and password
+- [x] **AUTH-02**: User can log in and stay logged in across sessions
+- [x] **AUTH-03**: User can reset password via email link
+- [x] **AUTH-04**: User session persists across browser refresh
 - [ ] **AUTH-05**: User can log out from any page
 
 ### Receipt Capture
@@ -120,10 +120,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status | Description |
 |-------------|-------|--------|-------------|
-| AUTH-01 | Phase 1: Foundation | Pending | User can create account with email and password |
-| AUTH-02 | Phase 1: Foundation | Pending | User can log in and stay logged in across sessions |
-| AUTH-03 | Phase 1: Foundation | Pending | User can reset password via email link |
-| AUTH-04 | Phase 1: Foundation | Pending | User session persists across browser refresh |
+| AUTH-01 | Phase 1: Foundation | Complete | User can create account with email and password |
+| AUTH-02 | Phase 1: Foundation | Complete | User can log in and stay logged in across sessions |
+| AUTH-03 | Phase 1: Foundation | Complete | User can reset password via email link |
+| AUTH-04 | Phase 1: Foundation | Complete | User session persists across browser refresh |
 | AUTH-05 | Phase 1: Foundation | Pending | User can log out from any page |
 | RCPT-01 | Phase 2: Core Capture | Pending | User can capture receipt photo using mobile camera with auto-crop |
 | RCPT-02 | Phase 2: Core Capture | Pending | User can upload receipt images (PDF, JPG, PNG formats) |
