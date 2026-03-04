@@ -13,7 +13,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **AUTH-02**: User can log in and stay logged in across sessions
 - [x] **AUTH-03**: User can reset password via email link
 - [x] **AUTH-04**: User session persists across browser refresh
-- [ ] **AUTH-05**: User can log out from any page
+- [x] **AUTH-05**: User can log out from any page
 
 ### Receipt Capture
 
@@ -54,7 +54,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **L10N-01**: System supports Lei (RON) as primary currency
 - [x] **L10N-02**: UI is available in Romanian with full diacritics support
 - [x] **L10N-03**: UI is available in English as secondary language
-- [ ] **L10N-04**: User can switch between Romanian and English languages
+- [x] **L10N-04**: User can switch between Romanian and English languages
 - [x] **L10N-05**: All currency formatting follows Romanian conventions
 
 ### User Experience
@@ -124,7 +124,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | AUTH-02 | Phase 1: Foundation | Complete | User can log in and stay logged in across sessions |
 | AUTH-03 | Phase 1: Foundation | Complete | User can reset password via email link |
 | AUTH-04 | Phase 1: Foundation | Complete | User session persists across browser refresh |
-| AUTH-05 | Phase 1: Foundation | Pending | User can log out from any page |
+| AUTH-05 | Phase 1: Foundation | Complete | User can log out from any page |
 | RCPT-01 | Phase 2: Core Capture | Pending | User can capture receipt photo using mobile camera with auto-crop |
 | RCPT-02 | Phase 2: Core Capture | Pending | User can upload receipt images (PDF, JPG, PNG formats) |
 | RCPT-03 | Phase 2: Core Capture | Pending | AI extracts vendor, amount, date, tax, payment type from receipt |
@@ -162,7 +162,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | L10N-01 | Phase 1: Foundation | Complete | System supports Lei (RON) as primary currency |
 | L10N-02 | Phase 1: Foundation | Complete | UI is available in Romanian with full diacritics support |
 | L10N-03 | Phase 1: Foundation | Complete | UI is available in English as secondary language |
-| L10N-04 | Phase 1: Foundation | Pending | User can switch between Romanian and English languages |
+| L10N-04 | Phase 1: Foundation | Complete | User can switch between Romanian and English languages |
 | L10N-05 | Phase 1: Foundation | Complete | All currency formatting follows Romanian conventions |
 | UX-04 | Phase 1: Foundation | Pending | Mobile camera integration works smoothly |
 

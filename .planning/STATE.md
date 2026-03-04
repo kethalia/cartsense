@@ -3,36 +3,36 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 01-foundation (Phase 1 of 10)
-current_plan: 4 of 5
+current_plan: 5 of 5
 status: in-progress
-stopped_at: Completed 01-03-PLAN.md
-last_updated: "2026-03-04T20:45:18Z"
+stopped_at: Completed 01-04-PLAN.md
+last_updated: "2026-03-04T20:52:01Z"
 progress:
   total_phases: 1
   completed_phases: 0
   total_plans: 5
-  completed_plans: 3
+  completed_plans: 4
 ---
 
 # CartSense - Project State
 
 **Last Updated:** 2026-03-04
 **Current Phase:** 01-foundation (Phase 1 of 10)
-**Current Plan:** 4 of 5
+**Current Plan:** 5 of 5
 **Project Status:** In Progress
 
 ---
 
 ## Progress
 
-`[██████░░░░] 3/5 plans complete (Phase 01)`
+`[████████░░] 4/5 plans complete (Phase 01)`
 
 ## Execution Position
 
 - **Phase:** 01-foundation
-- **Last Completed:** 01-03-PLAN.md (Clerk Auth Integration)
-- **Next Plan:** 01-04-PLAN.md
-- **Requirements Completed:** L10N-01, L10N-02, L10N-03, L10N-05, AUTH-01, AUTH-02, AUTH-03, AUTH-04
+- **Last Completed:** 01-04-PLAN.md (Middleware & App Shell)
+- **Next Plan:** 01-05-PLAN.md
+- **Requirements Completed:** L10N-01, L10N-02, L10N-03, L10N-04, L10N-05, AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05
 
 ## Decisions
 
@@ -53,6 +53,8 @@ progress:
 | Clerk v7 signals API for custom flows | 01-03 | 2026-03-04 | signIn.emailCode.sendCode/verifyCode instead of legacy prepareFirstFactor |
 | HandleSSOCallback from @clerk/react | 01-03 | 2026-03-04 | @clerk/nextjs only exports legacy AuthenticateWithRedirectCallback |
 | AUTH-03 fulfilled by design | 01-03 | 2026-03-04 | Passwordless system eliminates need for password reset |
+| Compact button groups for sidebar footer controls | 01-04 | 2026-03-04 | EN/RO toggle and theme icons fit sidebar footer without clutter |
+| (app) route group for authenticated pages | 01-04 | 2026-03-04 | Separates sidebar-wrapped pages from public auth pages |
 
 ## Performance Metrics
 
@@ -62,6 +64,7 @@ progress:
 | Phase 01-foundation P01 | 7 min | 2 tasks | 30 files |
 | 01-02 | 4 min | 2 | 11 |
 | 01-03 | 10 min | 2 | 7 |
+| 01-04 | 3 min | 2 | 9 |
 
 ## Blockers
 
@@ -69,9 +72,9 @@ None
 
 ## Last Session
 
-- **Timestamp:** 2026-03-04T20:45:18Z
-- **Stopped At:** Completed 01-03-PLAN.md
-- **Resume:** Continue with 01-04-PLAN.md
+- **Timestamp:** 2026-03-04T20:52:01Z
+- **Stopped At:** Completed 01-04-PLAN.md
+- **Resume:** Continue with 01-05-PLAN.md
 
 ---
 *State tracking initiated: 2026-03-04*
