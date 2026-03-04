@@ -4,7 +4,8 @@
     "dashboard": "Panou principal",
     "settings": "Setări",
     "language": "Limbă",
-    "theme": "Temă"
+    "theme": "Temă",
+    "signOut": "Deconectare"
   },
   "Dashboard": {
     "title": "Panou principal",

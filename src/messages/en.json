@@ -4,7 +4,8 @@
     "dashboard": "Dashboard",
     "settings": "Settings",
     "language": "Language",
-    "theme": "Theme"
+    "theme": "Theme",
+    "signOut": "Sign out"
   },
   "Dashboard": {
     "title": "Dashboard",
