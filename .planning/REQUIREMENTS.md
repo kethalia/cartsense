@@ -62,7 +62,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **UX-01**: App works as PWA (Progressive Web App) installable on mobile
 - [ ] **UX-02**: App works offline for basic receipt capture
 - [ ] **UX-03**: Data syncs automatically when connection restored
-- [ ] **UX-04**: Mobile camera integration works smoothly
+- [x] **UX-04**: Mobile camera integration works smoothly
 - [ ] **UX-05**: App loads quickly (<3 seconds) on mobile networks
 
 ### Subscription Management
@@ -164,7 +164,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | L10N-03 | Phase 1: Foundation | Complete | UI is available in English as secondary language |
 | L10N-04 | Phase 1: Foundation | Complete | User can switch between Romanian and English languages |
 | L10N-05 | Phase 1: Foundation | Complete | All currency formatting follows Romanian conventions |
-| UX-04 | Phase 1: Foundation | Pending | Mobile camera integration works smoothly |
+| UX-04 | Phase 1: Foundation | Complete | Mobile camera integration works smoothly |
 
 **Coverage Analysis:**
 - **v1 requirements:** 37 total
