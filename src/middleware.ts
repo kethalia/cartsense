@@ -4,6 +4,8 @@ import { routing } from './i18n/routing'
 
 const intlMiddleware = createMiddleware(routing)
 
+// Protected routes — use /:locale pattern to handle both prefixed and unprefixed
+// With localePrefix: 'as-needed', the default locale (English) has NO prefix
 const isProtectedRoute = createRouteMatcher([
   '/:locale/dashboard(.*)',
   '/:locale/settings(.*)',
@@ -13,8 +15,18 @@ const isProtectedRoute = createRouteMatcher([
   '/capture(.*)',
 ])
 
+// Public routes that should not require auth
+const isPublicRoute = createRouteMatcher([
+  '/:locale/auth(.*)',
+  '/auth(.*)',
+  '/:locale/sso-callback(.*)',
+  '/sso-callback(.*)',
+])
+
 export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) await auth.protect()
+  if (isProtectedRoute(req)) {
+    await auth.protect()
+  }
   return intlMiddleware(req)
 })
 
