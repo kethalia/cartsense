@@ -8,7 +8,7 @@
 This roadmap delivers CartSense as a comprehensive receipt intelligence platform for the Romanian market through 10 strategic phases. Each phase builds on previous work while delivering standalone value, ensuring steady progress toward market leadership.
 
 **Total v1 Requirements:** 37  
-**Development Timeline:** 12-18 months  
+**Development Timeline:** 9-12 months  
 **Target Market:** Romanian consumers and businesses  
 
 ---
@@ -78,7 +78,7 @@ This roadmap delivers CartSense as a comprehensive receipt intelligence platform
 
 ### Requirements Mapped
 - **RCPT-05**: User can upload multiple receipts in batch for processing
-- **RCPT-06**: System recognizes major Romanian vendors (Kaufland, Mega Image, eMag, etc.)
+- **RCPT-06**: System recognizes major Romanian vendors (Kaufland, Mega Image, eMAG, etc.)
 - **RCPT-08**: System enhances receipt photo quality (brightness, contrast, crop)
 - **CAT-01**: System auto-categorizes receipts into 15+ standard expense categories
 - **CAT-02**: User can manually override auto-categorization

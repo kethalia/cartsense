@@ -57,7 +57,7 @@ Transform the tedious manual process of tracking expenses into effortless insigh
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Romanian market first | Local market with specific receipt formats, underserved by international apps | — Pending |
-| Subscription model (19.99/39.99 Lei) | Recurring revenue model aligns with ongoing value delivery of insights | — Pending |
+| Subscription model (49-299 RON range) | Recurring revenue model aligns with ongoing value delivery of insights, pricing aligned with Romanian purchasing power | — Pending |
 | PWA over native app | Faster development, easier deployment, still provides mobile-native experience | — Pending |
 | AI extraction over manual entry | Core value proposition - eliminate tedious manual data entry | — Pending |
 

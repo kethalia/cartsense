@@ -22,7 +22,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **RCPT-03**: AI extracts vendor, amount, date, tax, payment type from receipt
 - [ ] **RCPT-04**: User can manually enter receipt data when AI extraction fails
 - [ ] **RCPT-05**: User can upload multiple receipts in batch for processing
-- [ ] **RCPT-06**: System recognizes major Romanian vendors (Kaufland, Mega Image, eMag, etc.)
+- [ ] **RCPT-06**: System recognizes major Romanian vendors (Kaufland, Mega Image, eMAG, etc.)
 - [ ] **RCPT-07**: User can verify and correct AI-extracted data before saving
 - [ ] **RCPT-08**: System enhances receipt photo quality (brightness, contrast, crop)
 
@@ -33,7 +33,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [ ] **CAT-03**: User can create custom expense categories
 - [ ] **CAT-04**: User can flag receipts as business vs personal expenses
 - [ ] **CAT-05**: User can search receipts by vendor, amount, category, or date
-- [ ] **CAT-06**: System handles Romanian VAT (19% standard rate) correctly
+- [ ] **CAT-06**: System correctly handles Romanian VAT, including standard (19%), reduced (e.g., 9%, 5%), and VAT-exempt lines, with support for multiple VAT rates per receipt and VAT breakdown at receipt level
 - [ ] **CAT-07**: AI learns user categorization preferences over time
 - [ ] **CAT-08**: System detects and flags duplicate receipts
 
