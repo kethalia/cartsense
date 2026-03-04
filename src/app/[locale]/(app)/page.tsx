@@ -1,22 +1,73 @@
-import { setRequestLocale } from 'next-intl/server'
+import { auth } from '@clerk/nextjs/server'
+import { setRequestLocale, getTranslations } from 'next-intl/server'
+import { prisma } from '@/lib/db'
+import { EmptyState } from '@/components/dashboard/empty-state'
+import { ReceiptCard } from '@/components/dashboard/receipt-card'
+import { CaptureFlow } from '@/components/capture/capture-flow'
 
 type Props = {
   params: Promise<{ locale: string }>
 }
 
-export default async function HomePage({ params }: Props) {
+export default async function DashboardPage({ params }: Props) {
   const { locale } = await params
   setRequestLocale(locale)
 
+  const t = await getTranslations('Dashboard')
+  const { userId: clerkId } = await auth()
+
+  let receipts: Array<{
+    id: string
+    imageData: string
+    mimeType: string
+    fileSize: number | null
+    capturedAt: Date
+  }> = []
+
+  if (clerkId) {
+    try {
+      receipts = await prisma.capturedReceipt.findMany({
+        where: { user: { clerkId } },
+        orderBy: { capturedAt: 'desc' },
+        select: {
+          id: true,
+          imageData: true,
+          mimeType: true,
+          fileSize: true,
+          capturedAt: true,
+        },
+      })
+    } catch {
+      // User may not exist in DB yet — that's fine, show empty state
+    }
+  }
+
+  const hasReceipts = receipts.length > 0
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-4xl font-bold">CartSense</h1>
-      <p className="mt-4 text-lg text-muted-foreground">
-        Receipt intelligence for the Romanian market
-      </p>
-      <p className="mt-2 text-sm text-muted-foreground">
-        Locale: {locale}
-      </p>
-    </main>
+    <div className="relative min-h-[calc(100vh-3.5rem)]">
+      {hasReceipts ? (
+        <div className="space-y-4">
+          <h1 className="text-2xl font-semibold">{t('receipts')}</h1>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+            {receipts.map((receipt) => (
+              <ReceiptCard
+                key={receipt.id}
+                id={receipt.id}
+                imageData={receipt.imageData}
+                mimeType={receipt.mimeType}
+                fileSize={receipt.fileSize}
+                capturedAt={receipt.capturedAt}
+              />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <EmptyState />
+      )}
+
+      {/* Capture flow: FAB + camera + preview overlay */}
+      <CaptureFlow />
+    </div>
   )
 }

@@ -10,7 +10,10 @@
   "Dashboard": {
     "title": "Dashboard",
     "emptyState": "No receipts yet. Tap the camera button to capture your first receipt!",
-    "receiptSaved": "Receipt saved! Processing coming soon."
+    "emptyStateHint": "Use the camera button below to get started",
+    "receiptSaved": "Receipt saved! Processing coming soon.",
+    "capturedAt": "Captured {date}",
+    "receipts": "Receipts"
   },
   "Auth": {
     "signIn": "Sign in",
@@ -40,7 +43,10 @@
     "profile": "Profile",
     "logout": "Log out",
     "language": "Language",
-    "theme": "Theme"
+    "theme": "Theme",
+    "account": "Account",
+    "appearance": "Appearance",
+    "logoutConfirm": "Are you sure you want to log out?"
   },
   "LocaleSwitcher": {
     "en": "English",

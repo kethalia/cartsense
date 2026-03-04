@@ -10,7 +10,10 @@
   "Dashboard": {
     "title": "Panou principal",
     "emptyState": "Niciun bon încă. Apasă butonul camerei pentru a captura primul bon!",
-    "receiptSaved": "Bon salvat! Procesarea vine în curând."
+    "emptyStateHint": "Folosește butonul camerei de mai jos pentru a începe",
+    "receiptSaved": "Bon salvat! Procesarea vine în curând.",
+    "capturedAt": "Capturat {date}",
+    "receipts": "Bonuri"
   },
   "Auth": {
     "signIn": "Autentificare",
@@ -40,7 +43,10 @@
     "profile": "Profil",
     "logout": "Deconectare",
     "language": "Limbă",
-    "theme": "Temă"
+    "theme": "Temă",
+    "account": "Cont",
+    "appearance": "Aspect",
+    "logoutConfirm": "Sigur doriți să vă deconectați?"
   },
   "LocaleSwitcher": {
     "en": "English",
