@@ -113,21 +113,36 @@ npx shadcn@latest add sidebar dialog drawer button input-otp sheet
 ```
 src/
 ├── app/
+│   ├── layout.tsx              # Root layout (minimal — passes children through)
 │   └── [locale]/
-│       ├── layout.tsx          # Root layout with ClerkProvider + NextIntlClientProvider + ThemeProvider
-│       ├── page.tsx            # Dashboard (home)
-│       ├── settings/
-│       │   └── page.tsx        # Settings page
-│       └── capture/
-│           └── page.tsx        # Camera capture page
+│       ├── layout.tsx          # Locale layout with ClerkProvider + NextIntlClientProvider + ThemeProvider
+│       ├── auth/
+│       │   └── page.tsx        # Auth page (public — dialog/drawer with email OTP + Google)
+│       ├── sso-callback/
+│       │   └── page.tsx        # Google OAuth callback handler
+│       └── (app)/              # Route group for authenticated pages (has sidebar)
+│           ├── layout.tsx      # Protected layout with SidebarProvider + AppSidebar
+│           ├── page.tsx        # Dashboard (home)
+│           └── settings/
+│               └── page.tsx    # Settings page
 ├── components/
-│   ├── app-sidebar.tsx         # Main sidebar navigation
-│   ├── auth-dialog.tsx         # Auth dialog (desktop) / drawer (mobile)
-│   ├── camera-fab.tsx          # Floating action button for camera
-│   ├── camera-capture.tsx      # Camera capture component
+│   ├── auth/
+│   │   ├── auth-screen.tsx     # Auth dialog (desktop) / drawer (mobile)
+│   │   ├── email-otp-form.tsx  # Email OTP sign-in/sign-up flow
+│   │   └── google-auth-button.tsx
+│   ├── layout/
+│   │   ├── app-sidebar.tsx     # Main sidebar navigation
+│   │   ├── locale-switcher.tsx # Language selector (sidebar footer)
+│   │   └── theme-toggle.tsx    # Theme selector (sidebar footer)
+│   ├── capture/
+│   │   ├── fab-button.tsx      # Floating action button for camera
+│   │   ├── camera-capture.tsx  # Camera capture component
+│   │   ├── capture-flow.tsx    # Capture state machine orchestrator
+│   │   └── photo-preview.tsx   # Preview with Use this / Retake
+│   ├── dashboard/
+│   │   ├── empty-state.tsx     # Empty state for no receipts
+│   │   └── receipt-card.tsx    # Receipt thumbnail card
 │   ├── theme-provider.tsx      # next-themes ThemeProvider wrapper
-│   ├── theme-toggle.tsx        # Theme selector (sidebar item)
-│   ├── locale-switcher.tsx     # Language selector (sidebar item)
 │   └── ui/                     # shadcn/ui generated components
 ├── i18n/
 │   ├── routing.ts              # defineRouting config
@@ -137,8 +152,9 @@ src/
 │   ├── en.json                 # English translations
 │   └── ro.json                 # Romanian translations
 ├── lib/
+│   ├── db.ts                   # Prisma client singleton
 │   └── utils.ts                # Utility functions
-└── proxy.ts                    # Combined Clerk + next-intl middleware
+└── middleware.ts                # Combined Clerk + next-intl middleware (Next.js 15)
 ```
 
 ### Pattern 1: Combined Clerk + next-intl Middleware (CRITICAL)
@@ -146,17 +162,23 @@ src/
 **When to use:** Always — this is the foundation of the entire app.
 **Source:** Clerk official docs — "Combine Middleware" section
 ```typescript
-// src/proxy.ts (Next.js 16+ uses proxy.ts; Next.js 15 uses middleware.ts)
+// src/middleware.ts (Next.js 15 — Next.js 16+ renames this to proxy.ts)
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import createMiddleware from 'next-intl/middleware'
 import { routing } from './i18n/routing'
 
 const intlMiddleware = createMiddleware(routing)
 
+// IMPORTANT: With localePrefix: 'as-needed', the default locale (English) has NO
+// prefix — routes are /dashboard, not /en/dashboard. Include BOTH prefixed and
+// unprefixed patterns to protect routes in all locales.
 const isProtectedRoute = createRouteMatcher([
   '/:locale/dashboard(.*)',
   '/:locale/settings(.*)',
   '/:locale/capture(.*)',
+  '/dashboard(.*)',
+  '/settings(.*)',
+  '/capture(.*)',
 ])
 
 export default clerkMiddleware(async (auth, req) => {
@@ -521,10 +543,10 @@ export function LocaleSwitcher() {
 **Warning signs:** Console warnings about "Expected server HTML to contain..."
 
 ### Pitfall 3: Clerk + next-intl Route Protection with Locale Prefix
-**What goes wrong:** Protected routes don't match because Clerk's `createRouteMatcher` doesn't account for the locale segment
-**Why it happens:** With `localePrefix: 'as-needed'`, paths are `/dashboard` for English but `/ro/dashboard` for Romanian
-**How to avoid:** Use `'/:locale/dashboard(.*)'` pattern in createRouteMatcher — it handles both prefixed and unprefixed cases
-**Warning signs:** Unauthenticated users can access protected routes when using non-default locale
+**What goes wrong:** Protected routes don't match because Clerk's `createRouteMatcher` doesn't account for both prefixed and unprefixed paths
+**Why it happens:** With `localePrefix: 'as-needed'`, the default locale (English) has NO prefix — paths are `/dashboard` not `/en/dashboard`. Non-default locales DO have a prefix — `/ro/dashboard`. The `/:locale/dashboard(.*)` pattern alone only matches when a locale segment is present.
+**How to avoid:** Include BOTH prefixed and unprefixed patterns in `createRouteMatcher`: `['/:locale/dashboard(.*)', '/dashboard(.*)']`. Do this for every protected route.
+**Warning signs:** Unauthenticated users can access protected routes when using the default locale (English)
 
 ### Pitfall 4: `setRequestLocale` Omission
 **What goes wrong:** Pages opt into dynamic rendering unnecessarily
