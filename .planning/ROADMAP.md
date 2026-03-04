@@ -14,7 +14,18 @@ This roadmap delivers CartSense as a comprehensive receipt intelligence platform
 ---
 
 ## Phase 1: Foundation & Core Authentication
-**Goal:** Establish secure user foundation with basic authentication and Romanian localization
+**Goal:** Establish secure user foundation with passwordless authentication (email OTP + Google OAuth), Romanian/English localization with theme support, and a basic mobile camera capture entry point.
+
+**Plans:** 5 plans in 4 waves
+
+Plans:
+- [ ] 01-01-PLAN.md — Project scaffold with Next.js 15, Prisma schema, all dependencies
+- [ ] 01-02-PLAN.md — Internationalization (Romanian/English) and theme system (light/dark/system)
+- [ ] 01-03-PLAN.md — Clerk authentication with email OTP and Google OAuth
+- [ ] 01-04-PLAN.md — App shell with sidebar, combined middleware, language/theme selectors
+- [ ] 01-05-PLAN.md — Dashboard, Settings page, and camera capture flow
+
+**Requirements:** [AUTH-01, AUTH-02, AUTH-03, AUTH-04, AUTH-05, L10N-01, L10N-02, L10N-03, L10N-04, L10N-05, UX-04]
 
 ### Success Criteria
 - Users can create accounts and authenticate securely across sessions
@@ -23,9 +34,9 @@ This roadmap delivers CartSense as a comprehensive receipt intelligence platform
 - Initial receipt data structure supports Romanian formats
 
 ### Requirements Mapped
-- **AUTH-01**: User can create account with email and password
+- **AUTH-01**: User can create account with email OTP or Google OAuth
 - **AUTH-02**: User can log in and stay logged in across sessions
-- **AUTH-03**: User can reset password via email link
+- **AUTH-03**: ~~Password reset via email~~ N/A — passwordless authentication
 - **AUTH-04**: User session persists across browser refresh
 - **AUTH-05**: User can log out from any page
 - **L10N-01**: System supports Lei (RON) as primary currency
