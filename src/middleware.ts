@@ -4,7 +4,7 @@ import { routing } from './i18n/routing'
 
 const intlMiddleware = createMiddleware(routing)
 
-// Public routes that skip auth protection
+// Public routes — everything else requires auth
 const isPublicRoute = createRouteMatcher([
   '/',
   '/:locale',

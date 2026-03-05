@@ -119,7 +119,7 @@ export function EmailOTPForm() {
         if (signIn.status === 'complete') {
           await signIn.finalize({
             navigate: ({ decorateUrl }) => {
-              window.location.href = decorateUrl('/')
+              window.location.href = decorateUrl('/dashboard')
             },
           })
         }
@@ -134,7 +134,7 @@ export function EmailOTPForm() {
         if (signUp.status === 'complete') {
           await signUp.finalize({
             navigate: ({ decorateUrl }) => {
-              window.location.href = decorateUrl('/')
+              window.location.href = decorateUrl('/dashboard')
             },
           })
         }

@@ -30,12 +30,12 @@ export function AppSidebar() {
   const navItems = [
     {
       title: t('dashboard'),
-      href: '/' as const,
+      href: '/dashboard',
       icon: Home,
     },
     {
       title: t('settings'),
-      href: '/settings' as const,
+      href: '/settings',
       icon: Settings,
     },
   ]

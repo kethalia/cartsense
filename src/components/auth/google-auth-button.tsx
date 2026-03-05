@@ -47,7 +47,7 @@ export function GoogleAuthButton() {
       await signIn.sso({
         strategy: 'oauth_google',
         redirectUrl: '/sso-callback',
-        redirectCallbackUrl: '/',
+        redirectCallbackUrl: '/dashboard',
       })
     } catch {
       // Redirect will happen, loading state handles UX

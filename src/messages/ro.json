@@ -57,6 +57,18 @@
     "dark": "Întunecat",
     "system": "Sistem"
   },
+  "Landing": {
+    "signIn": "Autentificare",
+    "title": "Inteligență pentru bonuri fiscale",
+    "subtitle": "Fotografiază bonul, urmărește cheltuielile. CartSense transformă bonurile în informații utile — creat pentru piața din România.",
+    "getStarted": "Începe gratuit",
+    "featureCapture": "Capturează",
+    "featureCaptureDesc": "Fotografiază bonurile cu telefonul",
+    "featureOrganize": "Organizează",
+    "featureOrganizeDesc": "Categorizare automată și căutare cheltuieli",
+    "featureInsights": "Analiză",
+    "featureInsightsDesc": "Urmărește tendințele și economisește bani"
+  },
   "Common": {
     "appName": "CartSense",
     "loading": "Se încarcă...",

@@ -57,6 +57,18 @@
     "dark": "Dark",
     "system": "System"
   },
+  "Landing": {
+    "signIn": "Sign in",
+    "title": "Receipt intelligence for your pocket",
+    "subtitle": "Snap a photo, track your spending. CartSense turns receipts into insights — built for the Romanian market.",
+    "getStarted": "Get started — it's free",
+    "featureCapture": "Capture",
+    "featureCaptureDesc": "Snap receipts with your phone camera",
+    "featureOrganize": "Organize",
+    "featureOrganizeDesc": "Auto-categorize and search your expenses",
+    "featureInsights": "Insights",
+    "featureInsightsDesc": "Track spending trends and save money"
+  },
   "Common": {
     "appName": "CartSense",
     "loading": "Loading...",
