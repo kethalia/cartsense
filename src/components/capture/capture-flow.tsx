@@ -9,6 +9,7 @@ import { FabMenu } from '@/components/capture/fab-menu'
 import { CameraCapture, type CameraCaptureHandle } from '@/components/capture/camera-capture'
 import { FileUpload, type FileUploadHandle } from '@/components/capture/file-upload'
 import { PhotoPreview } from '@/components/capture/photo-preview'
+import { VerificationDrawer } from '@/components/receipt/verification-drawer'
 import { captureReceipt } from '@/actions/capture-receipt'
 import { fileToBase64 } from '@/lib/utils'
 
@@ -17,6 +18,12 @@ type CaptureState = 'idle' | 'previewing' | 'saving'
 type PreviewData = {
   file: File
   previewUrl: string
+}
+
+type VerificationData = {
+  receiptId: string
+  imageData: string
+  mimeType: string
 }
 
 export function CaptureFlow() {
@@ -28,8 +35,12 @@ export function CaptureFlow() {
   const [state, setState] = useState<CaptureState>('idle')
   const [previewData, setPreviewData] = useState<PreviewData | null>(null)
 
+  // Verification drawer state
+  const [verificationOpen, setVerificationOpen] = useState(false)
+  const [verificationData, setVerificationData] = useState<VerificationData | null>(null)
+
   const { executeAsync } = useAction(captureReceipt, {
-    onSuccess: ({ data }) => {
+    onSuccess: ({ data, input }) => {
       toast.success(t('receiptSaved'))
 
       if (previewData) {
@@ -38,11 +49,15 @@ export function CaptureFlow() {
       setPreviewData(null)
       setState('idle')
 
-      // Navigate to verification page for AI extraction + review
+      // Open verification drawer instead of navigating
       if (data?.id) {
-        router.push(`/receipt/${data.id}/verify`)
+        setVerificationData({
+          receiptId: data.id,
+          imageData: input.imageData,
+          mimeType: input.mimeType,
+        })
+        setVerificationOpen(true)
       } else {
-        // Fallback: just refresh dashboard
         router.refresh()
       }
     },
@@ -102,6 +117,12 @@ export function CaptureFlow() {
     })
   }, [previewData, executeAsync])
 
+  const handleVerificationComplete = useCallback(() => {
+    setVerificationOpen(false)
+    setVerificationData(null)
+    router.refresh()
+  }, [router])
+
   return (
     <>
       {/* Hidden camera input */}
@@ -127,6 +148,17 @@ export function CaptureFlow() {
           onClose={handleClose}
         />
       )}
+
+      {/* Verification drawer — opens after image is saved */}
+      <VerificationDrawer
+        open={verificationOpen}
+        onOpenChange={(open) => {
+          if (!open) handleVerificationComplete()
+        }}
+        receiptId={verificationData?.receiptId ?? null}
+        imageData={verificationData?.imageData ?? null}
+        mimeType={verificationData?.mimeType ?? null}
+      />
     </>
   )
 }

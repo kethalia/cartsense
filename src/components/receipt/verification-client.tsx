@@ -16,12 +16,14 @@ type VerificationClientProps = {
   receiptId: string
   imageData: string
   mimeType: string
+  onComplete?: () => void
 }
 
 export function VerificationClient({
   receiptId,
   imageData,
   mimeType,
+  onComplete,
 }: VerificationClientProps) {
   const router = useRouter()
   const t = useTranslations('Receipt')
@@ -119,7 +121,11 @@ export function VerificationClient({
 
         if (result?.data) {
           toast.success(t('receiptVerified'))
-          router.push('/dashboard')
+          if (onComplete) {
+            onComplete()
+          } else {
+            router.push('/dashboard')
+          }
         } else {
           toast.error(t('saveFailed'))
           setSaving(false)

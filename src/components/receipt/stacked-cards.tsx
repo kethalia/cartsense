@@ -1,9 +1,8 @@
 'use client'
 
-import * as React from 'react'
-import { motion, AnimatePresence } from 'motion/react'
+import { useState } from 'react'
+import { motion } from 'motion/react'
 import { cn } from '@/lib/utils'
-import { Card } from '@/components/ui/card'
 
 export type CardConfig = {
   id: string
@@ -22,103 +21,113 @@ type StackedCardsWithTabsProps = {
 const springTransition = { type: 'spring' as const, stiffness: 300, damping: 30 }
 
 export function StackedCardsWithTabs({
-  cards,
+  cards: initialCards,
   activeCardId,
   onCardChange,
   className,
 }: StackedCardsWithTabsProps) {
-  const [internalActiveId, setInternalActiveId] = React.useState(cards[0]?.id ?? '')
-  const activeId = activeCardId ?? internalActiveId
+  // Internal ordered array — last element is on top
+  const [orderedCards, setOrderedCards] = useState<CardConfig[]>(initialCards)
 
-  const handleCardChange = React.useCallback(
-    (id: string) => {
-      if (onCardChange) {
-        onCardChange(id)
-      } else {
-        setInternalActiveId(id)
+  const handleCardClick = (clickedId: string) => {
+    const clickedIndex = orderedCards.findIndex((c) => c.id === clickedId)
+
+    // Already on top
+    if (clickedIndex === orderedCards.length - 1) return
+
+    // Move clicked card to top (end of array)
+    const newCards = [...orderedCards]
+    const [clickedCard] = newCards.splice(clickedIndex, 1)
+    newCards.push(clickedCard)
+    setOrderedCards(newCards)
+
+    // Notify parent
+    onCardChange?.(clickedId)
+  }
+
+  // If parent controls active card, reorder to match
+  if (activeCardId) {
+    const topCard = orderedCards[orderedCards.length - 1]
+    if (topCard && topCard.id !== activeCardId) {
+      const idx = orderedCards.findIndex((c) => c.id === activeCardId)
+      if (idx !== -1) {
+        const newCards = [...orderedCards]
+        const [card] = newCards.splice(idx, 1)
+        newCards.push(card)
+        // Schedule state update (can't setState during render)
+        queueMicrotask(() => setOrderedCards(newCards))
       }
-    },
-    [onCardChange],
-  )
+    }
+  }
 
-  // Build the ordered list: active card first, then others in original order
-  const orderedCards = React.useMemo(() => {
-    const active = cards.find((c) => c.id === activeId)
-    const rest = cards.filter((c) => c.id !== activeId)
-    return active ? [active, ...rest] : cards
-  }, [cards, activeId])
+  const topCardId = orderedCards[orderedCards.length - 1]?.id
 
   return (
-    <div className={cn('flex flex-col gap-2', className)}>
-      {/* Tab bar */}
-      <div className="flex gap-1 relative">
-        {cards.map((card) => {
-          const isActive = card.id === activeId
+    <div className={cn('flex flex-col items-center gap-6', className)}>
+      {/* Card stack */}
+      <div className="relative w-full max-w-sm mx-auto" style={{ height: 420 }}>
+        {orderedCards.map((card, index) => {
+          const isTop = index === orderedCards.length - 1
+          const cardsFromTop = orderedCards.length - 1 - index
+          const offsetY = cardsFromTop * 15
+          const offsetX = cardsFromTop * 15
+          const rotation = cardsFromTop * 2
+          const scale = 1 - cardsFromTop * 0.02
+
           return (
-            <button
+            <motion.div
               key={card.id}
-              type="button"
-              onClick={() => handleCardChange(card.id)}
+              layout
+              initial={false}
+              animate={{
+                x: offsetX,
+                y: offsetY,
+                rotate: rotation,
+                scale,
+                zIndex: index,
+              }}
+              transition={springTransition}
+              onClick={() => handleCardClick(card.id)}
               className={cn(
-                'relative px-3 py-1.5 text-sm rounded-t-md transition-colors',
-                isActive
-                  ? 'text-primary-foreground'
-                  : 'text-muted-foreground hover:text-foreground',
+                'absolute left-0 top-0 rounded-2xl shadow-2xl overflow-hidden bg-card border',
+                !isTop && 'cursor-pointer',
               )}
+              style={{
+                width: '100%',
+                height: 350,
+              }}
             >
-              {isActive && (
-                <motion.div
-                  layoutId="tab-indicator"
-                  className="absolute inset-0 bg-primary rounded-t-md"
-                  transition={springTransition}
-                />
-              )}
-              <span className="relative z-10 flex items-center gap-1.5">
-                {card.icon}
-                {card.label}
-              </span>
-            </button>
+              <div className="h-full overflow-auto">{card.content}</div>
+            </motion.div>
           )
         })}
       </div>
 
-      {/* Card stack */}
-      <div className="relative" style={{ minHeight: 300 }}>
-        <AnimatePresence mode="popLayout">
-          {orderedCards.map((card, index) => {
-            const isActive = card.id === activeId
-            const zIndex = 40 - index * 10
-
-            return (
-              <motion.div
-                key={card.id}
-                layout
-                transition={springTransition}
-                animate={{
-                  scale: isActive ? 1 : 0.97 - index * 0.01,
-                  y: isActive ? 0 : 8 * index,
-                  x: isActive ? 0 : 4 * index,
-                  opacity: isActive ? 1 : 0.7 - index * 0.1,
-                }}
-                style={{ zIndex }}
-                className={cn(
-                  'absolute inset-0',
-                  !isActive && 'pointer-events-none',
-                )}
-                onClick={!isActive ? () => handleCardChange(card.id) : undefined}
-              >
-                <Card
-                  className={cn(
-                    'h-full overflow-auto',
-                    isActive ? 'shadow-lg' : 'shadow-sm',
-                  )}
-                >
-                  {card.content}
-                </Card>
-              </motion.div>
-            )
-          })}
-        </AnimatePresence>
+      {/* Tabs at bottom — pill style, centered */}
+      <div className="flex gap-2 bg-muted/50 backdrop-blur-sm rounded-full p-1.5">
+        {initialCards.map((card) => {
+          const isActive = card.id === topCardId
+          return (
+            <motion.button
+              key={card.id}
+              type="button"
+              onClick={() => handleCardClick(card.id)}
+              className={cn(
+                'px-4 py-2 rounded-full text-sm font-medium transition-colors',
+                isActive
+                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted',
+              )}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <span className="flex items-center gap-1.5">
+                {card.icon}
+                {card.label}
+              </span>
+            </motion.button>
+          )
+        })}
       </div>
     </div>
   )

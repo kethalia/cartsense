@@ -12,7 +12,6 @@ import type {
   ExtractionResult,
   ManualEntryData,
   VerifiedReceiptData,
-  PaymentType,
 } from '@/types/receipt'
 
 type ReceiptVerificationProps = {
@@ -82,13 +81,6 @@ export function ReceiptVerification({
     isValid,
     errors,
   } = useFieldSources({ aiData, manualData, defaultSource })
-
-  // When AI data arrives, set all sources to AI
-  React.useEffect(() => {
-    if (aiData && prevAiDataRef.current === aiData) {
-      // Only on initial arrival (already handled by the first effect)
-    }
-  }, [aiData])
 
   // Reset all sources to AI when aiData first appears
   const aiDataArrived = React.useRef(false)
@@ -160,7 +152,7 @@ export function ReceiptVerification({
   )
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col items-center gap-4 py-4">
       <StackedCardsWithTabs
         cards={cards}
         activeCardId={activeCard}
@@ -169,7 +161,7 @@ export function ReceiptVerification({
 
       <Button
         size="lg"
-        className="w-full"
+        className="w-full max-w-sm"
         disabled={!isValid || saving}
         onClick={handleSave}
       >
