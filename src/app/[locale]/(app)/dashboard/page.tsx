@@ -51,7 +51,7 @@ export default async function DashboardPage({ params }: Props) {
   const hasReceipts = receipts.length > 0
 
   return (
-    <div className="relative min-h-[calc(100vh-3.5rem)]">
+    <div className="relative">
       {hasReceipts ? (
         <div className="space-y-4">
           <h1 className="text-2xl font-semibold">{t('receipts')}</h1>

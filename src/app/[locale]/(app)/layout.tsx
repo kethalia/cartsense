@@ -15,10 +15,10 @@ export default async function AppLayout({ children, params }: Props) {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex h-14 items-center gap-2 border-b px-4 lg:px-6">
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4 lg:px-6">
           <SidebarTrigger className="-ml-1" />
         </header>
-        <main className="flex-1 p-4 lg:p-6">
+        <main className="max-h-[calc(100dvh-4rem)] overflow-auto p-4 lg:p-6">
           {children}
         </main>
       </SidebarInset>

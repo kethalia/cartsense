@@ -185,16 +185,16 @@ export function EmailOTPForm() {
         )}
       </Button>
 
-      <div className="text-center">
-        <button
-          type="button"
-          onClick={handleResendCode}
-          disabled={isLoading}
-          className="text-sm text-muted-foreground underline-offset-4 hover:underline hover:text-foreground transition-colors disabled:opacity-50"
-        >
-          {t('resendCode')}
-        </button>
-      </div>
+      <Button
+        type="button"
+        variant="link"
+        size="sm"
+        className="w-full text-muted-foreground"
+        onClick={handleResendCode}
+        disabled={isLoading}
+      >
+        {t('resendCode')}
+      </Button>
     </form>
   )
 }
