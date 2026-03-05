@@ -9,6 +9,7 @@ import { FabButton } from '@/components/capture/fab-button'
 import { CameraCapture, type CameraCaptureHandle } from '@/components/capture/camera-capture'
 import { PhotoPreview } from '@/components/capture/photo-preview'
 import { captureReceipt } from '@/actions/capture-receipt'
+import { fileToBase64 } from '@/lib/utils'
 
 type CaptureState = 'idle' | 'previewing' | 'saving'
 
@@ -108,21 +109,3 @@ export function CaptureFlow() {
   )
 }
 
-/** Convert a File to a base64 string (without the data URI prefix) */
-function fileToBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      const result = reader.result as string
-      // Remove the "data:image/jpeg;base64," prefix
-      const base64 = result.split(',')[1]
-      if (base64) {
-        resolve(base64)
-      } else {
-        reject(new Error('Failed to convert file to base64'))
-      }
-    }
-    reader.onerror = () => reject(reader.error)
-    reader.readAsDataURL(file)
-  })
-}

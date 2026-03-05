@@ -8,6 +8,7 @@ import { useAction } from 'next-safe-action/hooks'
 import { toast } from 'sonner'
 import { Trash2, Eye, Download } from 'lucide-react'
 import { useIsMobile } from '@/hooks/use-mobile'
+import { formatFileSize, downloadImage } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -37,21 +38,6 @@ type ReceiptCardProps = {
   mimeType: string
   fileSize: number | null
   capturedAt: Date
-}
-
-function formatFileSize(bytes: number | null): string {
-  if (!bytes) return ''
-  if (bytes < 1024) return `${bytes} B`
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-}
-
-function downloadImage(imageData: string, mimeType: string) {
-  const ext = mimeType.split('/')[1] || 'jpg'
-  const link = document.createElement('a')
-  link.href = `data:${mimeType};base64,${imageData}`
-  link.download = `receipt.${ext}`
-  link.click()
 }
 
 function ReceiptImageView({ dataUri, label }: { dataUri: string; label: string }) {
