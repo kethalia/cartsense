@@ -105,7 +105,7 @@ export function SettingsControls() {
             variant="destructive"
             size="lg"
             className="w-full"
-            onClick={() => signOut({ redirectUrl: '/auth' })}
+            onClick={() => signOut({ redirectUrl: '/' })}
           >
             <LogOut className="mr-2 h-4 w-4" />
             {t('logout')}

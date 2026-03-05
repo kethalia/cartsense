@@ -92,7 +92,7 @@ export function AppSidebar() {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={() => signOut({ redirectUrl: '/auth' })}
+              onClick={() => signOut({ redirectUrl: '/' })}
               className="text-muted-foreground hover:text-foreground"
             >
               <LogOut />
