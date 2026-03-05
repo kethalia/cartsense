@@ -1,118 +1,60 @@
 'use client'
 
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useAction } from 'next-safe-action/hooks'
 import { toast } from 'sonner'
 import { extractReceipt } from '@/actions/extract-receipt'
 import { saveVerifiedReceipt } from '@/actions/save-verified-receipt'
-import { ReceiptVerification } from '@/components/receipt/receipt-verification'
 import { ProcessingSkeleton } from '@/components/receipt/processing-skeleton'
-import { AIReadyBanner } from '@/components/receipt/ai-ready-banner'
+import { ReceiptEditor } from '@/components/receipt/receipt-editor'
 import type { ExtractionResult, VerifiedReceiptData } from '@/types/receipt'
 
 type VerificationClientProps = {
   receiptId: string
   imageData: string
   mimeType: string
-  onComplete?: () => void
 }
 
 export function VerificationClient({
   receiptId,
   imageData,
   mimeType,
-  onComplete,
 }: VerificationClientProps) {
   const router = useRouter()
   const t = useTranslations('Receipt')
 
   const [aiData, setAiData] = useState<ExtractionResult | null>(null)
-  const [aiLoading, setAiLoading] = useState(true)
-  const [aiTimedOut, setAiTimedOut] = useState(false)
-  const [showManualEntry, setShowManualEntry] = useState(false)
-  const [showAiReadyBanner, setShowAiReadyBanner] = useState(false)
+  const [processing, setProcessing] = useState(true)
   const [saving, setSaving] = useState(false)
-
-  // Track whether manual entry was active when AI completed
-  const showManualEntryRef = useRef(false)
-  showManualEntryRef.current = showManualEntry
 
   const extractAction = useAction(extractReceipt)
   const saveAction = useAction(saveVerifiedReceipt)
 
   // Trigger AI extraction on mount
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout | null = null
-
-    const runExtraction = async () => {
-      // Start 10-second timeout
-      timeoutId = setTimeout(() => {
-        setAiTimedOut(true)
-      }, 10000)
-
+    const run = async () => {
       try {
         const result = await extractAction.executeAsync({ receiptId })
 
-        // Clear timeout
-        if (timeoutId) {
-          clearTimeout(timeoutId)
-          timeoutId = null
-        }
-
-        console.log('[verification] extraction result:', JSON.stringify(result, null, 2))
-
         if (result?.data?.status === 'success' && result.data.data) {
           setAiData(result.data.data)
-          setAiLoading(false)
-
-          // If user already skipped to manual entry, show banner
-          if (showManualEntryRef.current) {
-            setShowAiReadyBanner(true)
-          }
         } else {
-          // Extraction failed
-          console.error('[verification] extraction failed:', result?.data?.error ?? result?.serverError ?? 'unknown')
-          setAiLoading(false)
-          setShowManualEntry(true)
+          console.error('[verification] extraction failed:', result?.data?.error ?? result?.serverError)
           toast.error(result?.data?.error ?? t('aiFailed'))
         }
       } catch (err) {
-        // API error
-        if (timeoutId) {
-          clearTimeout(timeoutId)
-          timeoutId = null
-        }
         console.error('[verification] extraction threw:', err)
-        setAiLoading(false)
-        setShowManualEntry(true)
         toast.error(t('aiError'))
+      } finally {
+        setProcessing(false)
       }
     }
 
-    runExtraction()
-
-    return () => {
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
-    }
+    run()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [receiptId])
-
-  const handleSkipToManual = useCallback(() => {
-    setShowManualEntry(true)
-  }, [])
-
-  const handleMerge = useCallback(() => {
-    setShowAiReadyBanner(false)
-    // AI data is already in state — ReceiptVerification will pick it up
-  }, [])
-
-  const handleDismissBanner = useCallback(() => {
-    setShowAiReadyBanner(false)
-  }, [])
 
   const handleSave = useCallback(
     async (data: VerifiedReceiptData) => {
@@ -125,11 +67,7 @@ export function VerificationClient({
 
         if (result?.data) {
           toast.success(t('receiptVerified'))
-          if (onComplete) {
-            onComplete()
-          } else {
-            router.push('/dashboard')
-          }
+          router.push('/dashboard')
         } else {
           toast.error(t('saveFailed'))
           setSaving(false)
@@ -143,32 +81,23 @@ export function VerificationClient({
     [receiptId, router, t]
   )
 
-  // Phase 1: Processing screen (AI loading, user hasn't skipped)
-  if (aiLoading && !showManualEntry) {
+  if (processing) {
     return (
-      <ProcessingSkeleton
-        imageData={imageData}
-        mimeType={mimeType}
-        timedOut={aiTimedOut}
-        onSkip={handleSkipToManual}
-      />
+      <div className="p-4">
+        <ProcessingSkeleton imageData={imageData} mimeType={mimeType} />
+      </div>
     )
   }
 
-  // Phase 2: Verification screen (stacked cards)
   return (
-    <>
-      {showAiReadyBanner && (
-        <AIReadyBanner onMerge={handleMerge} onDismiss={handleDismissBanner} />
-      )}
-      <ReceiptVerification
+    <div className="p-4">
+      <ReceiptEditor
+        aiData={aiData}
         imageData={imageData}
         mimeType={mimeType}
-        aiData={aiData}
-        aiLoading={aiLoading}
         onSave={handleSave}
         saving={saving}
       />
-    </>
+    </div>
   )
 }

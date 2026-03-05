@@ -23,47 +23,30 @@ export type ExtractionResult = {
   confidence: number // 0-1 overall confidence
 }
 
-/** Field names available for source selection in verification UI */
-export type ReceiptFieldName = 'vendorName' | 'totalAmount' | 'receiptDate' | 'taxAmount' | 'paymentType'
-
-/** Source of field data — used in merge logic */
-export type FieldSource = 'manual' | 'ai'
-
-/** Map of each field to its selected source */
-export type FieldSources = Record<ReceiptFieldName, FieldSource>
-
-/** A single product/line item on a receipt */
+/** A single editable product line item */
 export type LineItem = {
   id: string
   name: string
   quantity: string // string for input field
-  price: string // string for input field (unit price)
+  unitPrice: string // string for input field
 }
 
-/** Manual entry form data — string types for form inputs */
-export type ManualEntryData = {
+/** Receipt form data — all fields editable after AI extraction */
+export type ReceiptFormData = {
   vendorName: string
-  totalAmount: string // string for input field, parsed to number on save
-  receiptDate: string // YYYY-MM-DD format
+  totalAmount: string
+  receiptDate: string // YYYY-MM-DD
   taxAmount: string
   paymentType: PaymentType | ''
   lineItems: LineItem[]
 }
 
-/** Verified receipt data ready to persist */
+/** Verified receipt data ready to persist (including line items) */
 export type VerifiedReceiptData = {
   vendorName: string
   totalAmount: number
-  receiptDate: string | null // ISO date string, null if not provided
+  receiptDate: string | null
   taxAmount: number | null
   paymentType: PaymentType | null
+  lineItems: { name: string; quantity: number; unitPrice: number; totalPrice: number }[]
 }
-
-/** All 5 receipt field labels — for iteration in UI */
-export const RECEIPT_FIELDS: readonly ReceiptFieldName[] = [
-  'vendorName',
-  'totalAmount',
-  'receiptDate',
-  'taxAmount',
-  'paymentType',
-] as const
