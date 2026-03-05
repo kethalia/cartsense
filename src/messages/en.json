@@ -44,7 +44,12 @@
     "useThis": "Use this",
     "retake": "Retake",
     "cancel": "Cancel",
-    "saved": "Receipt saved!"
+    "saved": "Receipt saved!",
+    "takePhoto": "Take Photo",
+    "uploadImage": "Upload Image",
+    "invalidFileType": "Only JPG and PNG images are supported",
+    "fileTooLarge": "Image too large. Maximum size is 10MB",
+    "imageTooSmall": "Image too small. Minimum size is 300\u00d7300 pixels"
   },
   "Settings": {
     "title": "Settings",

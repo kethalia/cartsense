@@ -44,7 +44,12 @@
     "useThis": "Folosește",
     "retake": "Refă",
     "cancel": "Anulează",
-    "saved": "Bon salvat!"
+    "saved": "Bon salvat!",
+    "takePhoto": "Fotografiază",
+    "uploadImage": "Încarcă imagine",
+    "invalidFileType": "Sunt acceptate doar imagini JPG și PNG",
+    "fileTooLarge": "Imaginea este prea mare. Dimensiunea maximă este 10MB",
+    "imageTooSmall": "Imaginea este prea mică. Dimensiunea minimă este 300\u00d7300 pixeli"
   },
   "Settings": {
     "title": "Setări",
