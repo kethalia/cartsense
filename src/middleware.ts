@@ -5,7 +5,7 @@ import { routing } from './i18n/routing'
 
 const intlMiddleware = createMiddleware(routing)
 
-const protectedPaths = ['/dashboard', '/settings']
+const protectedPaths = ['/dashboard', '/settings', '/receipt']
 
 function isProtectedPath(pathname: string): boolean {
   // Strip locale prefix if present (e.g. /ro/dashboard → /dashboard)
