@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useAction } from 'next-safe-action/hooks'
 import { toast } from 'sonner'
-import { FabButton } from '@/components/capture/fab-button'
+import { FabMenu } from '@/components/capture/fab-menu'
 import { CameraCapture, type CameraCaptureHandle } from '@/components/capture/camera-capture'
+import { FileUpload, type FileUploadHandle } from '@/components/capture/file-upload'
 import { PhotoPreview } from '@/components/capture/photo-preview'
 import { captureReceipt } from '@/actions/capture-receipt'
 import { fileToBase64 } from '@/lib/utils'
@@ -20,13 +21,15 @@ type PreviewData = {
 
 export function CaptureFlow() {
   const t = useTranslations('Dashboard')
+  const tCamera = useTranslations('Camera')
   const router = useRouter()
   const cameraRef = useRef<CameraCaptureHandle>(null)
+  const uploadRef = useRef<FileUploadHandle>(null)
   const [state, setState] = useState<CaptureState>('idle')
   const [previewData, setPreviewData] = useState<PreviewData | null>(null)
 
   const { executeAsync } = useAction(captureReceipt, {
-    onSuccess: () => {
+    onSuccess: ({ data }) => {
       toast.success(t('receiptSaved'))
 
       if (previewData) {
@@ -35,7 +38,13 @@ export function CaptureFlow() {
       setPreviewData(null)
       setState('idle')
 
-      router.refresh()
+      // Navigate to verification page for AI extraction + review
+      if (data?.id) {
+        router.push(`/receipt/${data.id}/verify`)
+      } else {
+        // Fallback: just refresh dashboard
+        router.refresh()
+      }
     },
     onError: ({ error }) => {
       const message =
@@ -55,6 +64,13 @@ export function CaptureFlow() {
     setPreviewData({ file, previewUrl })
     setState('previewing')
   }, [])
+
+  const handleUploadError = useCallback(
+    (messageKey: string) => {
+      toast.error(tCamera(messageKey))
+    },
+    [tCamera]
+  )
 
   const handleClose = useCallback(() => {
     if (previewData) {
@@ -91,9 +107,15 @@ export function CaptureFlow() {
       {/* Hidden camera input */}
       <CameraCapture ref={cameraRef} onCapture={handleCapture} />
 
-      {/* FAB button — always visible when not in preview */}
+      {/* Hidden file upload input */}
+      <FileUpload ref={uploadRef} onUpload={handleCapture} onError={handleUploadError} />
+
+      {/* FAB menu — always visible when not in preview */}
       {state !== 'previewing' && state !== 'saving' && (
-        <FabButton onClick={handleFabClick} />
+        <FabMenu
+          onTakePhoto={handleFabClick}
+          onUploadImage={() => uploadRef.current?.trigger()}
+        />
       )}
 
       {/* Photo preview overlay */}
@@ -108,4 +130,3 @@ export function CaptureFlow() {
     </>
   )
 }
-
