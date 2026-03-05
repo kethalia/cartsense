@@ -7,6 +7,8 @@ const intlMiddleware = createMiddleware(routing)
 // Protected routes — use /:locale pattern to handle both prefixed and unprefixed
 // With localePrefix: 'as-needed', the default locale (English) has NO prefix
 const isProtectedRoute = createRouteMatcher([
+  '/',
+  '/:locale',
   '/:locale/dashboard(.*)',
   '/:locale/settings(.*)',
   '/:locale/capture(.*)',
