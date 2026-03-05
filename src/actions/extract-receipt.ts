@@ -6,6 +6,22 @@ import { authActionClient } from '@/lib/safe-action'
 import { prisma } from '@/lib/db'
 import type { ExtractionResult, PaymentType } from '@/types/receipt'
 
+// ── AI Model Configuration ──
+// Haiku: fast & cheap (~$0.001/receipt) — used for free tier
+// Sonnet: higher accuracy (~$0.005/receipt) — reserved for premium tier
+const AI_MODELS = {
+  free: 'claude-haiku-4-20250414',
+  premium: 'claude-sonnet-4-20250514',
+} as const
+
+/** Select AI model based on user tier. Premium tier check to be added later. */
+function getExtractionModel(_userId: string): string {
+  // TODO: When premium tier is implemented, check user.plan here
+  // e.g. const user = await prisma.user.findUnique({ where: { id: userId }, select: { plan: true } })
+  // return user?.plan === 'premium' ? AI_MODELS.premium : AI_MODELS.free
+  return AI_MODELS.free
+}
+
 const extractReceiptSchema = z.object({
   receiptId: z.string().min(1, 'Receipt ID is required'),
 })
@@ -63,9 +79,10 @@ export const extractReceipt = authActionClient
 
     try {
       const anthropic = getAnthropicClient()
+      const model = getExtractionModel(userId)
 
       const response = await anthropic.messages.create({
-        model: 'claude-sonnet-4-20250514',
+        model,
         max_tokens: 1024,
         system:
           'You are a receipt data extractor. Analyze the receipt image and extract structured data. Return ONLY valid JSON, no other text.',
