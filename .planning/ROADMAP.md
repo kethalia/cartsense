@@ -61,7 +61,7 @@ Plans:
 
 Plans:
 - [ ] 02-01-PLAN.md — Receipt schema evolution + AI extraction service
-- [ ] 02-02-PLAN.md — Expanded FAB menu + upload flow
+- [x] 02-02-PLAN.md — Expanded FAB menu + upload flow
 - [ ] 02-03-PLAN.md — Stacked cards verification UI components
 - [ ] 02-04-PLAN.md — Receipt verification page + end-to-end wiring
 
