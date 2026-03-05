@@ -1,39 +1,36 @@
-'use server'
+"use server";
 
-import { z } from 'zod'
-import Anthropic from '@anthropic-ai/sdk'
-import { authActionClient } from '@/lib/safe-action'
-import { prisma } from '@/lib/db'
+import { z } from "zod";
+import Anthropic from "@anthropic-ai/sdk";
+import { authActionClient } from "@/lib/safe-action";
+import { prisma } from "@/lib/db";
 import {
   buildReceiptExtractionRequest,
-  type ReceiptToolResult,
-} from '@/lib/prompts/extract-receipt'
-import type { ExtractionResult, ExtractedLineItem, PaymentType } from '@/types/receipt'
+  imageMimeTypeSchema,
+  receiptToolResultSchema,
+} from "@/lib/prompts/extract-receipt";
+import type { ReceiptToolResult } from "@/lib/prompts/extract-receipt";
+import type {
+  ExtractionResult,
+  ExtractedLineItem,
+  PaymentType,
+} from "@/types/receipt";
 
-// ── AI Model Configuration ──
-const AI_MODELS = {
-  default: 'claude-sonnet-4-20250514',
-} as const
-
-function getExtractionModel(_userId: string): string {
-  // Sonnet 4 — tested in Workbench, accurate for Romanian receipts.
-  // Haiku 4.5 was tested but gives inaccurate totals and misses fields.
-  return AI_MODELS.default
-}
+const MAX_RETRIES = 3;
 
 const extractReceiptSchema = z.object({
-  receiptId: z.string().min(1, 'Receipt ID is required'),
-})
+  receiptId: z.string().min(1, "Receipt ID is required"),
+});
 
 function getAnthropicClient(): Anthropic {
   if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error('AI extraction not configured')
+    throw new Error("AI extraction not configured");
   }
-  return new Anthropic()
+  return new Anthropic();
 }
 
 function isValidPaymentType(value: unknown): value is PaymentType {
-  return value === 'cash' || value === 'card' || value === 'other'
+  return value === "cash" || value === "card" || value === "other";
 }
 
 /** Map tool result to our ExtractionResult type */
@@ -43,7 +40,7 @@ function mapToolResult(result: ReceiptToolResult): ExtractionResult {
     quantity: item.quantity,
     unitPrice: item.unit_price,
     totalPrice: item.total_price,
-  }))
+  }));
 
   const fields = [
     result.merchant_name,
@@ -51,19 +48,21 @@ function mapToolResult(result: ReceiptToolResult): ExtractionResult {
     result.transaction_date,
     result.tax,
     result.payment_method,
-  ]
-  const extracted = fields.filter((f) => f != null).length
-  const confidence = Number((extracted / fields.length).toFixed(2))
+  ];
+  const extracted = fields.filter((f) => f != null).length;
+  const confidence = Number((extracted / fields.length).toFixed(2));
 
   return {
     vendorName: result.merchant_name ?? null,
     totalAmount: result.total ?? null,
     receiptDate: result.transaction_date ?? null,
     taxAmount: result.tax ?? null,
-    paymentType: isValidPaymentType(result.payment_method) ? result.payment_method : null,
+    paymentType: isValidPaymentType(result.payment_method)
+      ? result.payment_method
+      : null,
     lineItems,
     confidence,
-  }
+  };
 }
 
 export const extractReceipt = authActionClient
@@ -77,88 +76,123 @@ export const extractReceipt = authActionClient
         imageData: true,
         mimeType: true,
       },
-    })
+    });
 
     if (!receipt || receipt.userId !== userId) {
-      throw new Error('Receipt not found')
+      throw new Error("Receipt not found");
+    }
+
+    // Validate mime type before sending to Claude
+    const mimeResult = imageMimeTypeSchema.safeParse(receipt.mimeType);
+    if (!mimeResult.success) {
+      throw new Error(`Unsupported image type: ${receipt.mimeType}`);
     }
 
     await prisma.capturedReceipt.update({
       where: { id: receiptId },
-      data: { extractionStatus: 'processing' },
-    })
-
-    const model = getExtractionModel(userId)
+      data: { extractionStatus: "processing" },
+    });
 
     try {
-      const anthropic = getAnthropicClient()
-
+      const anthropic = getAnthropicClient();
       const params = buildReceiptExtractionRequest(
         receipt.imageData,
-        receipt.mimeType,
-        model,
-      )
+        mimeResult.data,
+      );
 
-      const response = await anthropic.messages.create(params)
+      let lastError: string | null = null;
 
-      // Find the tool_use block in the response
-      const toolUseBlock = response.content.find(
-        (block) => block.type === 'tool_use' && block.name === 'extract_receipt',
-      )
+      for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+        const response = await anthropic.messages.create(params);
 
-      if (!toolUseBlock || toolUseBlock.type !== 'tool_use') {
-        console.error('[extract-receipt] No tool_use block in response:', response.content)
+        // Find the tool_use block in the response
+        const toolUseBlock = response.content.find(
+          (block) =>
+            block.type === "tool_use" && block.name === "extract_receipt",
+        );
+
+        if (!toolUseBlock || toolUseBlock.type !== "tool_use") {
+          lastError = "AI did not call the extraction tool";
+          console.warn(
+            `[extract-receipt] Attempt ${attempt}/${MAX_RETRIES}: no tool_use block`,
+          );
+          continue;
+        }
+
+        // Parse and validate the tool result with Zod
+        const parsed = receiptToolResultSchema.safeParse(toolUseBlock.input);
+
+        if (!parsed.success) {
+          lastError = `Invalid tool output: ${parsed.error.issues.map((i) => i.message).join(", ")}`;
+          console.warn(
+            `[extract-receipt] Attempt ${attempt}/${MAX_RETRIES}: schema validation failed:`,
+            parsed.error.flatten(),
+          );
+          continue;
+        }
+
+        // Valid result — map and persist
+        const toolResult = parsed.data;
+        const extractionResult = mapToolResult(toolResult);
+
         await prisma.capturedReceipt.update({
           where: { id: receiptId },
           data: {
-            extractionStatus: 'failed',
-            rawExtraction: { error: 'AI did not call the extraction tool' },
+            extractionStatus: "completed",
+            vendorName: extractionResult.vendorName,
+            totalAmount: extractionResult.totalAmount,
+            receiptDate: extractionResult.receiptDate
+              ? new Date(extractionResult.receiptDate)
+              : null,
+            taxAmount: extractionResult.taxAmount,
+            paymentType: extractionResult.paymentType,
+            confidence: extractionResult.confidence,
+            rawExtraction: JSON.parse(JSON.stringify(toolResult)),
           },
-        })
-        return { status: 'failed' as const, error: 'AI did not return structured data' }
+        });
+
+        return { status: "success", data: extractionResult };
       }
 
-      const toolResult = toolUseBlock.input as ReceiptToolResult
-      const extractionResult = mapToolResult(toolResult)
-
-      // Persist extraction results
+      // All retries exhausted
+      console.error(
+        `[extract-receipt] All ${MAX_RETRIES} attempts failed:`,
+        lastError,
+      );
       await prisma.capturedReceipt.update({
         where: { id: receiptId },
         data: {
-          extractionStatus: 'completed',
-          vendorName: extractionResult.vendorName,
-          totalAmount: extractionResult.totalAmount,
-          receiptDate: extractionResult.receiptDate
-            ? new Date(extractionResult.receiptDate)
-            : null,
-          taxAmount: extractionResult.taxAmount,
-          paymentType: extractionResult.paymentType,
-          confidence: extractionResult.confidence,
-          rawExtraction: JSON.parse(JSON.stringify(toolResult)),
+          extractionStatus: "failed",
+          rawExtraction: { error: lastError },
         },
-      })
-
-      return { status: 'success' as const, data: extractionResult }
+      });
+      return {
+        status: "failed",
+        error: lastError ?? "AI extraction failed after retries",
+      };
     } catch (error) {
-      if (error instanceof Error && error.message === 'AI extraction not configured') {
-        throw error
+      if (
+        error instanceof Error &&
+        error.message === "AI extraction not configured"
+      ) {
+        throw error;
       }
 
-      const errorMessage = error instanceof Error ? error.message : 'Unknown extraction error'
-      console.error('[extract-receipt] AI extraction failed:', errorMessage, {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown extraction error";
+      console.error("[extract-receipt] AI extraction failed:", errorMessage, {
         receiptId,
-        model,
         status: (error as { status?: number }).status,
-      })
+      });
 
       await prisma.capturedReceipt.update({
         where: { id: receiptId },
         data: {
-          extractionStatus: 'failed',
-          rawExtraction: { error: errorMessage, model },
+          extractionStatus: "failed",
+          rawExtraction: { error: errorMessage },
         },
-      })
+      });
 
-      return { status: 'failed' as const, error: errorMessage }
+      return { status: "failed", error: errorMessage };
     }
-  })
+  });
