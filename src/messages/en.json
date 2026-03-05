@@ -1,0 +1,90 @@
+{
+  "Sidebar": {
+    "navigation": "Navigation",
+    "dashboard": "Dashboard",
+    "settings": "Settings",
+    "language": "Language",
+    "theme": "Theme",
+    "signOut": "Sign out"
+  },
+  "Dashboard": {
+    "title": "Dashboard",
+    "emptyState": "No receipts yet. Tap the camera button to capture your first receipt!",
+    "emptyStateHint": "Use the camera button below to get started",
+    "receiptSaved": "Receipt saved! Processing coming soon.",
+    "receiptDuplicate": "This receipt has already been uploaded.",
+    "receiptDeleted": "Receipt deleted.",
+    "view": "View",
+    "close": "Close",
+    "download": "Download",
+    "delete": "Delete",
+    "deleteError": "Failed to delete receipt.",
+    "capturedAt": "Captured {date}",
+    "receipts": "Receipts"
+  },
+  "Auth": {
+    "signIn": "Sign in",
+    "email": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "continue": "Continue",
+    "enterCode": "Enter verification code",
+    "codeSent": "We sent a code to {email}",
+    "verify": "Verify",
+    "resendCode": "Resend code",
+    "continueWithGoogle": "Continue with Google",
+    "or": "or",
+    "tagline": "Receipt intelligence for your pocket",
+    "invalidCode": "Invalid code, please try again",
+    "genericError": "Something went wrong. Please try again.",
+    "sending": "Sending...",
+    "verifying": "Verifying..."
+  },
+  "Camera": {
+    "capture": "Capture Receipt",
+    "useThis": "Use this",
+    "retake": "Retake",
+    "cancel": "Cancel",
+    "saved": "Receipt saved!"
+  },
+  "Settings": {
+    "title": "Settings",
+    "profile": "Profile",
+    "profileDesc": "Your account details.",
+    "language": "Language",
+    "languageDesc": "Choose your preferred language.",
+    "theme": "Theme",
+    "themeDesc": "Select how the app looks.",
+    "account": "Account",
+    "accountDesc": "Sign out of your account.",
+    "logout": "Log out"
+  },
+  "LocaleSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "ro": "Română"
+  },
+  "Theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
+  "Landing": {
+    "signIn": "Sign in",
+    "title": "Receipt intelligence for your pocket",
+    "subtitle": "Snap a photo, track your spending. CartSense turns receipts into insights — built for the Romanian market.",
+    "getStarted": "Get started — it's free",
+    "featureCapture": "Capture",
+    "featureCaptureDesc": "Snap receipts with your phone camera",
+    "featureOrganize": "Organize",
+    "featureOrganizeDesc": "Auto-categorize and search your expenses",
+    "featureInsights": "Insights",
+    "featureInsightsDesc": "Track spending trends and save money"
+  },
+  "Common": {
+    "appName": "CartSense",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "cancel": "Cancel",
+    "save": "Save"
+  }
+}

@@ -9,11 +9,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can create account with email and password
-- [ ] **AUTH-02**: User can log in and stay logged in across sessions
-- [ ] **AUTH-03**: User can reset password via email link
-- [ ] **AUTH-04**: User session persists across browser refresh
-- [ ] **AUTH-05**: User can log out from any page
+- [x] **AUTH-01**: User can create account with email and password
+- [x] **AUTH-02**: User can log in and stay logged in across sessions
+- [x] **AUTH-03**: User can reset password via email link
+- [x] **AUTH-04**: User session persists across browser refresh
+- [x] **AUTH-05**: User can log out from any page
 
 ### Receipt Capture
 
@@ -51,18 +51,18 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Localization
 
-- [ ] **L10N-01**: System supports Lei (RON) as primary currency
-- [ ] **L10N-02**: UI is available in Romanian with full diacritics support
-- [ ] **L10N-03**: UI is available in English as secondary language
-- [ ] **L10N-04**: User can switch between Romanian and English languages
-- [ ] **L10N-05**: All currency formatting follows Romanian conventions
+- [x] **L10N-01**: System supports Lei (RON) as primary currency
+- [x] **L10N-02**: UI is available in Romanian with full diacritics support
+- [x] **L10N-03**: UI is available in English as secondary language
+- [x] **L10N-04**: User can switch between Romanian and English languages
+- [x] **L10N-05**: All currency formatting follows Romanian conventions
 
 ### User Experience
 
 - [ ] **UX-01**: App works as PWA (Progressive Web App) installable on mobile
 - [ ] **UX-02**: App works offline for basic receipt capture
 - [ ] **UX-03**: Data syncs automatically when connection restored
-- [ ] **UX-04**: Mobile camera integration works smoothly
+- [x] **UX-04**: Mobile camera integration works smoothly
 - [ ] **UX-05**: App loads quickly (<3 seconds) on mobile networks
 
 ### Subscription Management
@@ -120,11 +120,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status | Description |
 |-------------|-------|--------|-------------|
-| AUTH-01 | Phase 1: Foundation | Pending | User can create account with email and password |
-| AUTH-02 | Phase 1: Foundation | Pending | User can log in and stay logged in across sessions |
-| AUTH-03 | Phase 1: Foundation | Pending | User can reset password via email link |
-| AUTH-04 | Phase 1: Foundation | Pending | User session persists across browser refresh |
-| AUTH-05 | Phase 1: Foundation | Pending | User can log out from any page |
+| AUTH-01 | Phase 1: Foundation | Complete | User can create account with email and password |
+| AUTH-02 | Phase 1: Foundation | Complete | User can log in and stay logged in across sessions |
+| AUTH-03 | Phase 1: Foundation | Complete | User can reset password via email link |
+| AUTH-04 | Phase 1: Foundation | Complete | User session persists across browser refresh |
+| AUTH-05 | Phase 1: Foundation | Complete | User can log out from any page |
 | RCPT-01 | Phase 2: Core Capture | Pending | User can capture receipt photo using mobile camera with auto-crop |
 | RCPT-02 | Phase 2: Core Capture | Pending | User can upload receipt images (PDF, JPG, PNG formats) |
 | RCPT-03 | Phase 2: Core Capture | Pending | AI extracts vendor, amount, date, tax, payment type from receipt |
@@ -159,12 +159,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | ANLZ-06 | Phase 8: Advanced Analytics | Pending | User can set budgets and track actual vs budget spending |
 | ANLZ-07 | Phase 8: Advanced Analytics | Pending | User can track product price changes over time |
 | ANLZ-09 | Phase 8: Advanced Analytics | Pending | System provides spending insights |
-| L10N-01 | Phase 1: Foundation | Pending | System supports Lei (RON) as primary currency |
-| L10N-02 | Phase 1: Foundation | Pending | UI is available in Romanian with full diacritics support |
-| L10N-03 | Phase 1: Foundation | Pending | UI is available in English as secondary language |
-| L10N-04 | Phase 1: Foundation | Pending | User can switch between Romanian and English languages |
-| L10N-05 | Phase 1: Foundation | Pending | All currency formatting follows Romanian conventions |
-| UX-04 | Phase 1: Foundation | Pending | Mobile camera integration works smoothly |
+| L10N-01 | Phase 1: Foundation | Complete | System supports Lei (RON) as primary currency |
+| L10N-02 | Phase 1: Foundation | Complete | UI is available in Romanian with full diacritics support |
+| L10N-03 | Phase 1: Foundation | Complete | UI is available in English as secondary language |
+| L10N-04 | Phase 1: Foundation | Complete | User can switch between Romanian and English languages |
+| L10N-05 | Phase 1: Foundation | Complete | All currency formatting follows Romanian conventions |
+| UX-04 | Phase 1: Foundation | Complete | Mobile camera integration works smoothly |
 
 **Coverage Analysis:**
 - **v1 requirements:** 37 total

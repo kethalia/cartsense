@@ -1,0 +1,90 @@
+{
+  "Sidebar": {
+    "navigation": "Navigare",
+    "dashboard": "Panou principal",
+    "settings": "Setări",
+    "language": "Limbă",
+    "theme": "Temă",
+    "signOut": "Deconectare"
+  },
+  "Dashboard": {
+    "title": "Panou principal",
+    "emptyState": "Niciun bon încă. Apasă butonul camerei pentru a captura primul bon!",
+    "emptyStateHint": "Folosește butonul camerei de mai jos pentru a începe",
+    "receiptSaved": "Bon salvat! Procesarea vine în curând.",
+    "receiptDuplicate": "Acest bon a fost deja încărcat.",
+    "receiptDeleted": "Bon șters.",
+    "view": "Vizualizare",
+    "close": "Închide",
+    "download": "Descarcă",
+    "delete": "Șterge",
+    "deleteError": "Nu s-a putut șterge bonul.",
+    "capturedAt": "Capturat {date}",
+    "receipts": "Bonuri"
+  },
+  "Auth": {
+    "signIn": "Autentificare",
+    "email": "Adresă de email",
+    "emailPlaceholder": "tu@exemplu.ro",
+    "continue": "Continuă",
+    "enterCode": "Introduceți codul de verificare",
+    "codeSent": "Am trimis un cod la {email}",
+    "verify": "Verifică",
+    "resendCode": "Retrimite codul",
+    "continueWithGoogle": "Continuă cu Google",
+    "or": "sau",
+    "tagline": "Inteligență pentru bonuri fiscale",
+    "invalidCode": "Cod invalid, vă rugăm încercați din nou",
+    "genericError": "Ceva nu a funcționat. Vă rugăm încercați din nou.",
+    "sending": "Se trimite...",
+    "verifying": "Se verifică..."
+  },
+  "Camera": {
+    "capture": "Capturează bon",
+    "useThis": "Folosește",
+    "retake": "Refă",
+    "cancel": "Anulează",
+    "saved": "Bon salvat!"
+  },
+  "Settings": {
+    "title": "Setări",
+    "profile": "Profil",
+    "profileDesc": "Detaliile contului tău.",
+    "language": "Limbă",
+    "languageDesc": "Alege limba preferată.",
+    "theme": "Temă",
+    "themeDesc": "Selectează aspectul aplicației.",
+    "account": "Cont",
+    "accountDesc": "Deconectează-te din cont.",
+    "logout": "Deconectare"
+  },
+  "LocaleSwitcher": {
+    "label": "Limbă",
+    "en": "English",
+    "ro": "Română"
+  },
+  "Theme": {
+    "light": "Luminos",
+    "dark": "Întunecat",
+    "system": "Sistem"
+  },
+  "Landing": {
+    "signIn": "Autentificare",
+    "title": "Inteligență pentru bonuri fiscale",
+    "subtitle": "Fotografiază bonul, urmărește cheltuielile. CartSense transformă bonurile în informații utile — creat pentru piața din România.",
+    "getStarted": "Începe gratuit",
+    "featureCapture": "Capturează",
+    "featureCaptureDesc": "Fotografiază bonurile cu telefonul",
+    "featureOrganize": "Organizează",
+    "featureOrganizeDesc": "Categorizare automată și căutare cheltuieli",
+    "featureInsights": "Analiză",
+    "featureInsightsDesc": "Urmărește tendințele și economisește bani"
+  },
+  "Common": {
+    "appName": "CartSense",
+    "loading": "Se încarcă...",
+    "error": "Ceva nu a funcționat",
+    "cancel": "Anulează",
+    "save": "Salvează"
+  }
+}
