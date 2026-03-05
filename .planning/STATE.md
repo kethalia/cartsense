@@ -58,6 +58,9 @@ progress:
 | Lazy User creation on first API call | 01-05 | 2026-03-04 | Avoids needing Clerk webhook sync for Phase 1 |
 | forwardRef + useImperativeHandle for camera | 01-05 | 2026-03-04 | Clean parent-child trigger pattern for hidden input |
 | SettingsControls as separate client component | 01-05 | 2026-03-04 | Keeps Settings page as server component for profile data |
+| claude-sonnet-4-20250514 for receipt extraction | 02-01 | 2026-03-05 | Cost-effective for structured data extraction |
+| Decimal(10,2) for RON financial fields | 02-01 | 2026-03-05 | Avoids floating point issues with currency |
+| Lazy Anthropic client initialization | 02-01 | 2026-03-05 | Fails fast on missing API key |
 | CSS transitions for FAB menu, not motion/react | 02-02 | 2026-03-05 | Per plan guidance, save motion/react for stacked cards |
 | FileUpload returns i18n keys to onError | 02-02 | 2026-03-05 | CaptureFlow resolves via useTranslations for proper localization |
 | Navigate to /receipt/[id]/verify after save | 02-02 | 2026-03-05 | Page created in Plan 04, 404 expected until then |
@@ -72,6 +75,7 @@ progress:
 | 01-03 | 10 min | 2 | 7 |
 | 01-04 | 3 min | 2 | 9 |
 | 01-05 | 4 min | 2 | 12 |
+| 02-01 | 3 min | 2 | 7 |
 | 02-02 | 3 min | 2 | 5 |
 
 ## Blockers
