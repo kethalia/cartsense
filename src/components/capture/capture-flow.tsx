@@ -3,10 +3,12 @@
 import { useRef, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useAction } from 'next-safe-action/hooks'
 import { toast } from 'sonner'
 import { FabButton } from '@/components/capture/fab-button'
 import { CameraCapture, type CameraCaptureHandle } from '@/components/capture/camera-capture'
 import { PhotoPreview } from '@/components/capture/photo-preview'
+import { captureReceipt } from '@/actions/capture-receipt'
 
 type CaptureState = 'idle' | 'previewing' | 'saving'
 
@@ -17,11 +19,32 @@ type PreviewData = {
 
 export function CaptureFlow() {
   const t = useTranslations('Dashboard')
-  const tCamera = useTranslations('Camera')
   const router = useRouter()
   const cameraRef = useRef<CameraCaptureHandle>(null)
   const [state, setState] = useState<CaptureState>('idle')
   const [previewData, setPreviewData] = useState<PreviewData | null>(null)
+
+  const { executeAsync } = useAction(captureReceipt, {
+    onSuccess: () => {
+      toast.success(t('receiptSaved'))
+
+      if (previewData) {
+        URL.revokeObjectURL(previewData.previewUrl)
+      }
+      setPreviewData(null)
+      setState('idle')
+
+      router.refresh()
+    },
+    onError: ({ error }) => {
+      const message =
+        error.validationErrors?._errors?.[0] ??
+        error.serverError ??
+        'Failed to save receipt'
+      toast.error(message)
+      setState('previewing')
+    },
+  })
 
   const handleFabClick = useCallback(() => {
     cameraRef.current?.trigger()
@@ -49,44 +72,14 @@ export function CaptureFlow() {
 
     setState('saving')
 
-    try {
-      // Convert file to base64
-      const base64 = await fileToBase64(previewData.file)
+    const base64 = await fileToBase64(previewData.file)
 
-      // POST to API
-      const response = await fetch('/api/receipts/capture', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          imageData: base64,
-          mimeType: previewData.file.type,
-          fileSize: previewData.file.size,
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.error || 'Failed to save receipt')
-      }
-
-      // Success
-      toast.success(t('receiptSaved'))
-
-      // Clean up preview
-      URL.revokeObjectURL(previewData.previewUrl)
-      setPreviewData(null)
-      setState('idle')
-
-      // Refresh dashboard to show new receipt
-      router.refresh()
-    } catch (error) {
-      console.error('Failed to save receipt:', error)
-      toast.error(
-        error instanceof Error ? error.message : 'Failed to save receipt'
-      )
-      setState('previewing')
-    }
-  }, [previewData, router, t])
+    await executeAsync({
+      imageData: base64,
+      mimeType: previewData.file.type,
+      fileSize: previewData.file.size,
+    })
+  }, [previewData, executeAsync])
 
   return (
     <>
