@@ -66,8 +66,8 @@ export default async function DashboardPage({ params }: Props) {
         <EmptyState />
       )}
 
-      {/* Capture flow: FAB + camera + preview overlay */}
-      <CaptureFlow />
+      {/* Capture flow: FAB + camera + preview (only for signed-in users) */}
+      {clerkId && <CaptureFlow />}
     </div>
   )
 }

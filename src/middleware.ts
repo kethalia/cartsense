@@ -6,6 +6,8 @@ const intlMiddleware = createMiddleware(routing)
 
 // Public routes that skip auth protection
 const isPublicRoute = createRouteMatcher([
+  '/',
+  '/:locale',
   '/auth(.*)',
   '/:locale/auth(.*)',
   '/sso-callback(.*)',
