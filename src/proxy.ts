@@ -13,7 +13,7 @@ function isProtectedPath(pathname: string): boolean {
   return protectedPaths.some((p) => pathWithoutLocale.startsWith(p))
 }
 
-export default function middleware(req: NextRequest) {
+export default function proxy(req: NextRequest) {
   // Check auth for protected routes (cookie-based, fast)
   if (isProtectedPath(req.nextUrl.pathname)) {
     const session = getSessionCookie(req)
