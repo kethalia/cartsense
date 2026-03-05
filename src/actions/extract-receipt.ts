@@ -10,7 +10,7 @@ import type { ExtractionResult, PaymentType } from '@/types/receipt'
 // Haiku: fast & cheap (~$0.001/receipt) — used for free tier
 // Sonnet: higher accuracy (~$0.005/receipt) — reserved for premium tier
 const AI_MODELS = {
-  free: 'claude-haiku-4-20250414',
+  free: 'claude-3-haiku-20240307',
   premium: 'claude-sonnet-4-20250514',
 } as const
 
@@ -77,9 +77,10 @@ export const extractReceipt = authActionClient
       data: { extractionStatus: 'processing' },
     })
 
+    const model = getExtractionModel(userId)
+
     try {
       const anthropic = getAnthropicClient()
-      const model = getExtractionModel(userId)
 
       const response = await anthropic.messages.create({
         model,
@@ -164,20 +165,28 @@ export const extractReceipt = authActionClient
         throw error
       }
 
+      const errorMessage = error instanceof Error ? error.message : 'Unknown extraction error'
+      console.error('[extract-receipt] AI extraction failed:', errorMessage, {
+        receiptId,
+        model,
+        status: (error as { status?: number }).status,
+      })
+
       // Mark as failed for API errors
       await prisma.capturedReceipt.update({
         where: { id: receiptId },
         data: {
           extractionStatus: 'failed',
           rawExtraction: {
-            error: error instanceof Error ? error.message : 'Unknown extraction error',
+            error: errorMessage,
+            model,
           },
         },
       })
 
       return {
         status: 'failed' as const,
-        error: error instanceof Error ? error.message : 'Extraction failed',
+        error: errorMessage,
       }
     }
   })

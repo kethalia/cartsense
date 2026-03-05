@@ -23,6 +23,14 @@ export type FieldSource = 'manual' | 'ai'
 /** Map of each field to its selected source */
 export type FieldSources = Record<ReceiptFieldName, FieldSource>
 
+/** A single product/line item on a receipt */
+export type LineItem = {
+  id: string
+  name: string
+  quantity: string // string for input field
+  price: string // string for input field (unit price)
+}
+
 /** Manual entry form data — string types for form inputs */
 export type ManualEntryData = {
   vendorName: string
@@ -30,6 +38,7 @@ export type ManualEntryData = {
   receiptDate: string // YYYY-MM-DD format
   taxAmount: string
   paymentType: PaymentType | ''
+  lineItems: LineItem[]
 }
 
 /** Verified receipt data ready to persist */

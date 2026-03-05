@@ -34,6 +34,7 @@ function createEmptyManualData(): ManualEntryData {
     receiptDate: getDefaultDate(),
     taxAmount: '',
     paymentType: '' as ManualEntryData['paymentType'],
+    lineItems: [],
   }
 }
 
@@ -44,6 +45,7 @@ function aiToManualData(ai: ExtractionResult): ManualEntryData {
     receiptDate: ai.receiptDate ?? getDefaultDate(),
     taxAmount: ai.taxAmount !== null ? String(ai.taxAmount) : '',
     paymentType: ai.paymentType ?? '',
+    lineItems: [],
   }
 }
 
