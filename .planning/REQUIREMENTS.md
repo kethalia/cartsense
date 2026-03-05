@@ -20,10 +20,10 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **RCPT-01**: User can capture receipt photo using mobile camera with auto-crop
 - [x] **RCPT-02**: User can upload receipt images (PDF, JPG, PNG formats)
 - [x] **RCPT-03**: AI extracts vendor, amount, date, tax, payment type from receipt
-- [ ] **RCPT-04**: User can manually enter receipt data when AI extraction fails
+- [x] **RCPT-04**: User can manually enter receipt data when AI extraction fails
 - [ ] **RCPT-05**: User can upload multiple receipts in batch for processing
 - [ ] **RCPT-06**: System recognizes major Romanian vendors (Kaufland, Mega Image, eMAG, etc.)
-- [ ] **RCPT-07**: User can verify and correct AI-extracted data before saving
+- [x] **RCPT-07**: User can verify and correct AI-extracted data before saving
 - [ ] **RCPT-08**: System enhances receipt photo quality (brightness, contrast, crop)
 
 ### Categorization
@@ -128,8 +128,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RCPT-01 | Phase 2: Core Capture | Complete | User can capture receipt photo using mobile camera with auto-crop |
 | RCPT-02 | Phase 2: Core Capture | Complete | User can upload receipt images (PDF, JPG, PNG formats) |
 | RCPT-03 | Phase 2: Core Capture | Complete | AI extracts vendor, amount, date, tax, payment type from receipt |
-| RCPT-04 | Phase 2: Core Capture | Pending | User can manually enter receipt data when AI extraction fails |
-| RCPT-07 | Phase 2: Core Capture | Pending | User can verify and correct AI-extracted data before saving |
+| RCPT-04 | Phase 2: Core Capture | Complete | User can manually enter receipt data when AI extraction fails |
+| RCPT-07 | Phase 2: Core Capture | Complete | User can verify and correct AI-extracted data before saving |
 | RCPT-05 | Phase 3: Enhanced Processing | Pending | User can upload multiple receipts in batch for processing |
 | RCPT-06 | Phase 3: Enhanced Processing | Pending | System recognizes major Romanian vendors |
 | RCPT-08 | Phase 3: Enhanced Processing | Pending | System enhances receipt photo quality |
