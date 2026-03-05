@@ -106,6 +106,28 @@ export function AIDataCard({ data, fieldSources, onToggleSource, loading }: AIDa
             </div>
           )
         })}
+
+        {/* Line items */}
+        {data.lineItems.length > 0 && (
+          <div className="border-t pt-3 mt-1 space-y-2">
+            <h4 className="text-sm font-medium text-foreground">
+              Products ({data.lineItems.length})
+            </h4>
+            <div className="space-y-1.5">
+              {data.lineItems.map((item, i) => (
+                <div key={i} className="flex items-baseline gap-2 text-sm">
+                  <span className="flex-1 truncate">{item.name}</span>
+                  <span className="text-muted-foreground text-xs shrink-0">
+                    {item.quantity} × {item.unitPrice.toFixed(2)}
+                  </span>
+                  <span className="font-medium shrink-0">
+                    {item.totalPrice.toFixed(2)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </CardContent>
     </>
   )

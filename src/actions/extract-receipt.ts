@@ -4,22 +4,21 @@ import { z } from 'zod'
 import Anthropic from '@anthropic-ai/sdk'
 import { authActionClient } from '@/lib/safe-action'
 import { prisma } from '@/lib/db'
-import type { ExtractionResult, PaymentType } from '@/types/receipt'
+import {
+  buildReceiptExtractionRequest,
+  type ReceiptToolResult,
+} from '@/lib/prompts/extract-receipt'
+import type { ExtractionResult, ExtractedLineItem, PaymentType } from '@/types/receipt'
 
 // ── AI Model Configuration ──
-// Haiku: fast & cheap (~$0.001/receipt) — used for free tier
-// Sonnet: higher accuracy (~$0.005/receipt) — reserved for premium tier
 const AI_MODELS = {
-  free: 'claude-3-haiku-20240307',
-  premium: 'claude-sonnet-4-20250514',
+  default: 'claude-sonnet-4-20250514',
 } as const
 
-/** Select AI model based on user tier. Premium tier check to be added later. */
 function getExtractionModel(_userId: string): string {
-  // TODO: When premium tier is implemented, check user.plan here
-  // e.g. const user = await prisma.user.findUnique({ where: { id: userId }, select: { plan: true } })
-  // return user?.plan === 'premium' ? AI_MODELS.premium : AI_MODELS.free
-  return AI_MODELS.free
+  // Sonnet 4 — tested in Workbench, accurate for Romanian receipts.
+  // Haiku 4.5 was tested but gives inaccurate totals and misses fields.
+  return AI_MODELS.default
 }
 
 const extractReceiptSchema = z.object({
@@ -33,30 +32,43 @@ function getAnthropicClient(): Anthropic {
   return new Anthropic()
 }
 
-const EXTRACTION_PROMPT = `Extract these fields from the receipt image:
-- vendorName: Store/vendor name
-- totalAmount: Total amount as a number (in RON)
-- receiptDate: Date in YYYY-MM-DD format
-- taxAmount: Tax/VAT amount as a number (in RON)
-- paymentType: 'cash', 'card', or 'other'
-- confidence: Your confidence in the extraction from 0 to 1
-
-Return JSON with these exact field names. Use null for any field you cannot determine.`
-
 function isValidPaymentType(value: unknown): value is PaymentType {
   return value === 'cash' || value === 'card' || value === 'other'
 }
 
-function calculateConfidence(result: Record<string, unknown>): number {
-  const fields = ['vendorName', 'totalAmount', 'receiptDate', 'taxAmount', 'paymentType']
-  const extracted = fields.filter((f) => result[f] != null).length
-  return Number((extracted / fields.length).toFixed(2))
+/** Map tool result to our ExtractionResult type */
+function mapToolResult(result: ReceiptToolResult): ExtractionResult {
+  const lineItems: ExtractedLineItem[] = (result.items ?? []).map((item) => ({
+    name: item.name,
+    quantity: item.quantity,
+    unitPrice: item.unit_price,
+    totalPrice: item.total_price,
+  }))
+
+  const fields = [
+    result.merchant_name,
+    result.total,
+    result.transaction_date,
+    result.tax,
+    result.payment_method,
+  ]
+  const extracted = fields.filter((f) => f != null).length
+  const confidence = Number((extracted / fields.length).toFixed(2))
+
+  return {
+    vendorName: result.merchant_name ?? null,
+    totalAmount: result.total ?? null,
+    receiptDate: result.transaction_date ?? null,
+    taxAmount: result.tax ?? null,
+    paymentType: isValidPaymentType(result.payment_method) ? result.payment_method : null,
+    lineItems,
+    confidence,
+  }
 }
 
 export const extractReceipt = authActionClient
   .schema(extractReceiptSchema)
   .action(async ({ parsedInput: { receiptId }, ctx: { userId } }) => {
-    // Verify receipt exists and belongs to user
     const receipt = await prisma.capturedReceipt.findUnique({
       where: { id: receiptId },
       select: {
@@ -71,7 +83,6 @@ export const extractReceipt = authActionClient
       throw new Error('Receipt not found')
     }
 
-    // Mark as processing
     await prisma.capturedReceipt.update({
       where: { id: receiptId },
       data: { extractionStatus: 'processing' },
@@ -82,66 +93,33 @@ export const extractReceipt = authActionClient
     try {
       const anthropic = getAnthropicClient()
 
-      const response = await anthropic.messages.create({
+      const params = buildReceiptExtractionRequest(
+        receipt.imageData,
+        receipt.mimeType,
         model,
-        max_tokens: 1024,
-        system:
-          'You are a receipt data extractor. Analyze the receipt image and extract structured data. Return ONLY valid JSON, no other text.',
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'image',
-                source: {
-                  type: 'base64',
-                  media_type: receipt.mimeType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
-                  data: receipt.imageData,
-                },
-              },
-              {
-                type: 'text',
-                text: EXTRACTION_PROMPT,
-              },
-            ],
-          },
-        ],
-      })
+      )
 
-      // Extract text content from response
-      const textBlock = response.content.find((block) => block.type === 'text')
-      if (!textBlock || textBlock.type !== 'text') {
-        throw new Error('No text in AI response')
-      }
+      const response = await anthropic.messages.create(params)
 
-      // Parse JSON response
-      let parsed: Record<string, unknown>
-      try {
-        parsed = JSON.parse(textBlock.text)
-      } catch {
-        // Set status to failed if we can't parse
+      // Find the tool_use block in the response
+      const toolUseBlock = response.content.find(
+        (block) => block.type === 'tool_use' && block.name === 'extract_receipt',
+      )
+
+      if (!toolUseBlock || toolUseBlock.type !== 'tool_use') {
+        console.error('[extract-receipt] No tool_use block in response:', response.content)
         await prisma.capturedReceipt.update({
           where: { id: receiptId },
           data: {
             extractionStatus: 'failed',
-            rawExtraction: { raw: textBlock.text, error: 'Failed to parse AI response' },
+            rawExtraction: { error: 'AI did not call the extraction tool' },
           },
         })
-        return { status: 'failed' as const, error: 'Failed to parse AI response' }
+        return { status: 'failed' as const, error: 'AI did not return structured data' }
       }
 
-      // Map to ExtractionResult
-      const confidence =
-        typeof parsed.confidence === 'number' ? parsed.confidence : calculateConfidence(parsed)
-
-      const extractionResult: ExtractionResult = {
-        vendorName: typeof parsed.vendorName === 'string' ? parsed.vendorName : null,
-        totalAmount: typeof parsed.totalAmount === 'number' ? parsed.totalAmount : null,
-        receiptDate: typeof parsed.receiptDate === 'string' ? parsed.receiptDate : null,
-        taxAmount: typeof parsed.taxAmount === 'number' ? parsed.taxAmount : null,
-        paymentType: isValidPaymentType(parsed.paymentType) ? parsed.paymentType : null,
-        confidence,
-      }
+      const toolResult = toolUseBlock.input as ReceiptToolResult
+      const extractionResult = mapToolResult(toolResult)
 
       // Persist extraction results
       await prisma.capturedReceipt.update({
@@ -150,17 +128,18 @@ export const extractReceipt = authActionClient
           extractionStatus: 'completed',
           vendorName: extractionResult.vendorName,
           totalAmount: extractionResult.totalAmount,
-          receiptDate: extractionResult.receiptDate ? new Date(extractionResult.receiptDate) : null,
+          receiptDate: extractionResult.receiptDate
+            ? new Date(extractionResult.receiptDate)
+            : null,
           taxAmount: extractionResult.taxAmount,
           paymentType: extractionResult.paymentType,
           confidence: extractionResult.confidence,
-          rawExtraction: JSON.parse(JSON.stringify(parsed)),
+          rawExtraction: JSON.parse(JSON.stringify(toolResult)),
         },
       })
 
       return { status: 'success' as const, data: extractionResult }
     } catch (error) {
-      // If it's already a "failed parse" return, re-throw
       if (error instanceof Error && error.message === 'AI extraction not configured') {
         throw error
       }
@@ -172,21 +151,14 @@ export const extractReceipt = authActionClient
         status: (error as { status?: number }).status,
       })
 
-      // Mark as failed for API errors
       await prisma.capturedReceipt.update({
         where: { id: receiptId },
         data: {
           extractionStatus: 'failed',
-          rawExtraction: {
-            error: errorMessage,
-            model,
-          },
+          rawExtraction: { error: errorMessage, model },
         },
       })
 
-      return {
-        status: 'failed' as const,
-        error: errorMessage,
-      }
+      return { status: 'failed' as const, error: errorMessage }
     }
   })

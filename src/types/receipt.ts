@@ -4,6 +4,14 @@ export type ExtractionStatus = 'pending' | 'processing' | 'completed' | 'failed'
 /** Payment type options */
 export type PaymentType = 'cash' | 'card' | 'other'
 
+/** A product/line item extracted by AI */
+export type ExtractedLineItem = {
+  name: string
+  quantity: number
+  unitPrice: number
+  totalPrice: number
+}
+
 /** Result from AI extraction — returned by extractReceipt action */
 export type ExtractionResult = {
   vendorName: string | null
@@ -11,6 +19,7 @@ export type ExtractionResult = {
   receiptDate: string | null // ISO date string (YYYY-MM-DD)
   taxAmount: number | null
   paymentType: PaymentType | null
+  lineItems: ExtractedLineItem[]
   confidence: number // 0-1 overall confidence
 }
 

@@ -1,12 +1,12 @@
 'use client'
 
 import {
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
-} from '@/components/ui/drawer'
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
 import { VerificationClient } from './verification-client'
 
 type VerificationDrawerProps = {
@@ -27,13 +27,16 @@ export function VerificationDrawer({
   if (!receiptId || !imageData || !mimeType) return null
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[95vh]">
-        <DrawerHeader className="sr-only">
-          <DrawerTitle>Receipt Verification</DrawerTitle>
-          <DrawerDescription>Verify and save your receipt data</DrawerDescription>
-        </DrawerHeader>
-        <div className="overflow-auto px-4 pb-4">
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className="h-[100dvh] max-h-[100dvh] w-screen max-w-none rounded-none border-none p-0 sm:rounded-none overflow-auto"
+        showCloseButton
+      >
+        <DialogHeader className="sr-only">
+          <DialogTitle>Receipt Verification</DialogTitle>
+          <DialogDescription>Verify and save your receipt data</DialogDescription>
+        </DialogHeader>
+        <div className="px-4 pb-6 pt-2">
           <VerificationClient
             receiptId={receiptId}
             imageData={imageData}
@@ -41,7 +44,7 @@ export function VerificationDrawer({
             onComplete={() => onOpenChange(false)}
           />
         </div>
-      </DrawerContent>
-    </Drawer>
+      </DialogContent>
+    </Dialog>
   )
 }

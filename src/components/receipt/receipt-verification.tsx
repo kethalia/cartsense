@@ -45,7 +45,12 @@ function aiToManualData(ai: ExtractionResult): ManualEntryData {
     receiptDate: ai.receiptDate ?? getDefaultDate(),
     taxAmount: ai.taxAmount !== null ? String(ai.taxAmount) : '',
     paymentType: ai.paymentType ?? '',
-    lineItems: [],
+    lineItems: ai.lineItems.map((item, i) => ({
+      id: `ai-${i}`,
+      name: item.name,
+      quantity: String(item.quantity),
+      price: String(item.unitPrice),
+    })),
   }
 }
 

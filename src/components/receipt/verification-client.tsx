@@ -61,6 +61,8 @@ export function VerificationClient({
           timeoutId = null
         }
 
+        console.log('[verification] extraction result:', JSON.stringify(result, null, 2))
+
         if (result?.data?.status === 'success' && result.data.data) {
           setAiData(result.data.data)
           setAiLoading(false)
@@ -71,16 +73,18 @@ export function VerificationClient({
           }
         } else {
           // Extraction failed
+          console.error('[verification] extraction failed:', result?.data?.error ?? result?.serverError ?? 'unknown')
           setAiLoading(false)
           setShowManualEntry(true)
-          toast.error(t('aiFailed'))
+          toast.error(result?.data?.error ?? t('aiFailed'))
         }
-      } catch {
+      } catch (err) {
         // API error
         if (timeoutId) {
           clearTimeout(timeoutId)
           timeoutId = null
         }
+        console.error('[verification] extraction threw:', err)
         setAiLoading(false)
         setShowManualEntry(true)
         toast.error(t('aiError'))
