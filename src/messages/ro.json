@@ -12,6 +12,13 @@
     "emptyState": "Niciun bon încă. Apasă butonul camerei pentru a captura primul bon!",
     "emptyStateHint": "Folosește butonul camerei de mai jos pentru a începe",
     "receiptSaved": "Bon salvat! Procesarea vine în curând.",
+    "receiptDuplicate": "Acest bon a fost deja încărcat.",
+    "receiptDeleted": "Bon șters.",
+    "view": "Vizualizare",
+    "close": "Închide",
+    "download": "Descarcă",
+    "delete": "Șterge",
+    "deleteError": "Nu s-a putut șterge bonul.",
     "capturedAt": "Capturat {date}",
     "receipts": "Bonuri"
   },
@@ -36,19 +43,23 @@
     "capture": "Capturează bon",
     "useThis": "Folosește",
     "retake": "Refă",
+    "cancel": "Anulează",
     "saved": "Bon salvat!"
   },
   "Settings": {
     "title": "Setări",
     "profile": "Profil",
-    "logout": "Deconectare",
+    "profileDesc": "Detaliile contului tău.",
     "language": "Limbă",
+    "languageDesc": "Alege limba preferată.",
     "theme": "Temă",
+    "themeDesc": "Selectează aspectul aplicației.",
     "account": "Cont",
-    "appearance": "Aspect",
-    "logoutConfirm": "Sigur doriți să vă deconectați?"
+    "accountDesc": "Deconectează-te din cont.",
+    "logout": "Deconectare"
   },
   "LocaleSwitcher": {
+    "label": "Limbă",
     "en": "English",
     "ro": "Română"
   },

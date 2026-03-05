@@ -22,8 +22,7 @@ export function ThemeToggle() {
   // Render skeleton placeholder during SSR to prevent hydration mismatch
   if (!mounted) {
     return (
-      <div className="space-y-1.5">
-        <div className="h-4 w-12 rounded bg-muted px-2" />
+      <div>
         <div className="flex gap-1">
           {themeOptions.map((opt) => (
             <div
@@ -37,10 +36,7 @@ export function ThemeToggle() {
   }
 
   return (
-    <div className="space-y-1.5">
-      <span className="px-2 text-xs font-medium text-muted-foreground">
-        {t('light') === 'Light' ? 'Theme' : 'Temă'}
-      </span>
+    <div>
       <div className="flex gap-1">
         {themeOptions.map(({ value, icon: Icon, labelKey }) => (
           <button

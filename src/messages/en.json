@@ -12,6 +12,13 @@
     "emptyState": "No receipts yet. Tap the camera button to capture your first receipt!",
     "emptyStateHint": "Use the camera button below to get started",
     "receiptSaved": "Receipt saved! Processing coming soon.",
+    "receiptDuplicate": "This receipt has already been uploaded.",
+    "receiptDeleted": "Receipt deleted.",
+    "view": "View",
+    "close": "Close",
+    "download": "Download",
+    "delete": "Delete",
+    "deleteError": "Failed to delete receipt.",
     "capturedAt": "Captured {date}",
     "receipts": "Receipts"
   },
@@ -36,19 +43,23 @@
     "capture": "Capture Receipt",
     "useThis": "Use this",
     "retake": "Retake",
+    "cancel": "Cancel",
     "saved": "Receipt saved!"
   },
   "Settings": {
     "title": "Settings",
     "profile": "Profile",
-    "logout": "Log out",
+    "profileDesc": "Your account details.",
     "language": "Language",
+    "languageDesc": "Choose your preferred language.",
     "theme": "Theme",
+    "themeDesc": "Select how the app looks.",
     "account": "Account",
-    "appearance": "Appearance",
-    "logoutConfirm": "Are you sure you want to log out?"
+    "accountDesc": "Sign out of your account.",
+    "logout": "Log out"
   },
   "LocaleSwitcher": {
+    "label": "Language",
     "en": "English",
     "ro": "Română"
   },

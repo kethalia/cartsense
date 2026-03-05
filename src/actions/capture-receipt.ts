@@ -1,6 +1,7 @@
 'use server'
 
 import { z } from 'zod'
+import { createHash } from 'crypto'
 import { authActionClient } from '@/lib/safe-action'
 import { prisma } from '@/lib/db'
 
@@ -14,35 +15,40 @@ const captureReceiptSchema = z.object({
 
 export const captureReceipt = authActionClient
   .schema(captureReceiptSchema)
-  .action(async ({ parsedInput: { imageData, mimeType, fileSize }, ctx: { clerkId } }) => {
-    // Look up or create User record (sync Clerk user to local DB)
-    let user = await prisma.user.findUnique({
-      where: { clerkId },
+  .action(async ({ parsedInput: { imageData, mimeType, fileSize }, ctx: { userId } }) => {
+    // Verify user exists in DB (Better Auth should have created them)
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
       select: { id: true },
     })
 
     if (!user) {
-      user = await prisma.user.create({
-        data: {
-          clerkId,
-          email: `${clerkId}@placeholder.local`,
-        },
-        select: { id: true },
-      })
+      throw new Error('Account not found. Please sign out and sign in again.')
     }
 
-    const receipt = await prisma.capturedReceipt.create({
-      data: {
-        userId: user.id,
-        imageData,
-        mimeType,
-        fileSize: fileSize ?? null,
-      },
-      select: {
-        id: true,
-        capturedAt: true,
-      },
-    })
+    const imageHash = createHash('sha256').update(imageData).digest('hex')
 
-    return { id: receipt.id, capturedAt: receipt.capturedAt }
+    try {
+      const receipt = await prisma.capturedReceipt.create({
+        data: {
+          userId,
+          imageHash,
+          imageData,
+          mimeType,
+          fileSize: fileSize ?? null,
+        },
+        select: {
+          id: true,
+          capturedAt: true,
+        },
+      })
+
+      return { id: receipt.id, capturedAt: receipt.capturedAt }
+    } catch (e: unknown) {
+      // Prisma unique constraint violation = duplicate image
+      if (typeof e === 'object' && e !== null && 'code' in e && (e as { code: string }).code === 'P2002') {
+        throw new Error('This receipt has already been uploaded.')
+      }
+      throw new Error('Failed to save receipt. Please try again.')
+    }
   })

@@ -1,8 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { useSignIn, useSignUp } from '@clerk/nextjs'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
+import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import {
@@ -13,61 +14,34 @@ import {
 import { Loader2 } from 'lucide-react'
 
 type Step = 'email' | 'code'
-type FlowType = 'signIn' | 'signUp'
 
 export function EmailOTPForm() {
   const t = useTranslations('Auth')
-  const { signIn, fetchStatus: signInFetchStatus } = useSignIn()
-  const { signUp, fetchStatus: signUpFetchStatus } = useSignUp()
+  const router = useRouter()
 
   const [step, setStep] = React.useState<Step>('email')
   const [email, setEmail] = React.useState('')
   const [code, setCode] = React.useState('')
-  const [flowType, setFlowType] = React.useState<FlowType>('signIn')
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
 
-  const isFetching = signInFetchStatus === 'fetching' || signUpFetchStatus === 'fetching'
-
   async function handleEmailSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!signIn || !signUp) return
-
     setIsLoading(true)
     setError(null)
 
     try {
-      // Try sign-in first (existing user)
-      const createResult = await signIn.create({ identifier: email })
+      const { error: sendError } = await authClient.emailOtp.sendVerificationOtp({
+        email,
+        type: 'sign-in',
+      })
 
-      if (createResult.error) {
-        // If user doesn't exist, try sign-up
-        const errorCode = (createResult.error as { code?: string }).code
-        const isNotFound =
-          errorCode === 'form_identifier_not_found' ||
-          errorCode === 'identifier_not_found'
-
-        if (isNotFound) {
-          await handleSignUpFlow()
-          return
-        }
-
-        const errorMsg = (createResult.error as { message?: string }).message
-        setError(errorMsg ?? t('genericError'))
+      if (sendError) {
+        setError(sendError.message ?? t('genericError'))
         return
       }
 
-      // User exists, send email code
-      if (signIn.status === 'needs_first_factor') {
-        const sendResult = await signIn.emailCode.sendCode()
-        if (sendResult.error) {
-          const errorMsg = (sendResult.error as { message?: string }).message
-          setError(errorMsg ?? t('genericError'))
-          return
-        }
-        setFlowType('signIn')
-        setStep('code')
-      }
+      setStep('code')
     } catch {
       setError(t('genericError'))
     } finally {
@@ -75,70 +49,24 @@ export function EmailOTPForm() {
     }
   }
 
-  async function handleSignUpFlow() {
-    if (!signUp) return
-
-    try {
-      const createResult = await signUp.create({ emailAddress: email })
-      if (createResult.error) {
-        const errorMsg = (createResult.error as { message?: string }).message
-        setError(errorMsg ?? t('genericError'))
-        return
-      }
-
-      const sendResult = await signUp.verifications.sendEmailCode()
-      if (sendResult.error) {
-        const errorMsg = (sendResult.error as { message?: string }).message
-        setError(errorMsg ?? t('genericError'))
-        return
-      }
-
-      setFlowType('signUp')
-      setStep('code')
-    } catch {
-      setError(t('genericError'))
-    }
-  }
-
   async function handleCodeSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!signIn || !signUp) return
-
     setIsLoading(true)
     setError(null)
 
     try {
-      if (flowType === 'signIn') {
-        const verifyResult = await signIn.emailCode.verifyCode({ code })
-        if (verifyResult.error) {
-          const errorMsg = (verifyResult.error as { message?: string }).message
-          setError(errorMsg ?? t('invalidCode'))
-          return
-        }
+      const { error: verifyError } = await authClient.signIn.emailOtp({
+        email,
+        otp: code,
+      })
 
-        if (signIn.status === 'complete') {
-          await signIn.finalize({
-            navigate: ({ decorateUrl }) => {
-              window.location.href = decorateUrl('/dashboard')
-            },
-          })
-        }
-      } else {
-        const verifyResult = await signUp.verifications.verifyEmailCode({ code })
-        if (verifyResult.error) {
-          const errorMsg = (verifyResult.error as { message?: string }).message
-          setError(errorMsg ?? t('invalidCode'))
-          return
-        }
-
-        if (signUp.status === 'complete') {
-          await signUp.finalize({
-            navigate: ({ decorateUrl }) => {
-              window.location.href = decorateUrl('/dashboard')
-            },
-          })
-        }
+      if (verifyError) {
+        setError(verifyError.message ?? t('invalidCode'))
+        return
       }
+
+      // Sign-in successful — redirect to dashboard
+      router.push('/dashboard')
     } catch {
       setError(t('invalidCode'))
     } finally {
@@ -147,24 +75,17 @@ export function EmailOTPForm() {
   }
 
   async function handleResendCode() {
-    if (!signIn || !signUp) return
-
     setIsLoading(true)
     setError(null)
 
     try {
-      if (flowType === 'signIn') {
-        const result = await signIn.emailCode.sendCode()
-        if (result.error) {
-          const errorMsg = (result.error as { message?: string }).message
-          setError(errorMsg ?? t('genericError'))
-        }
-      } else {
-        const result = await signUp.verifications.sendEmailCode()
-        if (result.error) {
-          const errorMsg = (result.error as { message?: string }).message
-          setError(errorMsg ?? t('genericError'))
-        }
+      const { error: resendError } = await authClient.emailOtp.sendVerificationOtp({
+        email,
+        type: 'sign-in',
+      })
+
+      if (resendError) {
+        setError(resendError.message ?? t('genericError'))
       }
     } catch {
       setError(t('genericError'))
@@ -202,7 +123,7 @@ export function EmailOTPForm() {
         <Button
           type="submit"
           className="w-full"
-          disabled={isLoading || isFetching || !signIn}
+          disabled={isLoading}
         >
           {isLoading ? (
             <>

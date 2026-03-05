@@ -1,7 +1,8 @@
 import { useTranslations } from 'next-intl'
 import { setRequestLocale } from 'next-intl/server'
-import { auth } from '@clerk/nextjs/server'
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
+import { auth } from '@/lib/auth'
 import { Link } from '@/i18n/navigation'
 import { Button } from '@/components/ui/button'
 import { Camera, Receipt, BarChart3 } from 'lucide-react'
@@ -15,8 +16,10 @@ export default async function LandingPage({ params }: Props) {
   setRequestLocale(locale)
 
   // If already signed in, go straight to dashboard
-  const { userId } = await auth()
-  if (userId) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+  if (session) {
     redirect('/dashboard')
   }
 

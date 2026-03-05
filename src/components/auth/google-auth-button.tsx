@@ -1,8 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { useSignIn } from '@clerk/nextjs'
 import { useTranslations } from 'next-intl'
+import { authClient } from '@/lib/auth-client'
 import { Button } from '@/components/ui/button'
 import { Loader2 } from 'lucide-react'
 
@@ -35,19 +35,15 @@ function GoogleIcon({ className }: { className?: string }) {
 
 export function GoogleAuthButton() {
   const t = useTranslations('Auth')
-  const { signIn } = useSignIn()
   const [isLoading, setIsLoading] = React.useState(false)
 
   async function handleClick() {
-    if (!signIn) return
-
     setIsLoading(true)
 
     try {
-      await signIn.sso({
-        strategy: 'oauth_google',
-        redirectUrl: '/sso-callback',
-        redirectCallbackUrl: '/dashboard',
+      await authClient.signIn.social({
+        provider: 'google',
+        callbackURL: '/dashboard',
       })
     } catch {
       // Redirect will happen, loading state handles UX
@@ -60,7 +56,7 @@ export function GoogleAuthButton() {
       variant="outline"
       className="w-full"
       onClick={handleClick}
-      disabled={isLoading || !signIn}
+      disabled={isLoading}
     >
       {isLoading ? (
         <Loader2 className="animate-spin" />

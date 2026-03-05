@@ -1,9 +1,11 @@
-import { auth } from '@clerk/nextjs/server'
+import { headers } from 'next/headers'
 import { setRequestLocale, getTranslations } from 'next-intl/server'
+import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { EmptyState } from '@/components/dashboard/empty-state'
 import { ReceiptCard } from '@/components/dashboard/receipt-card'
 import { CaptureFlow } from '@/components/capture/capture-flow'
+import { ItemGroup } from '@/components/ui/item'
 
 type Props = {
   params: Promise<{ locale: string }>
@@ -14,7 +16,11 @@ export default async function DashboardPage({ params }: Props) {
   setRequestLocale(locale)
 
   const t = await getTranslations('Dashboard')
-  const { userId: clerkId } = await auth()
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  })
+
+  const userId = session?.user?.id
 
   let receipts: Array<{
     id: string
@@ -24,10 +30,10 @@ export default async function DashboardPage({ params }: Props) {
     capturedAt: Date
   }> = []
 
-  if (clerkId) {
+  if (userId) {
     try {
       receipts = await prisma.capturedReceipt.findMany({
-        where: { user: { clerkId } },
+        where: { userId },
         orderBy: { capturedAt: 'desc' },
         select: {
           id: true,
@@ -49,7 +55,7 @@ export default async function DashboardPage({ params }: Props) {
       {hasReceipts ? (
         <div className="space-y-4">
           <h1 className="text-2xl font-semibold">{t('receipts')}</h1>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+          <ItemGroup className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {receipts.map((receipt) => (
               <ReceiptCard
                 key={receipt.id}
@@ -60,14 +66,14 @@ export default async function DashboardPage({ params }: Props) {
                 capturedAt={receipt.capturedAt}
               />
             ))}
-          </div>
+          </ItemGroup>
         </div>
       ) : (
         <EmptyState />
       )}
 
       {/* Capture flow: FAB + camera + preview (only for signed-in users) */}
-      {clerkId && <CaptureFlow />}
+      {userId && <CaptureFlow />}
     </div>
   )
 }

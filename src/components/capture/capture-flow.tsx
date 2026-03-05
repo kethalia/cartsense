@@ -55,17 +55,21 @@ export function CaptureFlow() {
     setState('previewing')
   }, [])
 
-  const handleRetake = useCallback(() => {
+  const handleClose = useCallback(() => {
     if (previewData) {
       URL.revokeObjectURL(previewData.previewUrl)
     }
     setPreviewData(null)
     setState('idle')
+  }, [previewData])
+
+  const handleRetake = useCallback(() => {
+    handleClose()
     // Re-trigger camera after a tick (allow state to settle)
     setTimeout(() => {
       cameraRef.current?.trigger()
     }, 100)
-  }, [previewData])
+  }, [handleClose])
 
   const handleConfirm = useCallback(async () => {
     if (!previewData) return
@@ -97,6 +101,7 @@ export function CaptureFlow() {
           previewUrl={previewData.previewUrl}
           onConfirm={handleConfirm}
           onRetake={handleRetake}
+          onClose={handleClose}
         />
       )}
     </>

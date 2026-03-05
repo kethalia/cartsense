@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    ports:
+      - "38116:5432"
+    environment:
+      POSTGRES_USER: cartsense
+      POSTGRES_PASSWORD: cartsense
+      POSTGRES_DB: cartsense
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
