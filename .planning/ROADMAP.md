@@ -115,7 +115,7 @@ Plans:
 - **CAT-01**: System auto-categorizes receipts into 15+ standard expense categories
 - **CAT-02**: User can manually override auto-categorization
 - **CAT-03**: User can create custom expense categories
-- **CAT-04**: User can flag receipts as business vs personal expenses
+- **CAT-04**: ~~User can flag receipts as business vs personal expenses~~ *(deferred)*
 - **CAT-05**: User can search receipts by vendor, amount, category, or date
 - **CAT-06**: System handles Romanian VAT (19% standard rate) correctly
 

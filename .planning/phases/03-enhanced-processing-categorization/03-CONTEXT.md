@@ -18,8 +18,8 @@ CAT-04 (business vs personal) deferred — see Deferred Ideas.
 
 ### Category system
 - Two-layer category model:
-  - **Receipt-level categories (15-18):** Classify the store/transaction type — Groceries, Restaurants, Transport, Entertainment, Health, Utilities, Shopping, Education, Services, Coffee/Bars, Clothing, Electronics stores, Home, Subscriptions, Fuel, Personal Care, Gifts, Travel, Other
-  - **Product-level categories (18-22, food-focused):** Classify individual line items — Meat, Dairy, Bread/Bakery, Fruits & Vegetables, Sweets/Snacks, Canned/Dry goods, Frozen, Drinks, Alcohol, Tobacco, Electronics, Household, Cleaning, Personal Care, Health/Pharma, Pet supplies, Baby, Stationery, Clothing, Other
+  - **Receipt-level categories (19):** Classify the store/transaction type — Groceries, Restaurants, Transport, Entertainment, Health, Utilities, Shopping, Education, Services, Coffee/Bars, Clothing, Electronics stores, Home, Subscriptions, Fuel, Personal Care, Gifts, Travel, Other
+  - **Product-level categories (20, food-focused):** Classify individual line items — Meat, Dairy, Bread/Bakery, Fruits & Vegetables, Sweets/Snacks, Canned/Dry goods, Frozen, Drinks, Alcohol, Tobacco, Electronics, Household, Cleaning, Personal Care, Health/Pharma, Pet supplies, Baby, Stationery, Clothing, Other
 - Food sub-categories are granular because Romanian grocery receipts (Kaufland, Mega Image, Lidl) are the most common receipt type and granular breakdowns unlock analytics value in later phases
 - Non-food product categories stay broad since those receipts are typically single-category
 
