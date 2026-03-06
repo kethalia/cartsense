@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useImperativeHandle, forwardRef, type ChangeEvent } from 'react'
+import { checkImageDimensions } from '@/lib/utils'
 
 export type FileUploadHandle = {
   trigger: () => void
@@ -14,25 +15,6 @@ type FileUploadProps = {
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png']
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
 const MIN_DIMENSION = 300
-
-function checkImageDimensions(file: File): Promise<{ width: number; height: number }> {
-  return new Promise((resolve, reject) => {
-    const img = new Image()
-    const url = URL.createObjectURL(file)
-
-    img.onload = () => {
-      URL.revokeObjectURL(url)
-      resolve({ width: img.naturalWidth, height: img.naturalHeight })
-    }
-
-    img.onerror = () => {
-      URL.revokeObjectURL(url)
-      reject(new Error('Failed to load image'))
-    }
-
-    img.src = url
-  })
-}
 
 export const FileUpload = forwardRef<FileUploadHandle, FileUploadProps>(
   function FileUpload({ onUpload, onError }, ref) {

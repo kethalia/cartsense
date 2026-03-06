@@ -6,6 +6,7 @@ import { Plus, Trash2, Merge, Expand } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ImageViewer } from '@/components/receipt/image-viewer'
+import { v4 as uuidv4 } from 'uuid'
 import type {
   ExtractionResult,
   ReceiptFormData,
@@ -16,12 +17,6 @@ import type {
 
 // ── Helpers ──
 
-let _counter = 0
-function generateId(): string {
-  _counter += 1
-  return `li-${Date.now()}-${_counter}`
-}
-
 function extractionToForm(ai: ExtractionResult): ReceiptFormData {
   return {
     vendorName: ai.vendorName ?? '',
@@ -30,7 +25,7 @@ function extractionToForm(ai: ExtractionResult): ReceiptFormData {
     taxAmount: ai.taxAmount !== null ? String(ai.taxAmount) : '',
     paymentType: ai.paymentType ?? '',
     lineItems: ai.lineItems.map((item) => ({
-      id: generateId(),
+      id: uuidv4(),
       name: item.name,
       quantity: String(item.quantity),
       unitPrice: String(item.unitPrice),
@@ -54,7 +49,7 @@ function formDataToForm(data: ReceiptFormData): ReceiptFormData {
     ...data,
     lineItems: data.lineItems.map((item) => ({
       ...item,
-      id: item.id || generateId(),
+      id: item.id || uuidv4(),
     })),
   }
 }
@@ -199,7 +194,7 @@ export function ReceiptEditor({
   const addLineItem = React.useCallback(() => {
     setForm((prev) => ({
       ...prev,
-      lineItems: [...prev.lineItems, { id: generateId(), name: '', quantity: '1', unitPrice: '' }],
+      lineItems: [...prev.lineItems, { id: uuidv4(), name: '', quantity: '1', unitPrice: '' }],
     }))
   }, [])
 
