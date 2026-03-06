@@ -93,7 +93,8 @@ function PreviewActions({
   )
 }
 
-export function PhotoPreview({ previewUrl, onConfirm, onRetake, onClose }: PhotoPreviewProps) {
+export function PhotoPreview(props: PhotoPreviewProps) {
+  const { previewUrl, onConfirm, onRetake, onClose } = props
   const t = useTranslations('Camera')
   const isMobile = useIsMobile()
   const [saving, setSaving] = useState(false)

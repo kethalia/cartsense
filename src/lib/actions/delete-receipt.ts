@@ -9,7 +9,7 @@ const deleteReceiptSchema = z.object({
 })
 
 export const deleteReceipt = authActionClient
-  .schema(deleteReceiptSchema)
+  .inputSchema(deleteReceiptSchema)
   .action(async ({ parsedInput: { id }, ctx: { userId } }) => {
     // Only allow deleting own receipts
     const receipt = await prisma.capturedReceipt.findFirst({

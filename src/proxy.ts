@@ -5,7 +5,7 @@ import { routing } from './i18n/routing'
 
 const intlMiddleware = createMiddleware(routing)
 
-const protectedPaths = ['/dashboard', '/settings']
+const protectedPaths = ['/dashboard', '/settings', '/receipt']
 
 function isProtectedPath(pathname: string): boolean {
   // Strip locale prefix if present (e.g. /ro/dashboard → /dashboard)
@@ -13,7 +13,7 @@ function isProtectedPath(pathname: string): boolean {
   return protectedPaths.some((p) => pathWithoutLocale.startsWith(p))
 }
 
-export default function middleware(req: NextRequest) {
+export default function proxy(req: NextRequest) {
   // Check auth for protected routes (cookie-based, fast)
   if (isProtectedPath(req.nextUrl.pathname)) {
     const session = getSessionCookie(req)

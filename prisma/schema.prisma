@@ -82,6 +82,16 @@ model CapturedReceipt {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
+  // ── Extraction fields ──
+  extractionStatus String    @default("pending") // pending | processing | completed | failed
+  vendorName       String?
+  totalAmount      Decimal?  @db.Decimal(10, 2)
+  receiptDate      DateTime?
+  taxAmount        Decimal?  @db.Decimal(10, 2)
+  paymentType      String?                       // "cash" | "card" | "other"
+  rawExtraction    Json?                         // Full AI response for debugging
+  verifiedAt       DateTime?                     // When user confirmed the data
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, imageHash])

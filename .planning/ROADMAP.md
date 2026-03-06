@@ -57,11 +57,11 @@ Plans:
 ## Phase 2: Core Receipt Capture
 **Goal:** Enable reliable receipt photo capture with basic AI extraction and manual verification
 
-**Plans:** 4 plans in 3 waves
+**Plans:** 4/4 plans complete
 
 Plans:
 - [ ] 02-01-PLAN.md — Receipt schema evolution + AI extraction service
-- [ ] 02-02-PLAN.md — Expanded FAB menu + upload flow
+- [x] 02-02-PLAN.md — Expanded FAB menu + upload flow
 - [ ] 02-03-PLAN.md — Stacked cards verification UI components
 - [ ] 02-04-PLAN.md — Receipt verification page + end-to-end wiring
 
