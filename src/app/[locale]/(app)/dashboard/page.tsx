@@ -1,14 +1,12 @@
 import { headers } from "next/headers"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { CaptureFlow } from "@/components/capture/capture-flow"
+import { DashboardContent } from "@/components/dashboard/dashboard-content"
 import { EmptyState } from "@/components/dashboard/empty-state"
-import { ReceiptCard } from "@/components/dashboard/receipt-card"
-import { ItemGroup } from "@/components/ui/item"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
-import type { ReceiptSummary } from "@/schemas"
 
-type Props = {
+interface Props {
   params: Promise<{ locale: string }>
 }
 
@@ -23,21 +21,56 @@ export default async function DashboardPage({ params }: Props) {
 
   const userId = session?.user?.id
 
-  let receipts: ReceiptSummary[] = []
+  let receipts: {
+    id: string
+    vendorName: string | null
+    totalAmount: number | null
+    receiptDate: Date | null
+    capturedAt: Date
+    categoryId: string | null
+    category: {
+      id: string
+      name: string
+      nameRo: string | null
+      slug: string
+      color: string
+      icon: string | null
+    } | null
+    imageData: string
+    mimeType: string
+  }[] = []
 
   if (userId) {
     try {
-      receipts = await prisma.capturedReceipt.findMany({
+      const raw = await prisma.capturedReceipt.findMany({
         where: { userId },
         orderBy: { capturedAt: "desc" },
         select: {
           id: true,
+          vendorName: true,
+          totalAmount: true,
+          receiptDate: true,
+          capturedAt: true,
+          categoryId: true,
+          category: {
+            select: {
+              id: true,
+              name: true,
+              nameRo: true,
+              slug: true,
+              color: true,
+              icon: true,
+            },
+          },
           imageData: true,
           mimeType: true,
-          fileSize: true,
-          capturedAt: true,
         },
       })
+
+      receipts = raw.map((r) => ({
+        ...r,
+        totalAmount: r.totalAmount ? Number(r.totalAmount) : null,
+      }))
     } catch {
       // User may not exist in DB yet — that's fine, show empty state
     }
@@ -50,11 +83,7 @@ export default async function DashboardPage({ params }: Props) {
       {hasReceipts ? (
         <div className="space-y-4">
           <h1 className="text-2xl font-semibold">{t("receipts")}</h1>
-          <ItemGroup className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {receipts.map((receipt) => (
-              <ReceiptCard key={receipt.id} receipt={receipt} />
-            ))}
-          </ItemGroup>
+          <DashboardContent receipts={receipts} />
         </div>
       ) : (
         <EmptyState />

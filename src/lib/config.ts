@@ -5,6 +5,10 @@ export const MAX_UPLOAD_SIZE = 10 * 1024 * 1024 // 10 MB
 export const BODY_SIZE_LIMIT = "11mb" // MAX_UPLOAD_SIZE + FormData overhead
 export const MIN_IMAGE_DIMENSION = 300 // px
 
+// ── Batch upload ──
+
+export const BATCH_MAX_RECEIPTS = 5
+
 // ── Image compression (server-side storage) ──
 
 export const MAX_STORED_BYTES = 4.5 * 1024 * 1024 // 4.5 MB — fits Claude's 5 MB vision limit
@@ -14,6 +18,10 @@ export const MAX_STORED_BYTES = 4.5 * 1024 * 1024 // 4.5 MB — fits Claude's 5 
 export const MIN_ZOOM = 0.5
 export const MAX_ZOOM = 5
 export const ZOOM_STEP = 0.5
+
+// ── Image enhancement (pre-processing for AI) ──
+
+export const IMAGE_ENHANCE_ENABLED = true
 
 // ── AI extraction ──
 

@@ -1,17 +1,19 @@
 "use client"
 
-import { Camera, Plus, Upload } from "lucide-react"
+import { Camera, Images, Plus, Upload } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useCallback, useState } from "react"
 import { Button } from "@/components/ui/button"
 
-type FabMenuProps = {
+interface Props {
   onTakePhoto: () => void
   onUploadImage: () => void
+  onBatchUpload: () => void
 }
 
-export function FabMenu({ onTakePhoto, onUploadImage }: FabMenuProps) {
+export function FabMenu({ onTakePhoto, onUploadImage, onBatchUpload }: Props) {
   const t = useTranslations("Camera")
+  const tBatch = useTranslations("Batch")
   const [isOpen, setIsOpen] = useState(false)
 
   const toggle = useCallback(() => {
@@ -31,6 +33,11 @@ export function FabMenu({ onTakePhoto, onUploadImage }: FabMenuProps) {
     close()
     onUploadImage()
   }, [close, onUploadImage])
+
+  const handleBatchUpload = useCallback(() => {
+    close()
+    onBatchUpload()
+  }, [close, onBatchUpload])
 
   return (
     <>
@@ -81,7 +88,7 @@ export function FabMenu({ onTakePhoto, onUploadImage }: FabMenuProps) {
           </Button>
         </div>
 
-        {/* Take Photo option (appears first from bottom, directly above FAB) */}
+        {/* Take Photo option */}
         <div
           className={`flex items-center gap-2 transition-all duration-200 ${
             isOpen
@@ -101,6 +108,29 @@ export function FabMenu({ onTakePhoto, onUploadImage }: FabMenuProps) {
             tabIndex={isOpen ? 0 : -1}
           >
             <Camera className="h-5 w-5" />
+          </Button>
+        </div>
+
+        {/* Batch Upload option */}
+        <div
+          className={`flex items-center gap-2 transition-all duration-200 ${
+            isOpen
+              ? "translate-y-0 scale-100 opacity-100"
+              : "pointer-events-none translate-y-12 scale-75 opacity-0"
+          }`}
+        >
+          <span className="rounded-md bg-popover px-2 py-1 text-xs font-medium text-popover-foreground shadow-sm">
+            {tBatch("batchUpload")}
+          </span>
+          <Button
+            size="icon"
+            variant="secondary"
+            onClick={handleBatchUpload}
+            className="h-12 w-12 rounded-full shadow-md"
+            aria-label={tBatch("batchUpload")}
+            tabIndex={isOpen ? 0 : -1}
+          >
+            <Images className="h-5 w-5" />
           </Button>
         </div>
       </div>
