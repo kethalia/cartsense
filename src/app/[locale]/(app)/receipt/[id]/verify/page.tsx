@@ -3,8 +3,9 @@ import { notFound, redirect } from 'next/navigation'
 import { setRequestLocale } from 'next-intl/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { v4 as uuidv4 } from 'uuid'
 import { VerificationClient } from '@/components/receipt/verification-client'
-import type { ExtractedLineItem } from '@/schemas'
+import type { ExtractedLineItem, PaymentType } from '@/schemas'
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -62,8 +63,9 @@ export default async function ReceiptVerifyPage({ params }: Props) {
                 ? receipt.receiptDate.toISOString().split('T')[0]
                 : new Date().toISOString().split('T')[0],
               taxAmount: receipt.taxAmount !== null ? String(receipt.taxAmount) : '',
-              paymentType: (receipt.paymentType as 'cash' | 'card' | 'other') ?? '',
+              paymentType: (receipt.paymentType as PaymentType) ?? '',
               lineItems: ((receipt.rawExtraction as { lineItems?: ExtractedLineItem[] })?.lineItems ?? []).map((i) => ({
+                id: uuidv4(),
                 name: i.name,
                 quantity: String(i.quantity),
                 unitPrice: String(i.unitPrice),

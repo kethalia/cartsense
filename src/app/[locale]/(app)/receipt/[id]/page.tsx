@@ -4,7 +4,7 @@ import { setRequestLocale } from 'next-intl/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { ReceiptDetails } from '@/components/receipt/receipt-details'
-import type { ExtractedLineItem } from '@/schemas'
+import type { ExtractedLineItem, PaymentType } from '@/schemas'
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -52,7 +52,7 @@ export default async function ReceiptDetailsPage({ params }: Props) {
       totalAmount={receipt.totalAmount ? Number(receipt.totalAmount) : null}
       receiptDate={receipt.receiptDate}
       taxAmount={receipt.taxAmount ? Number(receipt.taxAmount) : null}
-      paymentType={receipt.paymentType}
+      paymentType={receipt.paymentType as PaymentType | null}
       capturedAt={receipt.capturedAt}
       verifiedAt={receipt.verifiedAt}
       lineItems={(receipt.rawExtraction as { lineItems?: ExtractedLineItem[] })?.lineItems ?? []}

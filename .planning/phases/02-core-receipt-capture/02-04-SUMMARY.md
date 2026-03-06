@@ -2,7 +2,16 @@
 phase: 02-core-receipt-capture
 plan: 04
 subsystem: integration
-tags: [verification-page, ai-extraction, processing-pipeline, i18n, drawer-ui, stacked-cards-rewrite, line-items]
+tags:
+  [
+    verification-page,
+    ai-extraction,
+    processing-pipeline,
+    i18n,
+    drawer-ui,
+    stacked-cards-rewrite,
+    line-items,
+  ]
 
 # Dependency graph
 requires:
@@ -21,7 +30,13 @@ affects: [03-spending-analytics]
 # Tech tracking
 tech-stack:
   added: []
-  patterns: ["Drawer-based verification flow", "Background AI processing with sticky banner", "Reference-pattern stacked cards (offset/rotation/scale)", "Product line items in manual entry form"]
+  patterns:
+    [
+      "Drawer-based verification flow",
+      "Background AI processing with sticky banner",
+      "Reference-pattern stacked cards (offset/rotation/scale)",
+      "Product line items in manual entry form",
+    ]
 
 key-files:
   created:
@@ -92,6 +107,7 @@ completed: 2026-03-05
 4. **Fix: AI model name and product line items** - `3064238` (fix)
 
 ### Related commits (cross-plan fixes during Phase 2):
+
 - `f94bf0f` - feat(02-01): use Haiku for free tier, Sonnet reserved for premium
 - `b5338f9` - fix(02-01): increase server action body limit to 15mb for receipt images
 - `44fb494` - chore: upgrade to Next.js 16 with breaking change migration
@@ -101,6 +117,7 @@ completed: 2026-03-05
 ### Auto-fixed Issues
 
 **1. [Rule 1 - Bug] Fixed AI model name**
+
 - **Found during:** Checkpoint testing
 - **Issue:** `claude-haiku-4-20250414` model ID does not exist on the Anthropic API, returning 404
 - **Fix:** Changed to `claude-3-haiku-20240307` which is the currently available Haiku model
@@ -108,6 +125,7 @@ completed: 2026-03-05
 - **Commit:** `3064238`
 
 **2. [Rule 1 - Bug] Stacked cards not matching reference implementation**
+
 - **Found during:** Checkpoint testing
 - **Issue:** Original implementation used AnimatePresence with opacity fading, not the offset/rotation/scale pattern
 - **Fix:** Complete rewrite of stacked-cards.tsx to use array reorder pattern with spring animations matching the reference at kethalia/stacked-cards-example
@@ -115,6 +133,7 @@ completed: 2026-03-05
 - **Commit:** `4e8c590`
 
 **3. [Rule 2 - Missing functionality] Verification drawer instead of page navigation**
+
 - **Found during:** Checkpoint testing (user preference)
 - **Issue:** User wanted verification as a modal/drawer, not a separate page navigation
 - **Fix:** Created VerificationDrawer component, updated CaptureFlow to open drawer after save
@@ -122,9 +141,10 @@ completed: 2026-03-05
 - **Commit:** `4e8c590`
 
 **4. [Rule 2 - Missing functionality] Product line items in manual entry**
+
 - **Found during:** Checkpoint testing (user request)
 - **Issue:** Manual entry card had no products section; user explicitly requested line items
-- **Fix:** Added LineItem type, product add/remove/edit UI with subtotal calculation
+- **Fix:** Added ItemFormData type, product add/remove/edit UI with subtotal calculation
 - **Files modified:** `src/types/receipt.ts`, `src/components/receipt/manual-entry-card.tsx`, `src/components/receipt/receipt-verification.tsx`
 - **Commit:** `3064238`
 
@@ -143,12 +163,13 @@ completed: 2026-03-05
 
 - Complete Phase 2 receipt capture pipeline is working end-to-end
 - Ready for Phase 3: spending analytics, receipt history, and categorization
-- Line items are stored in-memory only; Phase 3 should add a LineItem DB table for persistence
+- Line items are stored in-memory only; Phase 3 should add a ItemFormData DB table for persistence
 
 ## Self-Check: PASSED
 
 All 12 files verified present on disk. All 4 commits verified in git history.
 
 ---
-*Phase: 02-core-receipt-capture*
-*Completed: 2026-03-05*
+
+_Phase: 02-core-receipt-capture_
+_Completed: 2026-03-05_

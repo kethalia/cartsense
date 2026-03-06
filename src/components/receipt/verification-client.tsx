@@ -10,34 +10,17 @@ import { Button } from "@/components/ui/button";
 import { extractReceipt } from "@/lib/actions/extract-receipt";
 import { saveVerifiedReceipt } from "@/lib/actions/save-verified-receipt";
 import { ProcessingSkeleton } from "@/components/receipt/processing-skeleton";
-import {
-  ReceiptEditor,
-  type ReceiptEditorMode,
-} from "@/components/receipt/receipt-editor";
-import { v4 as uuidv4 } from "uuid";
-import type {
-  ExtractionResult,
-  ReceiptFormData,
-  VerifiedReceiptData,
-} from "@/schemas";
-
-type ExistingData = {
-  vendorName: string;
-  totalAmount: string;
-  receiptDate: string;
-  taxAmount: string;
-  paymentType: "cash" | "card" | "other" | "";
-  lineItems: { name: string; quantity: string; unitPrice: string }[];
-};
+import { ReceiptEditor } from "@/components/receipt/receipt-editor";
+import type { ExtractionResult, ReceiptFormData, ReceiptData } from "@/schemas";
 
 type VerificationClientProps = {
   receiptId: string;
   imageData: string;
   mimeType: string;
   /** 'verify' = fresh receipt, 'edit' = re-editing existing */
-  mode?: ReceiptEditorMode;
-  /** Pre-loaded data from DB (skips AI extraction) */
-  existingData?: ExistingData;
+  mode?: "verify" | "edit";
+  /** Pre-filled form data from DB (skips AI extraction) */
+  existingData?: ReceiptFormData;
 };
 
 export function VerificationClient({
@@ -60,22 +43,10 @@ export function VerificationClient({
   const extractAction = useAction(extractReceipt);
   const saveAction = useAction(saveVerifiedReceipt);
 
-  // If we have existing data, convert it to form data immediately
+  // If we have existing data, use it directly as form data
   useEffect(() => {
     if (existingData) {
-      setInitialFormData({
-        vendorName: existingData.vendorName,
-        totalAmount: existingData.totalAmount,
-        receiptDate: existingData.receiptDate,
-        taxAmount: existingData.taxAmount,
-        paymentType: existingData.paymentType,
-        lineItems: existingData.lineItems.map((i) => ({
-          id: uuidv4(),
-          name: i.name,
-          quantity: i.quantity,
-          unitPrice: i.unitPrice,
-        })),
-      });
+      setInitialFormData(existingData);
     }
   }, [existingData]);
 
@@ -110,7 +81,7 @@ export function VerificationClient({
   }, [existingData]);
 
   const handleSave = useCallback(
-    async (data: VerifiedReceiptData) => {
+    async (data: ReceiptData) => {
       setSaving(true);
       try {
         const result = await saveAction.executeAsync({

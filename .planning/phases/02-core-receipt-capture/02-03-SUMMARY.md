@@ -2,12 +2,20 @@
 phase: 02-core-receipt-capture
 plan: 03
 subsystem: ui
-tags: [motion, spring-animation, stacked-cards, receipt-verification, react-hooks, form-validation]
+tags:
+  [
+    motion,
+    spring-animation,
+    stacked-cards,
+    receipt-verification,
+    react-hooks,
+    form-validation,
+  ]
 
 # Dependency graph
 requires:
   - phase: 02-core-receipt-capture
-    provides: "Shared TypeScript types (ExtractionResult, FieldSources, ManualEntryData, VerifiedReceiptData) from src/types/receipt.ts"
+    provides: "Shared TypeScript types (ExtractionResult, FieldSources, ManualEntryData, ReceiptData) from src/types/receipt.ts"
 provides:
   - "StackedCardsWithTabs reusable animated card component"
   - "4 receipt verification cards (Image, Manual Entry, AI Extracted, Merge Preview)"
@@ -18,7 +26,13 @@ affects: [02-04]
 # Tech tracking
 tech-stack:
   added: [motion]
-  patterns: ["Spring-animated stacked cards with tab navigation", "Per-field source selection with exclusive toggle", "Live merge computation via useMemo", "Controlled/uncontrolled card component pattern"]
+  patterns:
+    [
+      "Spring-animated stacked cards with tab navigation",
+      "Per-field source selection with exclusive toggle",
+      "Live merge computation via useMemo",
+      "Controlled/uncontrolled card component pattern",
+    ]
 
 key-files:
   created:
@@ -61,6 +75,7 @@ completed: 2026-03-05
 - **Files modified:** 8
 
 ## Accomplishments
+
 - Installed motion library and created StackedCardsWithTabs — a reusable animated stacked card component with tab navigation and spring transitions
 - Built 4 receipt-specific cards: ImageCard (receipt display with zoom), AIDataCard (extraction results with per-field checkboxes), ManualEntryCard (5-field form with payment toggle buttons), MergePreviewCard (live computed merge with source badges)
 - Created useFieldSources hook managing per-field source selection, merge computation, and validation (required: vendor + amount)
@@ -74,6 +89,7 @@ Each task was committed atomically:
 2. **Task 2: Build manual entry, merge preview, field sources hook, and verification wrapper** - `505c31e` (feat)
 
 ## Files Created/Modified
+
 - `src/components/receipt/stacked-cards.tsx` - Generic animated stacked cards with tab bar and spring transitions
 - `src/components/receipt/image-card.tsx` - Receipt image display with double-click zoom
 - `src/components/receipt/ai-data-card.tsx` - Read-only AI extraction results with per-field checkboxes and confidence badge
@@ -84,6 +100,7 @@ Each task was committed atomically:
 - `package.json` - Added motion dependency
 
 ## Decisions Made
+
 - Used motion/react with AnimatePresence and spring config (stiffness: 300, damping: 30) for snappy but non-bouncy transitions
 - Used native img element for base64 receipt images instead of Next.js Image component (simpler for base64 data)
 - Field sources are a simple Record mapping each field to 'ai' or 'manual' — no bidirectional deselect needed since toggling one field to a source is the only operation
@@ -93,16 +110,20 @@ Each task was committed atomically:
 None - plan executed exactly as written.
 
 ## Issues Encountered
+
 None
 
 ## User Setup Required
+
 None - no external service configuration required.
 
 ## Next Phase Readiness
+
 - All verification UI components ready for Plan 04 (verify page route and i18n integration)
 - ReceiptVerification component accepts props from parent page (imageData, aiData, onSave)
 - Ready for 02-04: Verify/correct page route, i18n keys, and end-to-end flow
 
 ---
-*Phase: 02-core-receipt-capture*
-*Completed: 2026-03-05*
+
+_Phase: 02-core-receipt-capture_
+_Completed: 2026-03-05_
