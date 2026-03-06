@@ -2,11 +2,11 @@ import Anthropic from '@anthropic-ai/sdk'
 import {
   imageMimeTypeSchema,
   receiptToolResultSchema,
-  type ImageMimeType,
   type ExtractionResult,
+  type ExtractedLineItem,
   type PaymentType,
+  type ReceiptToolResult,
 } from '@/schemas'
-import { mapToolItems } from '@/lib/utils'
 
 // ── Prompts ──
 
@@ -224,7 +224,12 @@ export async function extractReceiptData(
 
   // Map snake_case tool result → camelCase ExtractionResult
   const toolResult = parsed.data
-  const lineItems = mapToolItems(toolResult)
+  const lineItems: ExtractedLineItem[] = toolResult.items.map((item) => ({
+    name: item.name,
+    quantity: item.quantity,
+    unitPrice: item.unit_price,
+    totalPrice: item.total_price,
+  }))
 
   const fields = [
     toolResult.merchant_name,

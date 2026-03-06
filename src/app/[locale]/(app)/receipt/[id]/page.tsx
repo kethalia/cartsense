@@ -3,8 +3,8 @@ import { notFound, redirect } from 'next/navigation'
 import { setRequestLocale } from 'next-intl/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
-import { extractLineItems } from '@/lib/utils'
 import { ReceiptDetails } from '@/components/receipt/receipt-details'
+import type { ExtractedLineItem } from '@/schemas'
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -57,7 +57,7 @@ export default async function ReceiptDetailsPage({ params }: Props) {
       confidence={receipt.confidence}
       capturedAt={receipt.capturedAt}
       verifiedAt={receipt.verifiedAt}
-      lineItems={extractLineItems(receipt.rawExtraction)}
+      lineItems={(receipt.rawExtraction as { lineItems?: ExtractedLineItem[] })?.lineItems ?? []}
     />
   )
 }

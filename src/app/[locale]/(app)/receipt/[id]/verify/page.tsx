@@ -3,8 +3,8 @@ import { notFound, redirect } from 'next/navigation'
 import { setRequestLocale } from 'next-intl/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
-import { extractLineItemsForForm } from '@/lib/utils'
 import { VerificationClient } from '@/components/receipt/verification-client'
+import type { ExtractedLineItem } from '@/schemas'
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -65,7 +65,11 @@ export default async function ReceiptVerifyPage({ params }: Props) {
               taxAmount: receipt.taxAmount !== null ? String(receipt.taxAmount) : '',
               paymentType: (receipt.paymentType as 'cash' | 'card' | 'other') ?? '',
               confidence: receipt.confidence ?? undefined,
-              lineItems: extractLineItemsForForm(receipt.rawExtraction),
+              lineItems: ((receipt.rawExtraction as { lineItems?: ExtractedLineItem[] })?.lineItems ?? []).map((i) => ({
+                name: i.name,
+                quantity: String(i.quantity),
+                unitPrice: String(i.unitPrice),
+              })),
             }
           : undefined
       }
