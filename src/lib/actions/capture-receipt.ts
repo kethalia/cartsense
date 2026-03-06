@@ -1,11 +1,10 @@
-"use server";
+"use server"
 
-import sharp from "sharp";
-import { createHash } from "crypto";
-import { authActionClient } from "@/lib/safe-action";
-import { prisma } from "@/lib/db";
-import { captureReceiptSchema } from "@/schemas";
-import { compressForStorage } from "@/lib/utils/image";
+import { createHash } from "crypto"
+import { prisma } from "@/lib/db"
+import { authActionClient } from "@/lib/safe-action"
+import { compressForStorage } from "@/lib/utils/image"
+import { captureReceiptSchema } from "@/schemas"
 
 export const captureReceipt = authActionClient
   .inputSchema(captureReceiptSchema)
@@ -14,19 +13,19 @@ export const captureReceipt = authActionClient
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: { id: true },
-    });
+    })
 
     if (!user) {
-      throw new Error("Account not found. Please sign out and sign in again.");
+      throw new Error("Account not found. Please sign out and sign in again.")
     }
 
     // Compress: raw File → Buffer → sharp (no base64 decode step)
-    const buffer = Buffer.from(await image.arrayBuffer());
-    const compressed = await compressForStorage(buffer);
+    const buffer = Buffer.from(await image.arrayBuffer())
+    const compressed = await compressForStorage(buffer)
 
     const imageHash = createHash("sha256")
       .update(compressed.base64)
-      .digest("hex");
+      .digest("hex")
 
     try {
       const receipt = await prisma.capturedReceipt.create({
@@ -41,9 +40,9 @@ export const captureReceipt = authActionClient
           id: true,
           capturedAt: true,
         },
-      });
+      })
 
-      return { id: receipt.id, capturedAt: receipt.capturedAt };
+      return { id: receipt.id, capturedAt: receipt.capturedAt }
     } catch (e: unknown) {
       // Prisma unique constraint violation = duplicate image
       if (
@@ -52,8 +51,8 @@ export const captureReceipt = authActionClient
         "code" in e &&
         (e as { code: string }).code === "P2002"
       ) {
-        throw new Error("This receipt has already been uploaded.");
+        throw new Error("This receipt has already been uploaded.")
       }
-      throw new Error("Failed to save receipt. Please try again.");
+      throw new Error("Failed to save receipt. Please try again.")
     }
-  });
+  })

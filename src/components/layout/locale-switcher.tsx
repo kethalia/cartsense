@@ -1,25 +1,24 @@
-"use client";
+"use client"
 
-import { useLocale, useTranslations } from "next-intl";
-import { useRouter, usePathname } from "@/i18n/navigation";
-import { routing } from "@/i18n/routing";
-import { Globe } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/ui/select"
+import { usePathname, useRouter } from "@/i18n/navigation"
+import { routing } from "@/i18n/routing"
 
 export function LocaleSwitcher() {
-  const t = useTranslations("LocaleSwitcher");
-  const locale = useLocale();
-  const router = useRouter();
-  const pathname = usePathname();
+  const t = useTranslations("LocaleSwitcher")
+  const locale = useLocale()
+  const router = useRouter()
+  const pathname = usePathname()
 
   function onChange(newLocale: string) {
-    router.replace(pathname, { locale: newLocale });
+    router.replace(pathname, { locale: newLocale })
   }
 
   return (
@@ -37,5 +36,5 @@ export function LocaleSwitcher() {
         </SelectContent>
       </Select>
     </div>
-  );
+  )
 }

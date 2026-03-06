@@ -1,27 +1,27 @@
-'use client'
+"use client"
 
-import * as React from 'react'
-import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
-import { authClient } from '@/lib/auth-client'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
+import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
+import * as React from "react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
-} from '@/components/ui/input-otp'
-import { Loader2 } from 'lucide-react'
+} from "@/components/ui/input-otp"
+import { authClient } from "@/lib/auth-client"
 
-type Step = 'email' | 'code'
+type Step = "email" | "code"
 
 export function EmailOTPForm() {
-  const t = useTranslations('Auth')
+  const t = useTranslations("Auth")
   const router = useRouter()
 
-  const [step, setStep] = React.useState<Step>('email')
-  const [email, setEmail] = React.useState('')
-  const [code, setCode] = React.useState('')
+  const [step, setStep] = React.useState<Step>("email")
+  const [email, setEmail] = React.useState("")
+  const [code, setCode] = React.useState("")
   const [isLoading, setIsLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
 
@@ -31,19 +31,20 @@ export function EmailOTPForm() {
     setError(null)
 
     try {
-      const { error: sendError } = await authClient.emailOtp.sendVerificationOtp({
-        email,
-        type: 'sign-in',
-      })
+      const { error: sendError } =
+        await authClient.emailOtp.sendVerificationOtp({
+          email,
+          type: "sign-in",
+        })
 
       if (sendError) {
-        setError(sendError.message ?? t('genericError'))
+        setError(sendError.message ?? t("genericError"))
         return
       }
 
-      setStep('code')
+      setStep("code")
     } catch {
-      setError(t('genericError'))
+      setError(t("genericError"))
     } finally {
       setIsLoading(false)
     }
@@ -61,14 +62,14 @@ export function EmailOTPForm() {
       })
 
       if (verifyError) {
-        setError(verifyError.message ?? t('invalidCode'))
+        setError(verifyError.message ?? t("invalidCode"))
         return
       }
 
       // Sign-in successful — redirect to dashboard
-      router.push('/dashboard')
+      router.push("/dashboard")
     } catch {
-      setError(t('invalidCode'))
+      setError(t("invalidCode"))
     } finally {
       setIsLoading(false)
     }
@@ -79,22 +80,23 @@ export function EmailOTPForm() {
     setError(null)
 
     try {
-      const { error: resendError } = await authClient.emailOtp.sendVerificationOtp({
-        email,
-        type: 'sign-in',
-      })
+      const { error: resendError } =
+        await authClient.emailOtp.sendVerificationOtp({
+          email,
+          type: "sign-in",
+        })
 
       if (resendError) {
-        setError(resendError.message ?? t('genericError'))
+        setError(resendError.message ?? t("genericError"))
       }
     } catch {
-      setError(t('genericError'))
+      setError(t("genericError"))
     } finally {
       setIsLoading(false)
     }
   }
 
-  if (step === 'email') {
+  if (step === "email") {
     return (
       <form onSubmit={handleEmailSubmit} className="space-y-4">
         <div className="space-y-2">
@@ -102,12 +104,12 @@ export function EmailOTPForm() {
             htmlFor="email"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            {t('email')}
+            {t("email")}
           </label>
           <Input
             id="email"
             type="email"
-            placeholder={t('emailPlaceholder')}
+            placeholder={t("emailPlaceholder")}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -116,22 +118,16 @@ export function EmailOTPForm() {
           />
         </div>
 
-        {error && (
-          <p className="text-sm text-destructive">{error}</p>
-        )}
+        {error && <p className="text-sm text-destructive">{error}</p>}
 
-        <Button
-          type="submit"
-          className="w-full"
-          disabled={isLoading}
-        >
+        <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? (
             <>
               <Loader2 className="animate-spin" />
-              {t('sending')}
+              {t("sending")}
             </>
           ) : (
-            t('continue')
+            t("continue")
           )}
         </Button>
       </form>
@@ -142,10 +138,10 @@ export function EmailOTPForm() {
     <form onSubmit={handleCodeSubmit} className="space-y-4">
       <div className="space-y-2">
         <label className="text-sm font-medium leading-none">
-          {t('enterCode')}
+          {t("enterCode")}
         </label>
         <p className="text-sm text-muted-foreground">
-          {t('codeSent', { email })}
+          {t("codeSent", { email })}
         </p>
         <div className="flex justify-center pt-2">
           <InputOTP
@@ -166,9 +162,7 @@ export function EmailOTPForm() {
         </div>
       </div>
 
-      {error && (
-        <p className="text-sm text-destructive">{error}</p>
-      )}
+      {error && <p className="text-sm text-destructive">{error}</p>}
 
       <Button
         type="submit"
@@ -178,10 +172,10 @@ export function EmailOTPForm() {
         {isLoading ? (
           <>
             <Loader2 className="animate-spin" />
-            {t('verifying')}
+            {t("verifying")}
           </>
         ) : (
-          t('verify')
+          t("verify")
         )}
       </Button>
 
@@ -193,7 +187,7 @@ export function EmailOTPForm() {
         onClick={handleResendCode}
         disabled={isLoading}
       >
-        {t('resendCode')}
+        {t("resendCode")}
       </Button>
     </form>
   )

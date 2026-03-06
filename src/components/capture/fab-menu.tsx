@@ -1,9 +1,9 @@
-'use client'
+"use client"
 
-import { useState, useCallback } from 'react'
-import { Plus, Camera, Upload } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { Button } from '@/components/ui/button'
+import { Camera, Plus, Upload } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { useCallback, useState } from "react"
+import { Button } from "@/components/ui/button"
 
 type FabMenuProps = {
   onTakePhoto: () => void
@@ -11,7 +11,7 @@ type FabMenuProps = {
 }
 
 export function FabMenu({ onTakePhoto, onUploadImage }: FabMenuProps) {
-  const t = useTranslations('Camera')
+  const t = useTranslations("Camera")
   const [isOpen, setIsOpen] = useState(false)
 
   const toggle = useCallback(() => {
@@ -50,11 +50,11 @@ export function FabMenu({ onTakePhoto, onUploadImage }: FabMenuProps) {
           size="icon"
           onClick={toggle}
           className="h-14 w-14 rounded-full shadow-lg transition-transform duration-200 hover:scale-105 active:scale-95"
-          aria-label={isOpen ? t('cancel') : t('capture')}
+          aria-label={isOpen ? t("cancel") : t("capture")}
           aria-expanded={isOpen}
         >
           <Plus
-            className={`h-6 w-6 transition-transform duration-200 ${isOpen ? 'rotate-45' : 'rotate-0'}`}
+            className={`h-6 w-6 transition-transform duration-200 ${isOpen ? "rotate-45" : "rotate-0"}`}
           />
         </Button>
 
@@ -62,19 +62,19 @@ export function FabMenu({ onTakePhoto, onUploadImage }: FabMenuProps) {
         <div
           className={`flex items-center gap-2 transition-all duration-200 ${
             isOpen
-              ? 'translate-y-0 scale-100 opacity-100'
-              : 'pointer-events-none translate-y-4 scale-75 opacity-0'
+              ? "translate-y-0 scale-100 opacity-100"
+              : "pointer-events-none translate-y-4 scale-75 opacity-0"
           }`}
         >
           <span className="rounded-md bg-popover px-2 py-1 text-xs font-medium text-popover-foreground shadow-sm">
-            {t('uploadImage')}
+            {t("uploadImage")}
           </span>
           <Button
             size="icon"
             variant="secondary"
             onClick={handleUploadImage}
             className="h-12 w-12 rounded-full shadow-md"
-            aria-label={t('uploadImage')}
+            aria-label={t("uploadImage")}
             tabIndex={isOpen ? 0 : -1}
           >
             <Upload className="h-5 w-5" />
@@ -85,19 +85,19 @@ export function FabMenu({ onTakePhoto, onUploadImage }: FabMenuProps) {
         <div
           className={`flex items-center gap-2 transition-all duration-200 ${
             isOpen
-              ? 'translate-y-0 scale-100 opacity-100'
-              : 'pointer-events-none translate-y-8 scale-75 opacity-0'
+              ? "translate-y-0 scale-100 opacity-100"
+              : "pointer-events-none translate-y-8 scale-75 opacity-0"
           }`}
         >
           <span className="rounded-md bg-popover px-2 py-1 text-xs font-medium text-popover-foreground shadow-sm">
-            {t('takePhoto')}
+            {t("takePhoto")}
           </span>
           <Button
             size="icon"
             variant="secondary"
             onClick={handleTakePhoto}
             className="h-12 w-12 rounded-full shadow-md"
-            aria-label={t('takePhoto')}
+            aria-label={t("takePhoto")}
             tabIndex={isOpen ? 0 : -1}
           >
             <Camera className="h-5 w-5" />

@@ -1,6 +1,6 @@
-import { createSafeActionClient } from 'next-safe-action'
-import { headers } from 'next/headers'
-import { auth } from '@/lib/auth'
+import { headers } from "next/headers"
+import { createSafeActionClient } from "next-safe-action"
+import { auth } from "@/lib/auth"
 
 export const actionClient = createSafeActionClient({
   handleServerError(e) {
@@ -14,7 +14,7 @@ export const authActionClient = actionClient.use(async ({ next }) => {
   })
 
   if (!session?.user) {
-    throw new Error('Unauthorized')
+    throw new Error("Unauthorized")
   }
 
   return next({ ctx: { userId: session.user.id, user: session.user } })

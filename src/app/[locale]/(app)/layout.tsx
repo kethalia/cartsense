@@ -1,6 +1,10 @@
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
-import { AppSidebar } from '@/components/layout/app-sidebar'
-import { setRequestLocale } from 'next-intl/server'
+import { setRequestLocale } from "next-intl/server"
+import { AppSidebar } from "@/components/layout/app-sidebar"
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar"
 
 type Props = {
   children: React.ReactNode

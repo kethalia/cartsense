@@ -1,71 +1,71 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import Image from "next/image";
-import { Link } from "@/i18n/navigation";
-import { useTranslations, useFormatter } from "next-intl";
-import { useRouter } from "next/navigation";
-import { useAction } from "next-safe-action/hooks";
-import { toast } from "sonner";
-import { Trash2, Eye, Download, MoreVertical, FileText } from "lucide-react";
-import { useIsMobile } from "@/hooks/use-mobile";
-import { formatFileSize, downloadImage } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Download, Eye, FileText, MoreVertical, Trash2 } from "lucide-react"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useFormatter, useTranslations } from "next-intl"
+import { useAction } from "next-safe-action/hooks"
+import { useState } from "react"
+import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogTitle,
-} from "@/components/ui/dialog";
+} from "@/components/ui/dialog"
 import {
   Drawer,
   DrawerContent,
   DrawerFooter,
   DrawerTitle,
-} from "@/components/ui/drawer";
+} from "@/components/ui/drawer"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import {
   Item,
-  ItemHeader,
-  ItemContent,
-  ItemTitle,
-  ItemDescription,
   ItemActions,
-} from "@/components/ui/item";
-import { deleteReceipt } from "@/lib/actions/delete-receipt";
-import type { ReceiptSummary } from "@/schemas";
+  ItemContent,
+  ItemDescription,
+  ItemHeader,
+  ItemTitle,
+} from "@/components/ui/item"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { Link } from "@/i18n/navigation"
+import { deleteReceipt } from "@/lib/actions/delete-receipt"
+import { downloadImage, formatFileSize } from "@/lib/utils"
+import type { ReceiptSummary } from "@/schemas"
 
 export function ReceiptCard({ receipt }: { receipt: ReceiptSummary }) {
-  const { id, imageData, mimeType, fileSize, capturedAt } = receipt;
-  const t = useTranslations("Dashboard");
-  const format = useFormatter();
-  const router = useRouter();
-  const isMobile = useIsMobile();
-  const [viewOpen, setViewOpen] = useState(false);
+  const { id, imageData, mimeType, fileSize, capturedAt } = receipt
+  const t = useTranslations("Dashboard")
+  const format = useFormatter()
+  const router = useRouter()
+  const isMobile = useIsMobile()
+  const [viewOpen, setViewOpen] = useState(false)
 
   const { executeAsync, isExecuting } = useAction(deleteReceipt, {
     onSuccess: () => {
-      toast.success(t("receiptDeleted"));
-      router.refresh();
+      toast.success(t("receiptDeleted"))
+      router.refresh()
     },
     onError: ({ error }) => {
-      toast.error(error.serverError ?? t("deleteError"));
+      toast.error(error.serverError ?? t("deleteError"))
     },
-  });
+  })
 
   const formattedDate = format.dateTime(new Date(capturedAt), {
     month: "short",
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  });
+  })
 
-  const dataUri = `data:${mimeType};base64,${imageData}`;
+  const dataUri = `data:${mimeType};base64,${imageData}`
 
   return (
     <>
@@ -133,7 +133,14 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptSummary }) {
           <DrawerContent className="px-4 pb-8">
             <DrawerTitle className="sr-only">{t("view")}</DrawerTitle>
             <div className="pt-4">
-              <Image src={dataUri} alt={t("view")} width={800} height={1200} className="h-auto max-h-[85vh] w-full rounded-md object-contain" unoptimized />
+              <Image
+                src={dataUri}
+                alt={t("view")}
+                width={800}
+                height={1200}
+                className="h-auto max-h-[85vh] w-full rounded-md object-contain"
+                unoptimized
+              />
             </div>
             <DrawerFooter className="px-0">
               <Button
@@ -151,7 +158,14 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptSummary }) {
         <Dialog open={viewOpen} onOpenChange={setViewOpen}>
           <DialogContent className="max-w-3xl" showCloseButton={false}>
             <DialogTitle className="sr-only">{t("view")}</DialogTitle>
-            <Image src={dataUri} alt={t("view")} width={800} height={1200} className="h-auto max-h-[85vh] w-full rounded-md object-contain" unoptimized />
+            <Image
+              src={dataUri}
+              alt={t("view")}
+              width={800}
+              height={1200}
+              className="h-auto max-h-[85vh] w-full rounded-md object-contain"
+              unoptimized
+            />
             <DialogFooter>
               <Button
                 variant="outline"
@@ -166,5 +180,5 @@ export function ReceiptCard({ receipt }: { receipt: ReceiptSummary }) {
         </Dialog>
       )}
     </>
-  );
+  )
 }

@@ -1,14 +1,14 @@
-'use client'
+"use client"
 
-import * as React from 'react'
-import { useTranslations } from 'next-intl'
-import { SiGoogle } from '@icons-pack/react-simple-icons'
-import { authClient } from '@/lib/auth-client'
-import { Button } from '@/components/ui/button'
-import { Loader2 } from 'lucide-react'
+import { SiGoogle } from "@icons-pack/react-simple-icons"
+import { Loader2 } from "lucide-react"
+import { useTranslations } from "next-intl"
+import * as React from "react"
+import { Button } from "@/components/ui/button"
+import { authClient } from "@/lib/auth-client"
 
 export function GoogleAuthButton() {
-  const t = useTranslations('Auth')
+  const t = useTranslations("Auth")
   const [isLoading, setIsLoading] = React.useState(false)
 
   async function handleClick() {
@@ -16,8 +16,8 @@ export function GoogleAuthButton() {
 
     try {
       await authClient.signIn.social({
-        provider: 'google',
-        callbackURL: '/dashboard',
+        provider: "google",
+        callbackURL: "/dashboard",
       })
     } catch {
       // Redirect will happen, loading state handles UX
@@ -37,7 +37,7 @@ export function GoogleAuthButton() {
       ) : (
         <SiGoogle className="size-4" />
       )}
-      {t('continueWithGoogle')}
+      {t("continueWithGoogle")}
     </Button>
   )
 }

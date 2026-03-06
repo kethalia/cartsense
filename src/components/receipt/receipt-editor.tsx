@@ -1,30 +1,30 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { useTranslations } from "next-intl";
-import { useForm, useFieldArray } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { v4 as uuidv4 } from "uuid";
-import { Plus, Trash2, Merge, Expand } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Expand, Merge, Plus, Trash2 } from "lucide-react"
+import { useTranslations } from "next-intl"
+import * as React from "react"
+import { useFieldArray, useForm } from "react-hook-form"
+import { v4 as uuidv4 } from "uuid"
+import { ImageViewer } from "@/components/receipt/image-viewer"
+import { Button } from "@/components/ui/button"
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
-} from "@/components/ui/form";
-import { ImageViewer } from "@/components/receipt/image-viewer";
+} from "@/components/ui/form"
+import { Input } from "@/components/ui/input"
+import { combineLineItems } from "@/lib/utils"
 import {
   paymentTypeSchema,
-  receiptFormDataSchema,
-  type ReceiptFormData,
   type ReceiptData,
+  type ReceiptFormData,
   type ReceiptImage,
-} from "@/schemas";
-import { combineLineItems } from "@/lib/utils";
+  receiptFormDataSchema,
+} from "@/schemas"
 
 // ── Helpers ──
 
@@ -38,32 +38,32 @@ function formToReceiptData(data: ReceiptFormData): ReceiptData {
     lineItems: data.lineItems
       .filter((i) => i.name.trim())
       .map((i) => {
-        const qty = parseFloat(i.quantity) || 1;
-        const price = parseFloat(i.unitPrice) || 0;
+        const qty = parseFloat(i.quantity) || 1
+        const price = parseFloat(i.unitPrice) || 0
         return {
           name: i.name.trim(),
           quantity: qty,
           unitPrice: price,
           totalPrice: qty * price,
-        };
+        }
       }),
-  };
+  }
 }
 
 // ── Main Component ──
 
 export type ReceiptEditorProps = {
-  image: ReceiptImage;
-  initialData: ReceiptFormData;
-  onSave: (data: ReceiptData) => void;
-  saving?: boolean;
-};
+  image: ReceiptImage
+  initialData: ReceiptFormData
+  onSave: (data: ReceiptData) => void
+  saving?: boolean
+}
 
 export function ReceiptEditor(props: ReceiptEditorProps) {
-  const { image, initialData, onSave, saving } = props;
-  const t = useTranslations("Receipt");
-  const [viewerOpen, setViewerOpen] = React.useState(false);
-  const dataUri = `data:${image.mimeType};base64,${image.imageData}`;
+  const { image, initialData, onSave, saving } = props
+  const t = useTranslations("Receipt")
+  const [viewerOpen, setViewerOpen] = React.useState(false)
+  const dataUri = `data:${image.mimeType};base64,${image.imageData}`
 
   const form = useForm<ReceiptFormData>({
     resolver: zodResolver(receiptFormDataSchema),
@@ -74,28 +74,28 @@ export function ReceiptEditor(props: ReceiptEditorProps) {
         id: i.id || uuidv4(),
       })),
     },
-  });
+  })
 
   const { fields, append, remove, replace } = useFieldArray({
     control: form.control,
     name: "lineItems",
-  });
+  })
 
-  const watchedItems = form.watch("lineItems");
+  const watchedItems = form.watch("lineItems")
 
   const itemsSubtotal = watchedItems.reduce(
     (sum, item) =>
       sum +
       (parseFloat(item.quantity) || 0) * (parseFloat(item.unitPrice) || 0),
     0,
-  );
+  )
 
   const hasDuplicates = (() => {
     const names = watchedItems
       .map((i) => i.name.trim().toLowerCase())
-      .filter(Boolean);
-    return new Set(names).size < names.length;
-  })();
+      .filter(Boolean)
+    return new Set(names).size < names.length
+  })()
 
   return (
     <Form {...form}>
@@ -300,10 +300,10 @@ export function ReceiptEditor(props: ReceiptEditorProps) {
 
               {fields.map((field, index) => {
                 const qty =
-                  parseFloat(watchedItems[index]?.quantity ?? "0") || 0;
+                  parseFloat(watchedItems[index]?.quantity ?? "0") || 0
                 const price =
-                  parseFloat(watchedItems[index]?.unitPrice ?? "0") || 0;
-                const lineTotal = qty * price;
+                  parseFloat(watchedItems[index]?.unitPrice ?? "0") || 0
+                const lineTotal = qty * price
 
                 return (
                   <div key={field.id} className="flex items-center gap-2">
@@ -342,7 +342,7 @@ export function ReceiptEditor(props: ReceiptEditorProps) {
                       <span className="sr-only">Remove item</span>
                     </Button>
                   </div>
-                );
+                )
               })}
 
               {/* Items subtotal */}
@@ -380,5 +380,5 @@ export function ReceiptEditor(props: ReceiptEditorProps) {
         alt={t("receiptImage")}
       />
     </Form>
-  );
+  )
 }

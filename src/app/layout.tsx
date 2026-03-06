@@ -1,13 +1,17 @@
-import type { Metadata } from 'next'
-import { getLocale } from 'next-intl/server'
-import './globals.css'
+import type { Metadata } from "next"
+import { getLocale } from "next-intl/server"
+import "./globals.css"
 
 export const metadata: Metadata = {
-  title: 'CartSense',
-  description: 'Receipt intelligence for the Romanian market',
+  title: "CartSense",
+  description: "Receipt intelligence for the Romanian market",
 }
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   const locale = await getLocale()
 
   return (

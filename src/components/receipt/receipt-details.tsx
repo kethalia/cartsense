@@ -1,10 +1,10 @@
-"use client";
+"use client"
 
-import * as React from "react";
-import { useTranslations, useFormatter } from "next-intl";
-import { Expand, Pencil } from "lucide-react";
-import { Link } from "@/i18n/navigation";
-import { Button } from "@/components/ui/button";
+import { Expand, Pencil } from "lucide-react"
+import { useFormatter, useTranslations } from "next-intl"
+import * as React from "react"
+import { ImageViewer } from "@/components/receipt/image-viewer"
+import { Button } from "@/components/ui/button"
 import {
   Table,
   TableBody,
@@ -13,13 +13,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { ImageViewer } from "@/components/receipt/image-viewer";
-import type { Receipt } from "@/schemas";
+} from "@/components/ui/table"
+import { Link } from "@/i18n/navigation"
+import type { Receipt } from "@/schemas"
 
 type ReceiptDetailsProps = {
-  receipt: Receipt;
-};
+  receipt: Receipt
+}
 
 export function ReceiptDetails({ receipt }: ReceiptDetailsProps) {
   const {
@@ -34,15 +34,15 @@ export function ReceiptDetails({ receipt }: ReceiptDetailsProps) {
     capturedAt,
     verifiedAt,
     lineItems,
-  } = receipt;
-  const t = useTranslations("Receipt");
-  const format = useFormatter();
-  const [viewerOpen, setViewerOpen] = React.useState(false);
+  } = receipt
+  const t = useTranslations("Receipt")
+  const format = useFormatter()
+  const [viewerOpen, setViewerOpen] = React.useState(false)
 
-  const dataUri = `data:${mimeType};base64,${imageData}`;
+  const dataUri = `data:${mimeType};base64,${imageData}`
   const formatDate = (date: Date) =>
-    format.dateTime(date, { year: "numeric", month: "short", day: "numeric" });
-  const itemsSubtotal = lineItems.reduce((sum, i) => sum + i.totalPrice, 0);
+    format.dateTime(date, { year: "numeric", month: "short", day: "numeric" })
+  const itemsSubtotal = lineItems.reduce((sum, i) => sum + i.totalPrice, 0)
 
   return (
     <div className="space-y-6">
@@ -97,9 +97,7 @@ export function ReceiptDetails({ receipt }: ReceiptDetailsProps) {
             <DetailRow
               label={t("taxAmount")}
               value={
-                taxAmount != null
-                  ? `${Number(taxAmount).toFixed(2)} RON`
-                  : null
+                taxAmount != null ? `${Number(taxAmount).toFixed(2)} RON` : null
               }
             />
             <DetailRow
@@ -172,7 +170,7 @@ export function ReceiptDetails({ receipt }: ReceiptDetailsProps) {
         alt={t("receiptImage")}
       />
     </div>
-  );
+  )
 }
 
 function DetailRow({ label, value }: { label: string; value: string | null }) {
@@ -181,5 +179,5 @@ function DetailRow({ label, value }: { label: string; value: string | null }) {
       <dt className="text-sm text-muted-foreground w-28 shrink-0">{label}</dt>
       <dd className="text-sm font-medium">{value ?? "—"}</dd>
     </div>
-  );
+  )
 }

@@ -1,18 +1,23 @@
-"use client";
+"use client"
 
-import { useState, useEffect, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import { useTranslations } from "next-intl";
-import { useAction } from "next-safe-action/hooks";
-import { v4 as uuidv4 } from "uuid";
-import { toast } from "sonner";
-import { RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { extractReceipt } from "@/lib/actions/extract-receipt";
-import { saveVerifiedReceipt } from "@/lib/actions/save-verified-receipt";
-import { ProcessingSkeleton } from "@/components/receipt/processing-skeleton";
-import { ReceiptEditor } from "@/components/receipt/receipt-editor";
-import type { ExtractionResult, ReceiptFormData, ReceiptData, ReceiptImage } from "@/schemas";
+import { RefreshCw } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useTranslations } from "next-intl"
+import { useAction } from "next-safe-action/hooks"
+import { useCallback, useEffect, useState } from "react"
+import { toast } from "sonner"
+import { v4 as uuidv4 } from "uuid"
+import { ProcessingSkeleton } from "@/components/receipt/processing-skeleton"
+import { ReceiptEditor } from "@/components/receipt/receipt-editor"
+import { Button } from "@/components/ui/button"
+import { extractReceipt } from "@/lib/actions/extract-receipt"
+import { saveVerifiedReceipt } from "@/lib/actions/save-verified-receipt"
+import type {
+  ExtractionResult,
+  ReceiptData,
+  ReceiptFormData,
+  ReceiptImage,
+} from "@/schemas"
 
 /** Transform AI extraction result → form data at the boundary */
 function extractionToFormData(ai: ExtractionResult): ReceiptFormData {
@@ -28,7 +33,7 @@ function extractionToFormData(ai: ExtractionResult): ReceiptFormData {
       quantity: String(item.quantity),
       unitPrice: String(item.unitPrice),
     })),
-  };
+  }
 }
 
 /** Empty form data for manual entry */
@@ -39,87 +44,87 @@ const emptyFormData: ReceiptFormData = {
   taxAmount: "",
   paymentType: "",
   lineItems: [],
-};
+}
 
 type VerificationClientProps = {
-  receiptId: string;
-  image: ReceiptImage;
+  receiptId: string
+  image: ReceiptImage
   /** Pre-filled form data from DB (skips AI extraction) */
-  existingData?: ReceiptFormData;
-};
+  existingData?: ReceiptFormData
+}
 
 export function VerificationClient(props: VerificationClientProps) {
-  const { receiptId, image, existingData } = props;
-  const router = useRouter();
-  const t = useTranslations("Receipt");
+  const { receiptId, image, existingData } = props
+  const router = useRouter()
+  const t = useTranslations("Receipt")
 
   const [formData, setFormData] = useState<ReceiptFormData | null>(
     existingData ?? null,
-  );
-  const [processing, setProcessing] = useState(!existingData);
-  const [extractionError, setExtractionError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
+  )
+  const [processing, setProcessing] = useState(!existingData)
+  const [extractionError, setExtractionError] = useState<string | null>(null)
+  const [saving, setSaving] = useState(false)
 
-  const extractAction = useAction(extractReceipt);
-  const saveAction = useAction(saveVerifiedReceipt);
+  const extractAction = useAction(extractReceipt)
+  const saveAction = useAction(saveVerifiedReceipt)
 
   const runExtraction = useCallback(async () => {
-    setProcessing(true);
-    setExtractionError(null);
+    setProcessing(true)
+    setExtractionError(null)
 
     try {
-      const result = await extractAction.executeAsync({ receiptId });
+      const result = await extractAction.executeAsync({ receiptId })
 
       if (result?.data?.status === "success" && result.data.data) {
-        setFormData(extractionToFormData(result.data.data));
+        setFormData(extractionToFormData(result.data.data))
       } else {
-        const error = result?.data?.error ?? t("aiFailed");
-        console.error("[verification] extraction failed:", error);
-        setExtractionError(error);
+        const error = result?.data?.error ?? t("aiFailed")
+        console.error("[verification] extraction failed:", error)
+        setExtractionError(error)
       }
     } catch (err) {
-      console.error("[verification] extraction threw:", err);
-      setExtractionError(t("aiError"));
+      console.error("[verification] extraction threw:", err)
+      setExtractionError(t("aiError"))
     } finally {
-      setProcessing(false);
+      setProcessing(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [receiptId, t]);
+  }, [receiptId, t])
 
   // Trigger AI extraction on mount (only without existing data)
   useEffect(() => {
-    if (existingData) return;
-    runExtraction();
+    if (existingData) return
+    runExtraction()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [existingData]);
+  }, [existingData])
 
   const handleSave = useCallback(
     async (data: ReceiptData) => {
-      setSaving(true);
+      setSaving(true)
       try {
         const result = await saveAction.executeAsync({
           receiptId,
           ...data,
-        });
+        })
 
         if (result?.data) {
-          toast.success(t("receiptVerified"));
-          router.push("/dashboard");
+          toast.success(t("receiptVerified"))
+          router.push("/dashboard")
         } else {
-          toast.error(t("saveFailed"));
-          setSaving(false);
+          toast.error(t("saveFailed"))
+          setSaving(false)
         }
       } catch {
-        toast.error(t("saveFailed"));
-        setSaving(false);
+        toast.error(t("saveFailed"))
+        setSaving(false)
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [receiptId, router, t],
-  );
+  )
 
   if (processing) {
-    return <ProcessingSkeleton image={image} />;
+    return <ProcessingSkeleton image={image} />
   }
 
   // Extraction failed — show error with Retry and manual entry options
@@ -146,7 +151,7 @@ export function VerificationClient(props: VerificationClientProps) {
           </Button>
         </div>
       </div>
-    );
+    )
   }
 
   return (
@@ -156,5 +161,5 @@ export function VerificationClient(props: VerificationClientProps) {
       onSave={handleSave}
       saving={saving}
     />
-  );
+  )
 }

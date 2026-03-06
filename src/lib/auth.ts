@@ -1,12 +1,12 @@
-import { betterAuth } from 'better-auth'
-import { prismaAdapter } from '@better-auth/prisma-adapter'
-import { emailOTP } from 'better-auth/plugins'
-import { nextCookies } from 'better-auth/next-js'
-import { prisma } from '@/lib/db'
+import { prismaAdapter } from "@better-auth/prisma-adapter"
+import { betterAuth } from "better-auth"
+import { nextCookies } from "better-auth/next-js"
+import { emailOTP } from "better-auth/plugins"
+import { prisma } from "@/lib/db"
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
-    provider: 'postgresql',
+    provider: "postgresql",
   }),
 
   emailAndPassword: {
