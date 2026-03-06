@@ -91,6 +91,17 @@ Plans:
 ## Phase 3: Enhanced Processing & Categorization
 **Goal:** Advanced receipt processing with automatic categorization and search capabilities
 
+**Plans:** 5 plans in 3 waves
+
+Plans:
+- [ ] 03-01-PLAN.md — Schema evolution + category system (Category, ReceiptItem models, CRUD)
+- [ ] 03-02-PLAN.md — Enhanced AI extraction + image processing (vendor recognition, auto-categorization, VAT, image enhancement)
+- [ ] 03-03-PLAN.md — Receipt list redesign + category UX (date grouping, category chips, override picker, Settings management)
+- [ ] 03-04-PLAN.md — Search & filtering (text search, filter chips, match highlighting)
+- [ ] 03-05-PLAN.md — Batch upload (queue UI, per-receipt processing, summary with selective review)
+
+**Requirements:** [RCPT-05, RCPT-06, RCPT-08, CAT-01, CAT-02, CAT-03, CAT-05, CAT-06]
+
 ### Success Criteria
 - System auto-categorizes receipts into 15+ expense categories with 85%+ accuracy
 - Users can create custom categories and override auto-categorization
