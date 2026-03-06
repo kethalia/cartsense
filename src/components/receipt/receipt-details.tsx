@@ -1,13 +1,16 @@
 'use client'
 
 import * as React from 'react'
-import { Link } from '@/i18n/navigation'
 import { useTranslations, useFormatter } from 'next-intl'
+import { useAction } from 'next-safe-action/hooks'
+import { toast } from 'sonner'
 import { Expand, Pencil } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ImageViewer } from '@/components/receipt/image-viewer'
+import { ReceiptEditor } from '@/components/receipt/receipt-editor'
+import { saveVerifiedReceipt } from '@/actions/save-verified-receipt'
 import { cn } from '@/lib/utils'
-import type { PaymentType } from '@/types/receipt'
+import type { PaymentType, VerifiedReceiptData, ReceiptFormData } from '@/types/receipt'
 
 type ReceiptLineItem = {
   name: string
@@ -31,28 +34,134 @@ type ReceiptDetailsProps = {
   lineItems: ReceiptLineItem[]
 }
 
-export function ReceiptDetails({
-  id,
-  imageData,
-  mimeType,
-  vendorName,
-  totalAmount,
-  receiptDate,
-  taxAmount,
-  paymentType,
-  confidence,
-  capturedAt,
-  verifiedAt,
-  lineItems,
-}: ReceiptDetailsProps) {
+/** Convert numeric props into the string-based form format ReceiptEditor expects */
+function toFormData(props: ReceiptDetailsProps): ReceiptFormData {
+  return {
+    vendorName: props.vendorName ?? '',
+    totalAmount: props.totalAmount != null ? String(props.totalAmount) : '',
+    receiptDate: props.receiptDate
+      ? props.receiptDate.toISOString().split('T')[0]
+      : new Date().toISOString().split('T')[0],
+    taxAmount: props.taxAmount != null ? String(props.taxAmount) : '',
+    paymentType: (props.paymentType as 'cash' | 'card' | 'other') ?? '',
+    lineItems: props.lineItems.map((i) => ({
+      id: `d-${Math.random().toString(36).slice(2, 8)}`,
+      name: i.name,
+      quantity: String(i.quantity),
+      unitPrice: String(i.unitPrice),
+    })),
+  }
+}
+
+export function ReceiptDetails(props: ReceiptDetailsProps) {
+  const {
+    id,
+    imageData,
+    mimeType,
+    confidence,
+    capturedAt,
+  } = props
+
   const t = useTranslations('Receipt')
+  const tCommon = useTranslations('Common')
   const format = useFormatter()
+
+  const [isEditing, setIsEditing] = React.useState(false)
+  const [saving, setSaving] = React.useState(false)
   const [viewerOpen, setViewerOpen] = React.useState(false)
+
+  // Mutable local state so read-only view updates after save
+  const [vendorName, setVendorName] = React.useState(props.vendorName)
+  const [totalAmount, setTotalAmount] = React.useState(props.totalAmount)
+  const [receiptDate, setReceiptDate] = React.useState(props.receiptDate)
+  const [taxAmount, setTaxAmount] = React.useState(props.taxAmount)
+  const [paymentType, setPaymentType] = React.useState(props.paymentType)
+  const [verifiedAt, setVerifiedAt] = React.useState(props.verifiedAt)
+  const [lineItems, setLineItems] = React.useState(props.lineItems)
+
+  const saveAction = useAction(saveVerifiedReceipt)
   const dataUri = `data:${mimeType};base64,${imageData}`
 
   const formatDate = (date: Date) =>
     format.dateTime(date, { year: 'numeric', month: 'short', day: 'numeric' })
 
+  const handleSave = React.useCallback(
+    async (data: VerifiedReceiptData) => {
+      setSaving(true)
+      try {
+        const result = await saveAction.executeAsync({
+          receiptId: id,
+          ...data,
+        })
+
+        if (result?.data) {
+          // Update local state with saved values
+          setVendorName(data.vendorName)
+          setTotalAmount(data.totalAmount)
+          setReceiptDate(data.receiptDate ? new Date(data.receiptDate) : null)
+          setTaxAmount(data.taxAmount)
+          setPaymentType(data.paymentType)
+          setVerifiedAt(result.data.verifiedAt ? new Date(result.data.verifiedAt) : new Date())
+          setLineItems(
+            data.lineItems.map((i) => ({
+              name: i.name,
+              quantity: i.quantity,
+              unitPrice: i.unitPrice,
+              totalPrice: i.totalPrice,
+            }))
+          )
+
+          toast.success(t('receiptVerified'))
+          setIsEditing(false)
+        } else {
+          toast.error(t('saveFailed'))
+        }
+      } catch {
+        toast.error(t('saveFailed'))
+      } finally {
+        setSaving(false)
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [id, t]
+  )
+
+  // ── Edit mode: render ReceiptEditor inline ──
+  if (isEditing) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">{t('receiptDetails')}</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setIsEditing(false)}
+          >
+            {tCommon('cancel')}
+          </Button>
+        </div>
+        <ReceiptEditor
+          mode="edit"
+          initialData={toFormData({
+            ...props,
+            vendorName,
+            totalAmount,
+            receiptDate,
+            taxAmount,
+            paymentType,
+            verifiedAt,
+            lineItems,
+          })}
+          imageData={imageData}
+          mimeType={mimeType}
+          onSave={handleSave}
+          saving={saving}
+        />
+      </div>
+    )
+  }
+
+  // ── Read-only mode ──
   const itemsSubtotal = lineItems.reduce((sum, i) => sum + i.totalPrice, 0)
 
   return (
@@ -99,11 +208,14 @@ export function ReceiptDetails({
         <div className="flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold">{t('receiptDetails')}</h2>
-            <Button variant="outline" size="sm" className="gap-1.5" asChild>
-              <Link href={`/receipt/${id}/verify`}>
-                <Pencil className="h-3.5 w-3.5" />
-                {t('edit')}
-              </Link>
+            <Button
+              variant="outline"
+              size="sm"
+              className="gap-1.5"
+              onClick={() => setIsEditing(true)}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+              {t('edit')}
             </Button>
           </div>
 
