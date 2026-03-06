@@ -203,3 +203,40 @@ export const saveVerifiedReceiptSchema = z.object({
 })
 
 export type SaveVerifiedReceiptInput = z.infer<typeof saveVerifiedReceiptSchema>
+
+// ── Search receipts input ──
+
+export const searchReceiptsSchema = z.object({
+  query: z.string().max(200).optional(),
+  categoryId: z.string().optional(),
+  dateFrom: z.string().optional(),
+  dateTo: z.string().optional(),
+  amountMin: z.number().min(0).optional(),
+  amountMax: z.number().optional(),
+})
+
+export type SearchReceiptsInput = z.infer<typeof searchReceiptsSchema>
+
+// ── Batch upload ──
+
+export const batchSaveAllSchema = z.object({
+  receiptIds: z.array(z.string()).min(1, "At least one receipt ID required"),
+})
+
+export type BatchSaveAllInput = z.infer<typeof batchSaveAllSchema>
+
+export type BatchItemStatus =
+  | "queued"
+  | "uploading"
+  | "extracting"
+  | "done"
+  | "failed"
+
+export type BatchItem = {
+  file: File
+  previewUrl: string
+  status: BatchItemStatus
+  receiptId?: string
+  result?: { vendorName: string | null; totalAmount: number | null }
+  error?: string
+}

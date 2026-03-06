@@ -37,7 +37,7 @@ import {
   deleteCategory,
   updateCategory,
 } from "@/lib/actions/category"
-import type { Category, CategoryType } from "@/schemas"
+import type { CategoryType } from "@/schemas"
 
 const COLOR_PALETTE = [
   "#EF4444",
