@@ -1,9 +1,9 @@
 'use server'
 
+import { z } from 'zod'
 import sharp from 'sharp'
 import { createHash } from 'crypto'
-import { headers } from 'next/headers'
-import { auth } from '@/lib/auth'
+import { authActionClient } from '@/lib/safe-action'
 import { prisma } from '@/lib/db'
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
@@ -48,66 +48,53 @@ async function compressForStorage(
   return { base64: output.toString('base64'), mimeType: 'image/jpeg', bytes: output.length }
 }
 
-/**
- * Server action that accepts a raw FormData upload (no base64 bloat).
- * The client sends the File as-is — ~33% smaller than the old base64 approach.
- */
-export async function captureReceipt(formData: FormData) {
-  // ── Auth ──
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session?.user) {
-    throw new Error('Unauthorized')
-  }
-  const userId = session.user.id
+const captureReceiptSchema = z.object({
+  image: z
+    .instanceof(File)
+    .refine((f) => f.type.startsWith('image/'), 'Must be an image type')
+    .refine((f) => f.size <= MAX_FILE_SIZE, 'File too large: maximum 10MB'),
+})
 
-  // ── Extract & validate file ──
-  const file = formData.get('image')
-  if (!file || !(file instanceof File)) {
-    throw new Error('No image provided')
-  }
-  if (!file.type.startsWith('image/')) {
-    throw new Error('Must be an image type')
-  }
-  if (file.size > MAX_FILE_SIZE) {
-    throw new Error('File too large: maximum 10MB')
-  }
-
-  // ── Verify user exists ──
-  const user = await prisma.user.findUnique({
-    where: { id: userId },
-    select: { id: true },
-  })
-  if (!user) {
-    throw new Error('Account not found. Please sign out and sign in again.')
-  }
-
-  // ── Compress: raw Buffer → sharp (no base64 decode step) ──
-  const buffer = Buffer.from(await file.arrayBuffer())
-  const compressed = await compressForStorage(buffer)
-
-  const imageHash = createHash('sha256').update(compressed.base64).digest('hex')
-
-  try {
-    const receipt = await prisma.capturedReceipt.create({
-      data: {
-        userId,
-        imageHash,
-        imageData: compressed.base64,
-        mimeType: compressed.mimeType,
-        fileSize: compressed.bytes,
-      },
-      select: {
-        id: true,
-        capturedAt: true,
-      },
+export const captureReceipt = authActionClient
+  .schema(captureReceiptSchema)
+  .action(async ({ parsedInput: { image }, ctx: { userId } }) => {
+    // Verify user exists in DB (Better Auth should have created them)
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true },
     })
 
-    return { id: receipt.id, capturedAt: receipt.capturedAt }
-  } catch (e: unknown) {
-    // Prisma unique constraint violation = duplicate image
-    if (typeof e === 'object' && e !== null && 'code' in e && (e as { code: string }).code === 'P2002') {
-      throw new Error('This receipt has already been uploaded.')
+    if (!user) {
+      throw new Error('Account not found. Please sign out and sign in again.')
     }
-    throw new Error('Failed to save receipt. Please try again.')
-  }
-}
+
+    // Compress: raw File → Buffer → sharp (no base64 decode step)
+    const buffer = Buffer.from(await image.arrayBuffer())
+    const compressed = await compressForStorage(buffer)
+
+    const imageHash = createHash('sha256').update(compressed.base64).digest('hex')
+
+    try {
+      const receipt = await prisma.capturedReceipt.create({
+        data: {
+          userId,
+          imageHash,
+          imageData: compressed.base64,
+          mimeType: compressed.mimeType,
+          fileSize: compressed.bytes,
+        },
+        select: {
+          id: true,
+          capturedAt: true,
+        },
+      })
+
+      return { id: receipt.id, capturedAt: receipt.capturedAt }
+    } catch (e: unknown) {
+      // Prisma unique constraint violation = duplicate image
+      if (typeof e === 'object' && e !== null && 'code' in e && (e as { code: string }).code === 'P2002') {
+        throw new Error('This receipt has already been uploaded.')
+      }
+      throw new Error('Failed to save receipt. Please try again.')
+    }
+  })
