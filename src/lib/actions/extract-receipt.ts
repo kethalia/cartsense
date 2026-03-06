@@ -1,8 +1,10 @@
 "use server"
 
+import { IMAGE_ENHANCE_ENABLED } from "@/lib/config"
 import { prisma } from "@/lib/db"
 import { extractReceiptData } from "@/lib/prompts/extract-receipt"
 import { authActionClient } from "@/lib/safe-action"
+import { enhanceReceiptImage } from "@/lib/utils/image-enhance"
 import { extractReceiptSchema } from "@/schemas"
 
 export const extractReceipt = authActionClient
@@ -28,10 +30,12 @@ export const extractReceipt = authActionClient
     })
 
     try {
-      const result = await extractReceiptData(
-        receipt.imageData,
-        receipt.mimeType,
-      )
+      // Enhance image for better OCR accuracy (original preserved in DB)
+      const processedImage = IMAGE_ENHANCE_ENABLED
+        ? await enhanceReceiptImage(receipt.imageData)
+        : receipt.imageData
+
+      const result = await extractReceiptData(processedImage, receipt.mimeType)
 
       // Look up receipt-level category from AI suggestion
       let categoryId: string | null = null
