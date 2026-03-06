@@ -7,44 +7,134 @@ on:
     branches: [main]
 
 jobs:
-  ci:
+  install:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
-      - name: Generate Prisma client
-        run: pnpm prisma generate
+      - run: pnpm prisma generate
 
-      - name: Lint
-        run: pnpm run lint
+      - uses: actions/cache/save@v4
+        with:
+          path: |
+            node_modules
+            ~/.cache
+          key: deps-${{ hashFiles('pnpm-lock.yaml') }}
 
-      - name: Format check
-        run: pnpm run format:check
+  lint:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
 
-      - name: Check unused files & dependencies
-        run: pnpm run knip
+      - uses: pnpm/action-setup@v4
 
-      - name: Type check
-        run: pnpm run typecheck
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
-      - name: Build
-        run: pnpm run build
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            ~/.cache
+          key: deps-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - run: pnpm run lint
+
+  format:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            ~/.cache
+          key: deps-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - run: pnpm run format:check
+
+  knip:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            ~/.cache
+          key: deps-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - run: pnpm run knip
+
+  typecheck:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            ~/.cache
+          key: deps-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - run: pnpm run typecheck
+
+  build:
+    needs: install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - uses: actions/cache/restore@v4
+        with:
+          path: |
+            node_modules
+            ~/.cache
+          key: deps-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - run: pnpm run build
         env:
-          # Dummy values for build-time env vars (runtime-only, not needed for compilation)
           DATABASE_URL: postgresql://localhost:5432/cartsense
           GOOGLE_CLIENT_ID: ci-placeholder
           GOOGLE_CLIENT_SECRET: ci-placeholder
