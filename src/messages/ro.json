@@ -127,6 +127,16 @@
     "retry": "Reîncearcă",
     "enterManually": "Completează manual"
   },
+  "Categories": {
+    "selectCategory": "Selectează categoria",
+    "searchOrCreate": "Caută sau creează...",
+    "createNew": "Creează \"{name}\"",
+    "noMatches": "Nicio categorie găsită",
+    "updated": "Categorie actualizată",
+    "created": "Categorie creată",
+    "system": "Standard",
+    "custom": "Personalizate"
+  },
   "ReceiptList": {
     "today": "Astăzi",
     "yesterday": "Ieri",

@@ -127,6 +127,16 @@
     "retry": "Retry",
     "enterManually": "Enter manually"
   },
+  "Categories": {
+    "selectCategory": "Select category",
+    "searchOrCreate": "Search or create...",
+    "createNew": "Create \"{name}\"",
+    "noMatches": "No categories match",
+    "updated": "Category updated",
+    "created": "Category created",
+    "system": "Standard",
+    "custom": "Custom"
+  },
   "ReceiptList": {
     "today": "Today",
     "yesterday": "Yesterday",
