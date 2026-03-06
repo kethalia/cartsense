@@ -4,6 +4,8 @@ import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { useCallback, useRef, useState } from "react"
 import { toast } from "sonner"
+import { BatchSummary } from "@/components/capture/batch-summary"
+import { BatchUpload } from "@/components/capture/batch-upload"
 import {
   CameraCapture,
   type CameraCaptureHandle,
@@ -15,9 +17,11 @@ import {
 } from "@/components/capture/file-upload"
 import { PhotoPreview } from "@/components/capture/photo-preview"
 import { useRouter } from "@/i18n/navigation"
+import { batchSaveAll } from "@/lib/actions/batch-upload"
 import { captureReceipt } from "@/lib/actions/capture-receipt"
+import type { BatchItem } from "@/schemas"
 
-type CaptureState = "idle" | "previewing" | "saving"
+type CaptureState = "idle" | "previewing" | "saving" | "batch" | "batch-summary"
 
 type PreviewData = {
   file: File
@@ -26,12 +30,14 @@ type PreviewData = {
 
 export function CaptureFlow() {
   const t = useTranslations("Dashboard")
+  const tBatch = useTranslations("Batch")
   const tCamera = useTranslations("Camera")
   const router = useRouter()
   const cameraRef = useRef<CameraCaptureHandle>(null)
   const uploadRef = useRef<FileUploadHandle>(null)
   const [state, setState] = useState<CaptureState>("idle")
   const [previewData, setPreviewData] = useState<PreviewData | null>(null)
+  const [batchItems, setBatchItems] = useState<BatchItem[]>([])
 
   const { executeAsync } = useAction(captureReceipt, {
     onSuccess: ({ data }) => {
@@ -59,6 +65,8 @@ export function CaptureFlow() {
       setState("previewing")
     },
   })
+
+  const saveAllAction = useAction(batchSaveAll)
 
   const handleFabClick = useCallback(() => {
     cameraRef.current?.trigger()
@@ -101,6 +109,64 @@ export function CaptureFlow() {
     await executeAsync({ image: previewData.file })
   }, [previewData, executeAsync])
 
+  // ── Batch handlers ──
+
+  const handleBatchUpload = useCallback(() => {
+    setState("batch")
+  }, [])
+
+  const handleBatchComplete = useCallback((items: BatchItem[]) => {
+    setBatchItems(items)
+    setState("batch-summary")
+  }, [])
+
+  const handleBatchClose = useCallback(() => {
+    setBatchItems([])
+    setState("idle")
+  }, [])
+
+  const handleBatchReview = useCallback(
+    (receiptId: string) => {
+      router.push(`/receipt/${receiptId}/verify`)
+    },
+    [router],
+  )
+
+  const handleBatchSaveAll = useCallback(async () => {
+    const doneIds = batchItems
+      .filter((item) => item.status === "done" && item.receiptId)
+      .map((item) => item.receiptId!)
+
+    if (doneIds.length === 0) return
+
+    try {
+      const result = await saveAllAction.executeAsync({
+        receiptIds: doneIds,
+      })
+      if (result?.data) {
+        toast.success(tBatch("savedCount", { count: result.data.saved }))
+      }
+    } catch {
+      toast.error(tBatch("failed"))
+    }
+  }, [batchItems, saveAllAction, tBatch])
+
+  const handleBatchDone = useCallback(() => {
+    // Clean up preview URLs
+    for (const item of batchItems) {
+      URL.revokeObjectURL(item.previewUrl)
+    }
+    setBatchItems([])
+    setState("idle")
+    router.refresh()
+  }, [batchItems, router])
+
+  const showFab =
+    state !== "previewing" &&
+    state !== "saving" &&
+    state !== "batch" &&
+    state !== "batch-summary"
+
   return (
     <>
       {/* Hidden camera input */}
@@ -113,11 +179,12 @@ export function CaptureFlow() {
         onError={handleUploadError}
       />
 
-      {/* FAB menu — always visible when not in preview */}
-      {state !== "previewing" && state !== "saving" && (
+      {/* FAB menu — always visible when idle */}
+      {showFab && (
         <FabMenu
           onTakePhoto={handleFabClick}
           onUploadImage={() => uploadRef.current?.trigger()}
+          onBatchUpload={handleBatchUpload}
         />
       )}
 
@@ -128,6 +195,24 @@ export function CaptureFlow() {
           onConfirm={handleConfirm}
           onRetake={handleRetake}
           onClose={handleClose}
+        />
+      )}
+
+      {/* Batch upload flow */}
+      {state === "batch" && (
+        <BatchUpload
+          onClose={handleBatchClose}
+          onComplete={handleBatchComplete}
+        />
+      )}
+
+      {/* Batch summary */}
+      {state === "batch-summary" && (
+        <BatchSummary
+          items={batchItems}
+          onReview={handleBatchReview}
+          onSaveAll={handleBatchSaveAll}
+          onDone={handleBatchDone}
         />
       )}
     </>
