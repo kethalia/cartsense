@@ -114,6 +114,7 @@
     "combineDuplicates": "Combine duplicates",
     "itemsSubtotal": "Items subtotal",
     "saveReceipt": "Save Receipt",
+    "updateReceipt": "Update Receipt",
     "saving": "Saving...",
     "receiptVerified": "Receipt verified and saved!",
     "saveFailed": "Failed to save receipt. Please try again.",

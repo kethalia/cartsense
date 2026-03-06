@@ -8,32 +8,88 @@ import { toast } from 'sonner'
 import { extractReceipt } from '@/actions/extract-receipt'
 import { saveVerifiedReceipt } from '@/actions/save-verified-receipt'
 import { ProcessingSkeleton } from '@/components/receipt/processing-skeleton'
-import { ReceiptEditor } from '@/components/receipt/receipt-editor'
-import type { ExtractionResult, VerifiedReceiptData } from '@/types/receipt'
+import { ReceiptEditor, type ReceiptEditorMode } from '@/components/receipt/receipt-editor'
+import type { ExtractionResult, ReceiptFormData, VerifiedReceiptData } from '@/types/receipt'
+
+type ExistingData = {
+  vendorName: string
+  totalAmount: string
+  receiptDate: string
+  taxAmount: string
+  paymentType: 'cash' | 'card' | 'other' | ''
+  confidence?: number
+  lineItems: { name: string; quantity: string; unitPrice: string }[]
+}
 
 type VerificationClientProps = {
   receiptId: string
   imageData: string
   mimeType: string
+  /** 'verify' = fresh receipt, 'edit' = re-editing existing */
+  mode?: ReceiptEditorMode
+  /** Pre-loaded data from DB (skips AI extraction) */
+  existingData?: ExistingData
+}
+
+let _idCounter = 0
+function makeId() {
+  _idCounter += 1
+  return `ex-${Date.now()}-${_idCounter}`
 }
 
 export function VerificationClient({
   receiptId,
   imageData,
   mimeType,
+  mode = 'verify',
+  existingData,
 }: VerificationClientProps) {
   const router = useRouter()
   const t = useTranslations('Receipt')
 
   const [aiData, setAiData] = useState<ExtractionResult | null>(null)
-  const [processing, setProcessing] = useState(true)
+  const [initialFormData, setInitialFormData] = useState<ReceiptFormData | null>(null)
+  const [processing, setProcessing] = useState(!existingData)
   const [saving, setSaving] = useState(false)
 
   const extractAction = useAction(extractReceipt)
   const saveAction = useAction(saveVerifiedReceipt)
 
-  // Trigger AI extraction on mount
+  // If we have existing data, convert it to form data immediately
   useEffect(() => {
+    if (existingData) {
+      setInitialFormData({
+        vendorName: existingData.vendorName,
+        totalAmount: existingData.totalAmount,
+        receiptDate: existingData.receiptDate,
+        taxAmount: existingData.taxAmount,
+        paymentType: existingData.paymentType,
+        lineItems: existingData.lineItems.map((i) => ({
+          id: makeId(),
+          name: i.name,
+          quantity: i.quantity,
+          unitPrice: i.unitPrice,
+        })),
+      })
+
+      if (existingData.confidence != null) {
+        setAiData({
+          vendorName: existingData.vendorName || null,
+          totalAmount: existingData.totalAmount ? Number(existingData.totalAmount) : null,
+          receiptDate: existingData.receiptDate || null,
+          taxAmount: existingData.taxAmount ? Number(existingData.taxAmount) : null,
+          paymentType: existingData.paymentType || null,
+          lineItems: [],
+          confidence: existingData.confidence,
+        })
+      }
+    }
+  }, [existingData])
+
+  // Trigger AI extraction on mount (only in verify mode without existing data)
+  useEffect(() => {
+    if (existingData) return
+
     const run = async () => {
       try {
         const result = await extractAction.executeAsync({ receiptId })
@@ -54,7 +110,7 @@ export function VerificationClient({
 
     run()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [receiptId])
+  }, [receiptId, existingData])
 
   const handleSave = useCallback(
     async (data: VerifiedReceiptData) => {
@@ -82,22 +138,18 @@ export function VerificationClient({
   )
 
   if (processing) {
-    return (
-      <div className="p-4">
-        <ProcessingSkeleton imageData={imageData} mimeType={mimeType} />
-      </div>
-    )
+    return <ProcessingSkeleton imageData={imageData} mimeType={mimeType} />
   }
 
   return (
-    <div className="p-4">
-      <ReceiptEditor
-        aiData={aiData}
-        imageData={imageData}
-        mimeType={mimeType}
-        onSave={handleSave}
-        saving={saving}
-      />
-    </div>
+    <ReceiptEditor
+      mode={mode}
+      aiData={aiData}
+      initialData={initialFormData}
+      imageData={imageData}
+      mimeType={mimeType}
+      onSave={handleSave}
+      saving={saving}
+    />
   )
 }

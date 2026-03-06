@@ -5,7 +5,6 @@ import { useTranslations } from 'next-intl'
 import { Plus, Trash2, Merge } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import type {
   ExtractionResult,
@@ -50,7 +49,17 @@ function emptyForm(): ReceiptFormData {
   }
 }
 
-/** Combine items with the same name (case-insensitive) → sum quantities, keep unit price from first occurrence */
+function formDataToForm(data: ReceiptFormData): ReceiptFormData {
+  return {
+    ...data,
+    lineItems: data.lineItems.map((item) => ({
+      ...item,
+      id: item.id || generateId(),
+    })),
+  }
+}
+
+/** Combine items with the same name (case-insensitive) → sum quantities, keep unit price from first */
 function combineLineItems(items: LineItem[]): LineItem[] {
   const map = new Map<string, LineItem>()
 
@@ -62,10 +71,7 @@ function combineLineItems(items: LineItem[]): LineItem[] {
     if (existing) {
       const existingQty = parseFloat(existing.quantity) || 0
       const addQty = parseFloat(item.quantity) || 0
-      map.set(key, {
-        ...existing,
-        quantity: String(existingQty + addQty),
-      })
+      map.set(key, { ...existing, quantity: String(existingQty + addQty) })
     } else {
       map.set(key, { ...item })
     }
@@ -138,8 +144,15 @@ function ProductRow({
 
 // ── Main Component ──
 
+export type ReceiptEditorMode = 'verify' | 'edit'
+
 type ReceiptEditorProps = {
-  aiData: ExtractionResult | null
+  /** 'verify' = first-time after AI extraction, 'edit' = editing existing receipt */
+  mode?: ReceiptEditorMode
+  /** AI extraction result (verify mode) */
+  aiData?: ExtractionResult | null
+  /** Pre-filled form data (edit mode) */
+  initialData?: ReceiptFormData | null
   imageData: string
   mimeType: string
   onSave: (data: VerifiedReceiptData) => void
@@ -147,7 +160,9 @@ type ReceiptEditorProps = {
 }
 
 export function ReceiptEditor({
+  mode = 'verify',
   aiData,
+  initialData,
   imageData,
   mimeType,
   onSave,
@@ -155,9 +170,11 @@ export function ReceiptEditor({
 }: ReceiptEditorProps) {
   const t = useTranslations('Receipt')
 
-  const [form, setForm] = React.useState<ReceiptFormData>(() =>
-    aiData ? extractionToForm(aiData) : emptyForm()
-  )
+  const [form, setForm] = React.useState<ReceiptFormData>(() => {
+    if (initialData) return formDataToForm(initialData)
+    if (aiData) return extractionToForm(aiData)
+    return emptyForm()
+  })
 
   // Validation
   const errors = React.useMemo(() => {
@@ -202,25 +219,21 @@ export function ReceiptEditor({
   }, [])
 
   const handleCombineDuplicates = React.useCallback(() => {
-    setForm((prev) => ({
-      ...prev,
-      lineItems: combineLineItems(prev.lineItems),
-    }))
+    setForm((prev) => ({ ...prev, lineItems: combineLineItems(prev.lineItems) }))
   }, [])
 
   // Computed
   const itemsSubtotal = React.useMemo(
     () =>
-      form.lineItems.reduce((sum, item) => {
-        return sum + (parseFloat(item.quantity) || 0) * (parseFloat(item.unitPrice) || 0)
-      }, 0),
+      form.lineItems.reduce(
+        (sum, item) => sum + (parseFloat(item.quantity) || 0) * (parseFloat(item.unitPrice) || 0),
+        0
+      ),
     [form.lineItems]
   )
 
   const hasDuplicates = React.useMemo(() => {
-    const names = form.lineItems
-      .map((i) => i.name.trim().toLowerCase())
-      .filter(Boolean)
+    const names = form.lineItems.map((i) => i.name.trim().toLowerCase()).filter(Boolean)
     return new Set(names).size < names.length
   }, [form.lineItems])
 
@@ -250,46 +263,43 @@ export function ReceiptEditor({
     })
   }, [form, isValid, onSave])
 
+  const confidence = aiData?.confidence
+
   return (
-    <div className="flex flex-col gap-6 md:flex-row md:items-start max-w-3xl mx-auto">
-      {/* Receipt image */}
-      <div className="flex-shrink-0 md:w-1/3 md:sticky md:top-4">
-        <Card>
-          <CardContent className="p-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={`data:${mimeType};base64,${imageData}`}
-              alt={t('receiptImage')}
-              className="w-full rounded-md object-contain"
-            />
-          </CardContent>
-        </Card>
+    <div className="space-y-6">
+      {/* ── Top: Image + Form side by side (desktop), stacked (mobile) ── */}
+      <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-6 md:items-stretch">
+        {/* Image */}
+        <div className="overflow-hidden rounded-lg border bg-muted flex flex-col">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={`data:${mimeType};base64,${imageData}`}
+            alt={t('receiptImage')}
+            className="w-full h-full object-contain"
+          />
+          {confidence != null && (
+            <div className="px-3 py-2 border-t bg-background">
+              <span
+                className={cn(
+                  'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
+                  confidence >= 0.8
+                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                    : confidence >= 0.5
+                      ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                      : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+                )}
+              >
+                {t('confidence', { value: Math.round(confidence * 100) })}
+              </span>
+            </div>
+          )}
+        </div>
 
-        {aiData && (
-          <div className="mt-2 text-center">
-            <span
-              className={cn(
-                'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium',
-                aiData.confidence >= 0.8
-                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                  : aiData.confidence >= 0.5
-                    ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                    : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-              )}
-            >
-              {t('confidence', { value: Math.round(aiData.confidence * 100) })}
-            </span>
-          </div>
-        )}
-      </div>
+        {/* Form */}
+        <div className="flex flex-col">
+          <h2 className="text-lg font-semibold mb-4">{t('receiptDetails')}</h2>
 
-      {/* Editable form */}
-      <div className="flex-1 space-y-6">
-        <Card>
-          <CardHeader className="pb-4">
-            <CardTitle className="text-lg">{t('receiptDetails')}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          <div className="space-y-4 flex-1">
             {/* Vendor Name */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium">
@@ -368,92 +378,89 @@ export function ReceiptEditor({
                 ))}
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
+      </div>
 
-        {/* Products */}
-        <Card>
-          <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg">
-                {t('products')} ({form.lineItems.length})
-              </CardTitle>
-              <div className="flex gap-2">
-                {hasDuplicates && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    className="h-7 text-xs gap-1"
-                    onClick={handleCombineDuplicates}
-                  >
-                    <Merge className="h-3 w-3" />
-                    {t('combineDuplicates')}
-                  </Button>
-                )}
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  className="h-7 text-xs gap-1"
-                  onClick={addLineItem}
-                >
-                  <Plus className="h-3 w-3" />
-                  {t('addItem')}
-                </Button>
-              </div>
+      {/* ── Bottom: Full-width products table ── */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold">
+            {t('products')} ({form.lineItems.length})
+          </h2>
+          <div className="flex gap-2">
+            {hasDuplicates && (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="h-7 text-xs gap-1"
+                onClick={handleCombineDuplicates}
+              >
+                <Merge className="h-3 w-3" />
+                {t('combineDuplicates')}
+              </Button>
+            )}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              className="h-7 text-xs gap-1"
+              onClick={addLineItem}
+            >
+              <Plus className="h-3 w-3" />
+              {t('addItem')}
+            </Button>
+          </div>
+        </div>
+
+        {form.lineItems.length === 0 ? (
+          <p className="text-sm text-muted-foreground italic py-4">
+            {t('noProducts')}
+          </p>
+        ) : (
+          <div className="space-y-2">
+            {/* Column headers */}
+            <div className="flex items-center gap-2 text-xs text-muted-foreground px-0.5">
+              <span className="flex-1">{t('productName')}</span>
+              <span className="w-16 text-center">{t('qty')}</span>
+              <span className="w-20 text-right">{t('unitPrice')}</span>
+              <span className="w-20 text-right">{t('lineTotal')}</span>
+              <span className="w-8" />
             </div>
-          </CardHeader>
-          <CardContent>
-            {form.lineItems.length === 0 ? (
-              <p className="text-sm text-muted-foreground italic text-center py-4">
-                {t('noProducts')}
-              </p>
-            ) : (
-              <div className="space-y-2">
-                {/* Column headers */}
-                <div className="flex items-center gap-2 text-xs text-muted-foreground px-0.5">
-                  <span className="flex-1">{t('productName')}</span>
-                  <span className="w-16 text-center">{t('qty')}</span>
-                  <span className="w-20 text-right">{t('unitPrice')}</span>
-                  <span className="w-20 text-right">{t('lineTotal')}</span>
-                  <span className="w-8" />
-                </div>
 
-                {form.lineItems.map((item, index) => (
-                  <ProductRow
-                    key={item.id}
-                    item={item}
-                    onUpdate={(updated) => updateLineItem(index, updated)}
-                    onRemove={() => removeLineItem(index)}
-                  />
-                ))}
+            {form.lineItems.map((item, index) => (
+              <ProductRow
+                key={item.id}
+                item={item}
+                onUpdate={(updated) => updateLineItem(index, updated)}
+                onRemove={() => removeLineItem(index)}
+              />
+            ))}
 
-                {/* Items subtotal */}
-                {itemsSubtotal > 0 && (
-                  <div className="flex justify-end items-center gap-2 pt-3 border-t text-sm">
-                    <span className="text-muted-foreground">{t('itemsSubtotal')}</span>
-                    <span className="font-medium tabular-nums w-20 text-right">
-                      {itemsSubtotal.toFixed(2)} RON
-                    </span>
-                    <span className="w-8" />
-                  </div>
-                )}
+            {/* Items subtotal */}
+            {itemsSubtotal > 0 && (
+              <div className="flex justify-end items-center gap-2 pt-3 border-t text-sm">
+                <span className="text-muted-foreground">{t('itemsSubtotal')}</span>
+                <span className="font-medium tabular-nums w-20 text-right">
+                  {itemsSubtotal.toFixed(2)} RON
+                </span>
+                <span className="w-8" />
               </div>
             )}
-          </CardContent>
-        </Card>
-
-        {/* Save */}
-        <Button
-          size="lg"
-          className="w-full"
-          disabled={!isValid || saving}
-          onClick={handleSave}
-        >
-          {saving ? t('saving') : t('saveReceipt')}
-        </Button>
+          </div>
+        )}
       </div>
+
+      {/* ── Save ── */}
+      <Button
+        size="lg"
+        className="w-full sm:w-auto"
+        disabled={!isValid || saving}
+        onClick={handleSave}
+      >
+        {saving ? t('saving') : mode === 'edit' ? t('updateReceipt') : t('saveReceipt')}
+      </Button>
     </div>
   )
 }
