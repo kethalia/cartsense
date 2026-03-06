@@ -121,7 +121,10 @@
     "saveFailed": "Failed to save receipt. Please try again.",
     "aiFailed": "AI extraction failed. You can enter the data manually.",
     "aiError": "Could not extract data from this receipt.",
-    "confidence": "Confidence: {value}%"
+    "confidence": "Confidence: {value}%",
+    "edit": "Edit",
+    "capturedOn": "Captured",
+    "verifiedOn": "Verified"
   },
   "Common": {
     "appName": "CartSense",

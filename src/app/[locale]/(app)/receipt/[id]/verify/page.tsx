@@ -3,6 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import { setRequestLocale } from 'next-intl/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { extractLineItemsForForm } from '@/lib/receipt-utils'
 import { VerificationClient } from '@/components/receipt/verification-client'
 
 type Props = {
@@ -64,39 +65,10 @@ export default async function ReceiptVerifyPage({ params }: Props) {
               taxAmount: receipt.taxAmount !== null ? String(receipt.taxAmount) : '',
               paymentType: (receipt.paymentType as 'cash' | 'card' | 'other') ?? '',
               confidence: receipt.confidence ?? undefined,
-              lineItems: extractLineItems(receipt.rawExtraction),
+              lineItems: extractLineItemsForForm(receipt.rawExtraction),
             }
           : undefined
       }
     />
   )
-}
-
-/** Extract line items from rawExtraction JSON (either verified or raw AI output) */
-function extractLineItems(
-  raw: unknown
-): { name: string; quantity: string; unitPrice: string }[] {
-  if (!raw || typeof raw !== 'object') return []
-
-  const obj = raw as Record<string, unknown>
-
-  // Verified format: { verified: true, lineItems: [...] }
-  if (obj.verified && Array.isArray(obj.lineItems)) {
-    return (obj.lineItems as { name: string; quantity: number; unitPrice: number }[]).map((i) => ({
-      name: i.name ?? '',
-      quantity: String(i.quantity ?? 1),
-      unitPrice: String(i.unitPrice ?? 0),
-    }))
-  }
-
-  // Raw AI format: { items: [{ name, quantity, unit_price, total_price }] }
-  if (Array.isArray(obj.items)) {
-    return (obj.items as { name: string; quantity: number; unit_price: number }[]).map((i) => ({
-      name: i.name ?? '',
-      quantity: String(i.quantity ?? 1),
-      unitPrice: String(i.unit_price ?? 0),
-    }))
-  }
-
-  return []
 }

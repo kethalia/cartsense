@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import Image from 'next/image'
-import Link from 'next/link'
+import { Link } from '@/i18n/navigation'
 import { useTranslations, useFormatter } from 'next-intl'
 import { useRouter } from 'next/navigation'
 import { useAction } from 'next-safe-action/hooks'
@@ -119,7 +119,7 @@ export function ReceiptCard({ id, imageData, mimeType, fileSize, capturedAt }: R
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem asChild>
-                <Link href={`/receipt/${id}/verify`}>
+                <Link href={`/receipt/${id}`}>
                   <FileText className="h-4 w-4" />
                   {t('details')}
                 </Link>
