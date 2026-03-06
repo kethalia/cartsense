@@ -35,6 +35,9 @@ jobs:
       - name: Format check
         run: pnpm run format:check
 
+      - name: Check unused files & dependencies
+        run: pnpm run knip
+
       - name: Type check
         run: pnpm run typecheck
 
