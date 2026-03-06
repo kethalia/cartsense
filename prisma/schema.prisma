@@ -89,7 +89,6 @@ model CapturedReceipt {
   receiptDate      DateTime?
   taxAmount        Decimal?  @db.Decimal(10, 2)
   paymentType      String?                       // "cash" | "card" | "other"
-  confidence       Float?                        // AI confidence 0-1
   rawExtraction    Json?                         // Full AI response for debugging
   verifiedAt       DateTime?                     // When user confirmed the data
 
