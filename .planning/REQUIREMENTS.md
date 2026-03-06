@@ -22,9 +22,9 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **RCPT-03**: AI extracts vendor, amount, date, tax, payment type from receipt
 - [x] **RCPT-04**: User can manually enter receipt data when AI extraction fails
 - [ ] **RCPT-05**: User can upload multiple receipts in batch for processing
-- [ ] **RCPT-06**: System recognizes major Romanian vendors (Kaufland, Mega Image, eMAG, etc.)
+- [x] **RCPT-06**: System recognizes major Romanian vendors (Kaufland, Mega Image, eMAG, etc.)
 - [x] **RCPT-07**: User can verify and correct AI-extracted data before saving
-- [ ] **RCPT-08**: System enhances receipt photo quality (brightness, contrast, crop)
+- [x] **RCPT-08**: System enhances receipt photo quality (brightness, contrast, crop)
 
 ### Categorization
 
@@ -131,8 +131,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RCPT-04 | Phase 2: Core Capture | Complete | User can manually enter receipt data when AI extraction fails |
 | RCPT-07 | Phase 2: Core Capture | Complete | User can verify and correct AI-extracted data before saving |
 | RCPT-05 | Phase 3: Enhanced Processing | Pending | User can upload multiple receipts in batch for processing |
-| RCPT-06 | Phase 3: Enhanced Processing | Pending | System recognizes major Romanian vendors |
-| RCPT-08 | Phase 3: Enhanced Processing | Pending | System enhances receipt photo quality |
+| RCPT-06 | Phase 3: Enhanced Processing | Complete | System recognizes major Romanian vendors |
+| RCPT-08 | Phase 3: Enhanced Processing | Complete | System enhances receipt photo quality |
 | CAT-01 | Phase 3: Enhanced Processing | Complete | System auto-categorizes receipts into 15+ standard expense categories |
 | CAT-02 | Phase 3: Enhanced Processing | Pending | User can manually override auto-categorization |
 | CAT-03 | Phase 3: Enhanced Processing | Complete | User can create custom expense categories |
