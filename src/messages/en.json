@@ -127,6 +127,14 @@
     "retry": "Retry",
     "enterManually": "Enter manually"
   },
+  "ReceiptList": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "uncategorized": "Uncategorized",
+    "dailyTotal": "Total",
+    "noAmount": "—",
+    "receipts": "Receipts"
+  },
   "Common": {
     "appName": "CartSense",
     "loading": "Loading...",

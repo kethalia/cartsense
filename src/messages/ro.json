@@ -127,6 +127,14 @@
     "retry": "Reîncearcă",
     "enterManually": "Completează manual"
   },
+  "ReceiptList": {
+    "today": "Astăzi",
+    "yesterday": "Ieri",
+    "uncategorized": "Necategorizat",
+    "dailyTotal": "Total",
+    "noAmount": "—",
+    "receipts": "Bonuri"
+  },
   "Common": {
     "appName": "CartSense",
     "loading": "Se încarcă...",
