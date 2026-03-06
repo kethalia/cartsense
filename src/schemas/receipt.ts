@@ -65,7 +65,7 @@ export const extractionResultSchema = z.object({
   taxAmount: z.number().nullable(),
   paymentType: paymentTypeSchema.nullable(),
   lineItems: z.array(extractedLineItemSchema),
-  confidence: z.number(),
+
 })
 
 export type ExtractionResult = z.infer<typeof extractionResultSchema>

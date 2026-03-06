@@ -33,7 +33,6 @@ export default async function ReceiptDetailsPage({ params }: Props) {
       receiptDate: true,
       taxAmount: true,
       paymentType: true,
-      confidence: true,
       rawExtraction: true,
       capturedAt: true,
       verifiedAt: true,
@@ -54,7 +53,6 @@ export default async function ReceiptDetailsPage({ params }: Props) {
       receiptDate={receipt.receiptDate}
       taxAmount={receipt.taxAmount ? Number(receipt.taxAmount) : null}
       paymentType={receipt.paymentType}
-      confidence={receipt.confidence}
       capturedAt={receipt.capturedAt}
       verifiedAt={receipt.verifiedAt}
       lineItems={(receipt.rawExtraction as { lineItems?: ExtractedLineItem[] })?.lineItems ?? []}

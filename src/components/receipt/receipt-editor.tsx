@@ -6,7 +6,6 @@ import { Plus, Trash2, Merge, Expand } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { ImageViewer } from '@/components/receipt/image-viewer'
-import { cn } from '@/lib/utils'
 import type {
   ExtractionResult,
   ReceiptFormData,
@@ -264,7 +263,6 @@ export function ReceiptEditor({
     })
   }, [form, isValid, onSave])
 
-  const confidence = aiData?.confidence
   const [viewerOpen, setViewerOpen] = React.useState(false)
   const dataUri = `data:${mimeType};base64,${imageData}`
 
@@ -291,23 +289,6 @@ export function ReceiptEditor({
             <Expand className="h-4 w-4" />
             <span className="sr-only">{t('viewFullImage')}</span>
           </Button>
-          {/* Confidence badge */}
-          {confidence != null && (
-            <div className="absolute bottom-2 left-2">
-              <span
-                className={cn(
-                  'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium shadow-sm',
-                  confidence >= 0.8
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                    : confidence >= 0.5
-                      ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                      : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-                )}
-              >
-                {t('confidence', { value: Math.round(confidence * 100) })}
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Form */}

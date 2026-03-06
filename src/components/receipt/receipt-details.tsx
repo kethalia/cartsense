@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button'
 import { ImageViewer } from '@/components/receipt/image-viewer'
 import { ReceiptEditor } from '@/components/receipt/receipt-editor'
 import { saveVerifiedReceipt } from '@/actions/save-verified-receipt'
-import { cn } from '@/lib/utils'
 import type { PaymentType, VerifiedReceiptData, ReceiptFormData } from '@/schemas'
 
 type ReceiptLineItem = {
@@ -28,7 +27,6 @@ type ReceiptDetailsProps = {
   receiptDate: Date | null
   taxAmount: number | null
   paymentType: string | null
-  confidence: number | null
   capturedAt: Date
   verifiedAt: Date | null
   lineItems: ReceiptLineItem[]
@@ -58,7 +56,6 @@ export function ReceiptDetails(props: ReceiptDetailsProps) {
     id,
     imageData,
     mimeType,
-    confidence,
     capturedAt,
   } = props
 
@@ -186,22 +183,6 @@ export function ReceiptDetails(props: ReceiptDetailsProps) {
             <Expand className="h-4 w-4" />
             <span className="sr-only">{t('viewFullImage')}</span>
           </Button>
-          {confidence != null && (
-            <div className="absolute bottom-2 left-2">
-              <span
-                className={cn(
-                  'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium shadow-sm',
-                  confidence >= 0.8
-                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                    : confidence >= 0.5
-                      ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
-                      : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
-                )}
-              >
-                {t('confidence', { value: Math.round(confidence * 100) })}
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Details */}

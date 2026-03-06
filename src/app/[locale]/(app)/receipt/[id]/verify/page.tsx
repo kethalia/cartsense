@@ -34,7 +34,6 @@ export default async function ReceiptVerifyPage({ params }: Props) {
       receiptDate: true,
       taxAmount: true,
       paymentType: true,
-      confidence: true,
       rawExtraction: true,
       verifiedAt: true,
     },
@@ -64,7 +63,6 @@ export default async function ReceiptVerifyPage({ params }: Props) {
                 : new Date().toISOString().split('T')[0],
               taxAmount: receipt.taxAmount !== null ? String(receipt.taxAmount) : '',
               paymentType: (receipt.paymentType as 'cash' | 'card' | 'other') ?? '',
-              confidence: receipt.confidence ?? undefined,
               lineItems: ((receipt.rawExtraction as { lineItems?: ExtractedLineItem[] })?.lineItems ?? []).map((i) => ({
                 name: i.name,
                 quantity: String(i.quantity),

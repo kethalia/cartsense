@@ -19,7 +19,6 @@ type ExistingData = {
   receiptDate: string
   taxAmount: string
   paymentType: 'cash' | 'card' | 'other' | ''
-  confidence?: number
   lineItems: { name: string; quantity: string; unitPrice: string }[]
 }
 
@@ -75,17 +74,7 @@ export function VerificationClient({
         })),
       })
 
-      if (existingData.confidence != null) {
-        setAiData({
-          vendorName: existingData.vendorName || null,
-          totalAmount: existingData.totalAmount ? Number(existingData.totalAmount) : null,
-          receiptDate: existingData.receiptDate || null,
-          taxAmount: existingData.taxAmount ? Number(existingData.taxAmount) : null,
-          paymentType: existingData.paymentType || null,
-          lineItems: [],
-          confidence: existingData.confidence,
-        })
-      }
+
     }
   }, [existingData])
 

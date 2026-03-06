@@ -39,7 +39,7 @@ export const extractReceipt = authActionClient
           receiptDate: result.receiptDate ? new Date(result.receiptDate) : null,
           taxAmount: result.taxAmount,
           paymentType: result.paymentType,
-          confidence: result.confidence,
+
           rawExtraction: JSON.parse(JSON.stringify(result)),
         },
       })

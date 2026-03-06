@@ -121,7 +121,6 @@
     "saveFailed": "Nu s-a putut salva bonul. Încearcă din nou.",
     "aiFailed": "Extragerea AI a eșuat. Poți introduce datele manual.",
     "aiError": "Nu s-au putut extrage date din acest bon.",
-    "confidence": "Încredere: {value}%",
     "edit": "Editează",
     "capturedOn": "Capturat",
     "verifiedOn": "Verificat",

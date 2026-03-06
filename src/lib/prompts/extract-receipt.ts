@@ -231,16 +231,6 @@ export async function extractReceiptData(
     totalPrice: item.total_price,
   }))
 
-  const fields = [
-    toolResult.merchant_name,
-    toolResult.total,
-    toolResult.transaction_date,
-    toolResult.tax,
-    toolResult.payment_method,
-  ]
-  const extracted = fields.filter((f) => f != null).length
-  const confidence = Number((extracted / fields.length).toFixed(2))
-
   return {
     vendorName: toolResult.merchant_name ?? null,
     totalAmount: toolResult.total ?? null,
@@ -250,6 +240,5 @@ export async function extractReceiptData(
       ? toolResult.payment_method
       : null,
     lineItems,
-    confidence,
   }
 }
