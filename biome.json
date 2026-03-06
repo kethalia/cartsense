@@ -50,7 +50,8 @@
       "!node_modules/**",
       "!prisma/migrations/**",
       "!.planning/**",
-      "!pnpm-lock.yaml"
+      "!pnpm-lock.yaml",
+      "!src/generated/**"
     ]
   }
 }
