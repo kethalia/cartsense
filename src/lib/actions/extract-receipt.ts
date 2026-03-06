@@ -33,6 +33,20 @@ export const extractReceipt = authActionClient
         receipt.mimeType,
       )
 
+      // Look up receipt-level category from AI suggestion
+      let categoryId: string | null = null
+      if (result.receiptCategory) {
+        const category = await prisma.category.findFirst({
+          where: {
+            slug: result.receiptCategory,
+            type: "receipt",
+            isCustom: false,
+          },
+          select: { id: true },
+        })
+        categoryId = category?.id ?? null
+      }
+
       await prisma.capturedReceipt.update({
         where: { id: receiptId },
         data: {
@@ -42,7 +56,10 @@ export const extractReceipt = authActionClient
           receiptDate: result.receiptDate ? new Date(result.receiptDate) : null,
           taxAmount: result.taxAmount,
           paymentType: result.paymentType,
-
+          categoryId,
+          vatBreakdown: result.vatBreakdown
+            ? JSON.parse(JSON.stringify(result.vatBreakdown))
+            : null,
           rawExtraction: JSON.parse(JSON.stringify(result)),
         },
       })

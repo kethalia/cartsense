@@ -19,6 +19,13 @@ export const receiptItemSchema = z.object({
   quantity: z.number(),
   unit_price: z.number(),
   total_price: z.number(),
+  vat_rate: z.number().optional(),
+  product_category: z.string().optional(),
+})
+
+export const vatBreakdownEntrySchema = z.object({
+  rate: z.number(),
+  amount: z.number(),
 })
 
 export const receiptToolResultSchema = z.object({
@@ -27,6 +34,8 @@ export const receiptToolResultSchema = z.object({
   transaction_date: z.string(),
   transaction_time: z.string().optional(),
   receipt_number: z.string().optional(),
+  vendor_normalized: z.string().optional(),
+  receipt_category: z.string().optional(),
   items: z.array(receiptItemSchema),
   subtotal: z.number().optional(),
   tax: z.number().optional(),
@@ -34,6 +43,7 @@ export const receiptToolResultSchema = z.object({
   total: z.number(),
   payment_method: z.string().optional(),
   additional_info: z.string().optional(),
+  vat_breakdown: z.array(vatBreakdownEntrySchema).optional(),
 })
 
 export type ReceiptToolResult = z.infer<typeof receiptToolResultSchema>
@@ -58,6 +68,8 @@ export const extractedLineItemSchema = z.object({
   quantity: z.number(),
   unitPrice: z.number(),
   totalPrice: z.number(),
+  vatRate: z.number().nullable(),
+  productCategory: z.string().nullable(),
 })
 
 export type ExtractedLineItem = z.infer<typeof extractedLineItemSchema>
@@ -66,11 +78,14 @@ export type ExtractedLineItem = z.infer<typeof extractedLineItemSchema>
 
 export const extractionResultSchema = z.object({
   vendorName: z.string().nullable(),
+  vendorNormalized: z.string().nullable(),
+  receiptCategory: z.string().nullable(),
   totalAmount: z.number().nullable(),
   receiptDate: z.string().nullable(),
   taxAmount: z.number().nullable(),
   paymentType: paymentTypeSchema.nullable(),
   lineItems: z.array(extractedLineItemSchema),
+  vatBreakdown: z.array(vatBreakdownEntrySchema).nullable(),
 })
 
 export type ExtractionResult = z.infer<typeof extractionResultSchema>
@@ -151,6 +166,8 @@ export const itemDataSchema = z.object({
   quantity: z.number().positive(),
   unitPrice: z.number().min(0),
   totalPrice: z.number().min(0),
+  vatRate: z.number().nullable().optional(),
+  productCategory: z.string().nullable().optional(),
 })
 
 export type ItemData = z.infer<typeof itemDataSchema>
@@ -162,6 +179,7 @@ export const receiptDataSchema = z.object({
   taxAmount: z.number().min(0).nullable(),
   paymentType: paymentTypeSchema.nullable(),
   lineItems: z.array(itemDataSchema).default([]),
+  categoryId: z.string().nullable().optional(),
 })
 
 export type ReceiptData = z.infer<typeof receiptDataSchema>
@@ -183,3 +201,5 @@ export const saveVerifiedReceiptSchema = z.object({
   receiptId: z.string().min(1, "Receipt ID is required"),
   ...receiptDataSchema.shape,
 })
+
+export type SaveVerifiedReceiptInput = z.infer<typeof saveVerifiedReceiptSchema>

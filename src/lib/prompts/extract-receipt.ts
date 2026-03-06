@@ -1,7 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk"
 import { AI_MAX_TOKENS, AI_MODEL, AI_TEMPERATURE } from "@/lib/config"
 import {
-  type ExtractedLineItem,
   type ExtractionResult,
   imageMimeTypeSchema,
   type PaymentType,
@@ -42,13 +41,25 @@ Identify and label:
 - Final total (TOTAL or TOTAL DE PLATA)
 - Payment method (NUMERAR=cash, CARD/POS/BANCOMAT=card)
 
-**Step 5: Arithmetic Verification**
+**Step 4b: VAT Analysis**
+- Identify all VAT/TVA lines on the receipt
+- Romanian receipts typically show: COTA A (19%), COTA B (9%), COTA C (5%)
+- Extract the amount for each VAT rate
+- If individual items have VAT codes (A, B, C), map them to rates (A=19, B=9, C=5)
+
+**Step 5: Vendor & Category Classification**
+- Identify the vendor from the header/footer
+- Normalize to a standard name if it is a known Romanian retailer (e.g., "SC MEGA IMAGE SRL" → "Mega Image")
+- Classify the receipt into one of the standard categories: groceries, restaurants, transport, entertainment, health, utilities, shopping, education, services, coffee-bars, clothing, electronics, home, subscriptions, fuel, personal-care, gifts, travel, other
+- For grocery receipts: also classify each product into product categories (meat, dairy, bread-bakery, fruits-vegetables, sweets-snacks, canned-dry-goods, frozen, drinks, alcohol, tobacco, electronics, household, cleaning, personal-care, health-pharma, pet-supplies, baby, stationery, clothing, other)
+
+**Step 6: Arithmetic Verification**
 - Does each item's total = quantity × unit price? Verify at least 2-3 items.
 - Does the sum of all item totals ≈ subtotal?
 - Does subtotal + tax - discounts = final total?
 If any calculations don't match, note the discrepancy.
 
-**Step 6: Completeness Check**
+**Step 7: Completeness Check**
 - Count the total number of items you listed in Step 3
 - Look back at the receipt image and count how many item lines you see
 - Verify these numbers match
@@ -89,6 +100,16 @@ const EXTRACT_RECEIPT_TOOL: Anthropic.Messages.Tool = {
         type: "string",
         description: "Receipt or transaction number if present",
       },
+      vendor_normalized: {
+        type: "string",
+        description:
+          "Standardized vendor name. For known Romanian retailers, use: Kaufland, Mega Image, Lidl, Carrefour, Auchan, Profi, Penny, eMAG, Altex, Dedeman, Decathlon, IKEA, H&M, Zara, KFC, McDonald's, Pizza Hut, Starbucks, MOL, OMV, Petrom, Selgros, Metro",
+      },
+      receipt_category: {
+        type: "string",
+        description:
+          "Category for the entire receipt. One of: groceries, restaurants, transport, entertainment, health, utilities, shopping, education, services, coffee-bars, clothing, electronics, home, subscriptions, fuel, personal-care, gifts, travel, other",
+      },
       items: {
         type: "array",
         description: "Every product/item on the receipt",
@@ -110,6 +131,15 @@ const EXTRACT_RECEIPT_TOOL: Anthropic.Messages.Tool = {
             total_price: {
               type: "number",
               description: "Line total (quantity × unit_price)",
+            },
+            vat_rate: {
+              type: "number",
+              description: "VAT rate for this specific item (19, 9, 5, or 0)",
+            },
+            product_category: {
+              type: "string",
+              description:
+                "Product category slug. One of: meat, dairy, bread-bakery, fruits-vegetables, sweets-snacks, canned-dry-goods, frozen, drinks, alcohol, tobacco, electronics, household, cleaning, personal-care, health-pharma, pet-supplies, baby, stationery, clothing, other",
             },
           },
           required: ["name", "quantity", "unit_price", "total_price"],
@@ -138,6 +168,25 @@ const EXTRACT_RECEIPT_TOOL: Anthropic.Messages.Tool = {
       additional_info: {
         type: "string",
         description: "Any other relevant information from the receipt",
+      },
+      vat_breakdown: {
+        type: "array",
+        description:
+          "VAT breakdown by rate. Romanian rates: 19 (standard), 9 (food/meds), 5 (reduced), 0 (exempt). Extract from TVA/COTA lines on receipt.",
+        items: {
+          type: "object",
+          properties: {
+            rate: {
+              type: "number",
+              description: "VAT rate percentage (19, 9, 5, or 0)",
+            },
+            amount: {
+              type: "number",
+              description: "VAT amount in RON for this rate",
+            },
+          },
+          required: ["rate", "amount"],
+        },
       },
     },
     required: ["merchant_name", "transaction_date", "items", "total"],
@@ -224,15 +273,20 @@ export async function extractReceiptData(
 
   // Map snake_case tool result → camelCase ExtractionResult
   const toolResult = parsed.data
-  const lineItems: ExtractedLineItem[] = toolResult.items.map((item) => ({
+  const lineItems = toolResult.items.map((item) => ({
     name: item.name,
     quantity: item.quantity,
     unitPrice: item.unit_price,
     totalPrice: item.total_price,
+    vatRate: item.vat_rate ?? null,
+    productCategory: item.product_category ?? null,
   }))
 
   return {
-    vendorName: toolResult.merchant_name ?? null,
+    vendorName:
+      toolResult.vendor_normalized ?? toolResult.merchant_name ?? null,
+    vendorNormalized: toolResult.vendor_normalized ?? null,
+    receiptCategory: toolResult.receipt_category ?? null,
     totalAmount: toolResult.total ?? null,
     receiptDate: toolResult.transaction_date ?? null,
     taxAmount: toolResult.tax ?? null,
@@ -240,5 +294,6 @@ export async function extractReceiptData(
       ? toolResult.payment_method
       : null,
     lineItems,
-  }
+    vatBreakdown: toolResult.vat_breakdown ?? null,
+  } satisfies ExtractionResult
 }

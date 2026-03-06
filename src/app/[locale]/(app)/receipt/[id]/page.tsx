@@ -48,9 +48,14 @@ export default async function ReceiptDetailsPage({ params }: Props) {
     totalAmount: row.totalAmount ? Number(row.totalAmount) : null,
     taxAmount: row.taxAmount ? Number(row.taxAmount) : null,
     paymentType: row.paymentType as PaymentType | null,
-    lineItems:
+    lineItems: (
       (row.rawExtraction as { lineItems?: ExtractedLineItem[] })?.lineItems ??
-      [],
+      []
+    ).map((i) => ({
+      ...i,
+      vatRate: i.vatRate ?? null,
+      productCategory: i.productCategory ?? null,
+    })),
   }
 
   return <ReceiptDetails receipt={receipt} />
