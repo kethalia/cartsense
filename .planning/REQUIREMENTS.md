@@ -32,7 +32,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **CAT-02**: User can manually override auto-categorization
 - [x] **CAT-03**: User can create custom expense categories
 - [ ] **CAT-04**: User can flag receipts as business vs personal expenses
-- [ ] **CAT-05**: User can search receipts by vendor, amount, category, or date
+- [x] **CAT-05**: User can search receipts by vendor, amount, category, or date
 - [x] **CAT-06**: System correctly handles Romanian VAT, including standard (19%), reduced (e.g., 9%, 5%), and VAT-exempt lines, with support for multiple VAT rates per receipt and VAT breakdown at receipt level
 - [ ] **CAT-07**: AI learns user categorization preferences over time
 - [ ] **CAT-08**: System detects and flags duplicate receipts
@@ -137,7 +137,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CAT-02 | Phase 3: Enhanced Processing | Complete | User can manually override auto-categorization |
 | CAT-03 | Phase 3: Enhanced Processing | Complete | User can create custom expense categories |
 | CAT-04 | Phase 3: Enhanced Processing | Pending | User can flag receipts as business vs personal expenses |
-| CAT-05 | Phase 3: Enhanced Processing | Pending | User can search receipts by vendor, amount, category, or date |
+| CAT-05 | Phase 3: Enhanced Processing | Complete | User can search receipts by vendor, amount, category, or date |
 | CAT-06 | Phase 3: Enhanced Processing | Complete | System handles Romanian VAT (19% standard rate) correctly |
 | UX-01 | Phase 4: PWA & Offline | Pending | App works as PWA installable on mobile |
 | UX-02 | Phase 4: PWA & Offline | Pending | App works offline for basic receipt capture |
