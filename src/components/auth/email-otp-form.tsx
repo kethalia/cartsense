@@ -1,9 +1,9 @@
 "use client"
 
-import * as React from "react"
-import { useTranslations } from "next-intl"
+import { Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { authClient } from "@/lib/auth-client"
+import { useTranslations } from "next-intl"
+import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
@@ -11,7 +11,7 @@ import {
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp"
-import { Loader2 } from "lucide-react"
+import { authClient } from "@/lib/auth-client"
 
 type Step = "email" | "code"
 

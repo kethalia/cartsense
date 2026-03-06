@@ -1,9 +1,9 @@
 import { headers } from "next/headers"
 import { notFound, redirect } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
+import { ReceiptDetails } from "@/components/receipt/receipt-details"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
-import { ReceiptDetails } from "@/components/receipt/receipt-details"
 import type { ExtractedLineItem, PaymentType, Receipt } from "@/schemas"
 
 type Props = {

@@ -1,9 +1,9 @@
 "use client"
 
-import * as React from "react"
-import { useTranslations, useFormatter } from "next-intl"
 import { Expand, Pencil } from "lucide-react"
-import { Link } from "@/i18n/navigation"
+import { useFormatter, useTranslations } from "next-intl"
+import * as React from "react"
+import { ImageViewer } from "@/components/receipt/image-viewer"
 import { Button } from "@/components/ui/button"
 import {
   Table,
@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { ImageViewer } from "@/components/receipt/image-viewer"
+import { Link } from "@/i18n/navigation"
 import type { Receipt } from "@/schemas"
 
 type ReceiptDetailsProps = {

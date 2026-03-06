@@ -1,11 +1,11 @@
 "use client"
 
-import * as React from "react"
-import { useTranslations } from "next-intl"
 import { SiGoogle } from "@icons-pack/react-simple-icons"
-import { authClient } from "@/lib/auth-client"
-import { Button } from "@/components/ui/button"
 import { Loader2 } from "lucide-react"
+import { useTranslations } from "next-intl"
+import * as React from "react"
+import { Button } from "@/components/ui/button"
+import { authClient } from "@/lib/auth-client"
 
 export function GoogleAuthButton() {
   const t = useTranslations("Auth")

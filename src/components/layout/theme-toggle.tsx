@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useTheme } from "next-themes"
+import { Monitor, Moon, Sun } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { Sun, Moon, Monitor } from "lucide-react"
+import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 
 const themeOptions = [

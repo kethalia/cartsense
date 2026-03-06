@@ -1,11 +1,11 @@
 import { headers } from "next/headers"
-import { setRequestLocale, getTranslations } from "next-intl/server"
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/db"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { CaptureFlow } from "@/components/capture/capture-flow"
 import { EmptyState } from "@/components/dashboard/empty-state"
 import { ReceiptCard } from "@/components/dashboard/receipt-card"
-import { CaptureFlow } from "@/components/capture/capture-flow"
 import { ItemGroup } from "@/components/ui/item"
+import { auth } from "@/lib/auth"
+import { prisma } from "@/lib/db"
 import type { ReceiptSummary } from "@/schemas"
 
 type Props = {

@@ -1,9 +1,9 @@
 "use server"
 
-import { authActionClient } from "@/lib/safe-action"
 import { prisma } from "@/lib/db"
-import { extractReceiptSchema } from "@/schemas"
 import { extractReceiptData } from "@/lib/prompts/extract-receipt"
+import { authActionClient } from "@/lib/safe-action"
+import { extractReceiptSchema } from "@/schemas"
 
 export const extractReceipt = authActionClient
   .inputSchema(extractReceiptSchema)

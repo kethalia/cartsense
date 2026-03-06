@@ -1,11 +1,11 @@
-import { useTranslations } from "next-intl"
-import { setRequestLocale } from "next-intl/server"
+import { BarChart3, Camera, Receipt } from "lucide-react"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
-import { auth } from "@/lib/auth"
-import { Link } from "@/i18n/navigation"
+import { useTranslations } from "next-intl"
+import { setRequestLocale } from "next-intl/server"
 import { Button } from "@/components/ui/button"
-import { Camera, Receipt, BarChart3 } from "lucide-react"
+import { Link } from "@/i18n/navigation"
+import { auth } from "@/lib/auth"
 
 type Props = {
   params: Promise<{ locale: string }>

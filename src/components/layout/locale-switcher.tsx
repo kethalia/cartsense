@@ -1,9 +1,6 @@
 "use client"
 
 import { useLocale, useTranslations } from "next-intl"
-import { useRouter, usePathname } from "@/i18n/navigation"
-import { routing } from "@/i18n/routing"
-import { Globe } from "lucide-react"
 import {
   Select,
   SelectContent,
@@ -11,6 +8,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { usePathname, useRouter } from "@/i18n/navigation"
+import { routing } from "@/i18n/routing"
 
 export function LocaleSwitcher() {
   const t = useTranslations("LocaleSwitcher")

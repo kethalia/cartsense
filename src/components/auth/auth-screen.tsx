@@ -1,11 +1,9 @@
 "use client"
 
-import * as React from "react"
 import { useTranslations } from "next-intl"
-import { useIsMobile } from "@/hooks/use-mobile"
+import * as React from "react"
 import { EmailOTPForm } from "@/components/auth/email-otp-form"
 import { GoogleAuthButton } from "@/components/auth/google-auth-button"
-import { Separator } from "@/components/ui/separator"
 import {
   Dialog,
   DialogContent,
@@ -20,6 +18,8 @@ import {
   DrawerHeader,
   DrawerTitle,
 } from "@/components/ui/drawer"
+import { Separator } from "@/components/ui/separator"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 function AuthContent() {
   const t = useTranslations("Auth")

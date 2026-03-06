@@ -1,14 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useTranslations, useLocale } from "next-intl"
-import { useTheme } from "next-themes"
-import { useRouter, usePathname } from "@/i18n/navigation"
+import { LogOut, Monitor, Moon, Sun } from "lucide-react"
 import { useRouter as useNextRouter } from "next/navigation"
-import { routing } from "@/i18n/routing"
-import { signOut } from "@/lib/auth-client"
-import { LogOut, Sun, Moon, Monitor } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
+import { useLocale, useTranslations } from "next-intl"
+import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Select,
@@ -17,6 +13,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Separator } from "@/components/ui/separator"
+import { usePathname, useRouter } from "@/i18n/navigation"
+import { routing } from "@/i18n/routing"
+import { signOut } from "@/lib/auth-client"
 
 const themeOptions = [
   { value: "light", icon: Sun, labelKey: "light" as const },

@@ -1,9 +1,9 @@
-import { NextIntlClientProvider, hasLocale } from "next-intl"
-import { getMessages, setRequestLocale } from "next-intl/server"
 import { notFound } from "next/navigation"
-import { routing } from "@/i18n/routing"
+import { hasLocale, NextIntlClientProvider } from "next-intl"
+import { getMessages, setRequestLocale } from "next-intl/server"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/sonner"
+import { routing } from "@/i18n/routing"
 
 type Props = {
   children: React.ReactNode

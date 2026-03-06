@@ -1,9 +1,10 @@
 "use client"
 
-import { Home, Settings, LogOut } from "lucide-react"
-import { useTranslations } from "next-intl"
+import { Home, LogOut, Settings } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useSession, signOut } from "@/lib/auth-client"
+import { useTranslations } from "next-intl"
+import { LocaleSwitcher } from "@/components/layout/locale-switcher"
+import { ThemeToggle } from "@/components/layout/theme-toggle"
 import {
   Sidebar,
   SidebarContent,
@@ -18,8 +19,7 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar"
 import { Link, usePathname } from "@/i18n/navigation"
-import { LocaleSwitcher } from "@/components/layout/locale-switcher"
-import { ThemeToggle } from "@/components/layout/theme-toggle"
+import { signOut, useSession } from "@/lib/auth-client"
 
 export function AppSidebar() {
   const t = useTranslations("Sidebar")

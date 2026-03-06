@@ -1,7 +1,7 @@
-import { betterAuth } from "better-auth"
 import { prismaAdapter } from "@better-auth/prisma-adapter"
-import { emailOTP } from "better-auth/plugins"
+import { betterAuth } from "better-auth"
 import { nextCookies } from "better-auth/next-js"
+import { emailOTP } from "better-auth/plugins"
 import { prisma } from "@/lib/db"
 
 export const auth = betterAuth({

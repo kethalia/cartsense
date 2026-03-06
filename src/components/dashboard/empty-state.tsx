@@ -1,6 +1,6 @@
 "use client"
 
-import { Camera, ArrowDownRight } from "lucide-react"
+import { ArrowDownRight, Camera } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 export function EmptyState() {

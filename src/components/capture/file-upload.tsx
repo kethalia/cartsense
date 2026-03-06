@@ -1,17 +1,17 @@
 "use client"
 
 import {
-  useRef,
-  useImperativeHandle,
-  forwardRef,
   type ChangeEvent,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
 } from "react"
-import { checkImageDimensions } from "@/lib/utils"
 import {
   ACCEPTED_IMAGE_TYPES,
   MAX_UPLOAD_SIZE,
   MIN_IMAGE_DIMENSION,
 } from "@/lib/config"
+import { checkImageDimensions } from "@/lib/utils"
 
 export type FileUploadHandle = {
   trigger: () => void

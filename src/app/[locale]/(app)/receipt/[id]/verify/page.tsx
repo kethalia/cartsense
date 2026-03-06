@@ -1,10 +1,10 @@
 import { headers } from "next/headers"
 import { notFound, redirect } from "next/navigation"
 import { setRequestLocale } from "next-intl/server"
-import { auth } from "@/lib/auth"
-import { prisma } from "@/lib/db"
 import { v4 as uuidv4 } from "uuid"
 import { VerificationClient } from "@/components/receipt/verification-client"
+import { auth } from "@/lib/auth"
+import { prisma } from "@/lib/db"
 import type { ExtractedLineItem, PaymentType, ReceiptImage } from "@/schemas"
 
 type Props = {

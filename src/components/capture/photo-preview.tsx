@@ -1,9 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { Loader2 } from "lucide-react"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
-import { useIsMobile } from "@/hooks/use-mobile"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -17,7 +17,7 @@ import {
   DrawerFooter,
   DrawerTitle,
 } from "@/components/ui/drawer"
-import { Loader2 } from "lucide-react"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 type PhotoPreviewProps = {
   previewUrl: string

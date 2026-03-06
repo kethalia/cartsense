@@ -1,12 +1,12 @@
 import Anthropic from "@anthropic-ai/sdk"
+import { AI_MAX_TOKENS, AI_MODEL, AI_TEMPERATURE } from "@/lib/config"
 import {
-  imageMimeTypeSchema,
-  receiptToolResultSchema,
-  type ExtractionResult,
   type ExtractedLineItem,
+  type ExtractionResult,
+  imageMimeTypeSchema,
   type PaymentType,
+  receiptToolResultSchema,
 } from "@/schemas"
-import { AI_MODEL, AI_MAX_TOKENS, AI_TEMPERATURE } from "@/lib/config"
 
 // ── Prompts ──
 

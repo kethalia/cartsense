@@ -1,30 +1,30 @@
 "use client"
 
-import * as React from "react"
-import { useTranslations } from "next-intl"
-import { useForm, useFieldArray } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { Expand, Merge, Plus, Trash2 } from "lucide-react"
+import { useTranslations } from "next-intl"
+import * as React from "react"
+import { useFieldArray, useForm } from "react-hook-form"
 import { v4 as uuidv4 } from "uuid"
-import { Plus, Trash2, Merge, Expand } from "lucide-react"
+import { ImageViewer } from "@/components/receipt/image-viewer"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import {
   Form,
+  FormControl,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
 } from "@/components/ui/form"
-import { ImageViewer } from "@/components/receipt/image-viewer"
+import { Input } from "@/components/ui/input"
+import { combineLineItems } from "@/lib/utils"
 import {
   paymentTypeSchema,
-  receiptFormDataSchema,
-  type ReceiptFormData,
   type ReceiptData,
+  type ReceiptFormData,
   type ReceiptImage,
+  receiptFormDataSchema,
 } from "@/schemas"
-import { combineLineItems } from "@/lib/utils"
 
 // ── Helpers ──
 

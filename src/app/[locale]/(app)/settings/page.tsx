@@ -1,9 +1,9 @@
 import { headers } from "next/headers"
-import { setRequestLocale, getTranslations } from "next-intl/server"
-import { auth } from "@/lib/auth"
+import { getTranslations, setRequestLocale } from "next-intl/server"
+import { SettingsControls } from "@/components/settings/settings-controls"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
-import { SettingsControls } from "@/components/settings/settings-controls"
+import { auth } from "@/lib/auth"
 
 type Props = {
   params: Promise<{ locale: string }>

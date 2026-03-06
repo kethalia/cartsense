@@ -1,11 +1,11 @@
 "use client"
 
-import * as React from "react"
+import { RotateCcw, X, ZoomIn, ZoomOut } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { ZoomIn, ZoomOut, RotateCcw, X } from "lucide-react"
+import * as React from "react"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import { MIN_ZOOM, MAX_ZOOM, ZOOM_STEP } from "@/lib/config"
+import { MAX_ZOOM, MIN_ZOOM, ZOOM_STEP } from "@/lib/config"
 
 type ImageViewerProps = {
   open: boolean
