@@ -5,8 +5,8 @@ import {
   type ExtractionResult,
   type ExtractedLineItem,
   type PaymentType,
-  type ReceiptToolResult,
 } from '@/schemas'
+import { AI_MODEL, AI_MAX_TOKENS, AI_TEMPERATURE } from '@/lib/config'
 
 // ── Prompts ──
 
@@ -179,9 +179,9 @@ export async function extractReceiptData(
   const anthropic = getAnthropicClient()
 
   const response = await anthropic.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 20000,
-    temperature: 0,
+    model: AI_MODEL,
+    max_tokens: AI_MAX_TOKENS,
+    temperature: AI_TEMPERATURE,
     system: SYSTEM_PROMPT,
     tools: [EXTRACT_RECEIPT_TOOL],
     tool_choice: { type: 'tool', name: 'extract_receipt' },

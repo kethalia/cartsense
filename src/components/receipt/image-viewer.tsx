@@ -9,6 +9,7 @@ import {
   DialogContent,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { MIN_ZOOM, MAX_ZOOM, ZOOM_STEP } from '@/lib/config'
 
 type ImageViewerProps = {
   open: boolean
@@ -16,10 +17,6 @@ type ImageViewerProps = {
   src: string
   alt?: string
 }
-
-const MIN_SCALE = 0.5
-const MAX_SCALE = 5
-const ZOOM_STEP = 0.5
 
 export function ImageViewer({ open, onOpenChange, src, alt = 'Image' }: ImageViewerProps) {
   const t = useTranslations('Receipt')
@@ -39,11 +36,11 @@ export function ImageViewer({ open, onOpenChange, src, alt = 'Image' }: ImageVie
   }, [open])
 
   const zoomIn = React.useCallback(() => {
-    setScale((s) => Math.min(s + ZOOM_STEP, MAX_SCALE))
+    setScale((s) => Math.min(s + ZOOM_STEP, MAX_ZOOM))
   }, [])
 
   const zoomOut = React.useCallback(() => {
-    setScale((s) => Math.max(s - ZOOM_STEP, MIN_SCALE))
+    setScale((s) => Math.max(s - ZOOM_STEP, MIN_ZOOM))
   }, [])
 
   const resetView = React.useCallback(() => {
@@ -55,7 +52,7 @@ export function ImageViewer({ open, onOpenChange, src, alt = 'Image' }: ImageVie
   const handleWheel = React.useCallback((e: React.WheelEvent) => {
     e.preventDefault()
     const delta = e.deltaY > 0 ? -0.2 : 0.2
-    setScale((s) => Math.min(Math.max(s + delta, MIN_SCALE), MAX_SCALE))
+    setScale((s) => Math.min(Math.max(s + delta, MIN_ZOOM), MAX_ZOOM))
   }, [])
 
   // Mouse drag
@@ -108,7 +105,7 @@ export function ImageViewer({ open, onOpenChange, src, alt = 'Image' }: ImageVie
               size="icon"
               className="h-8 w-8 text-white/80 hover:text-white hover:bg-white/10"
               onClick={zoomOut}
-              disabled={scale <= MIN_SCALE}
+              disabled={scale <= MIN_ZOOM}
             >
               <ZoomOut className="h-4 w-4" />
             </Button>
@@ -120,7 +117,7 @@ export function ImageViewer({ open, onOpenChange, src, alt = 'Image' }: ImageVie
               size="icon"
               className="h-8 w-8 text-white/80 hover:text-white hover:bg-white/10"
               onClick={zoomIn}
-              disabled={scale >= MAX_SCALE}
+              disabled={scale >= MAX_ZOOM}
             >
               <ZoomIn className="h-4 w-4" />
             </Button>

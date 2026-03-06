@@ -1,6 +1,5 @@
 import sharp from "sharp";
-
-const MAX_STORED_BYTES = 4.5 * 1024 * 1024; // 4.5 MB target (fits Claude's 5 MB limit)
+import { MAX_STORED_BYTES } from "@/lib/config";
 
 /**
  * Compress image for storage. Outputs JPEG, progressively reducing

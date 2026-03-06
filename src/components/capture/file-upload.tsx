@@ -2,6 +2,7 @@
 
 import { useRef, useImperativeHandle, forwardRef, type ChangeEvent } from 'react'
 import { checkImageDimensions } from '@/lib/utils'
+import { ACCEPTED_IMAGE_TYPES, MAX_UPLOAD_SIZE, MIN_IMAGE_DIMENSION } from '@/lib/config'
 
 export type FileUploadHandle = {
   trigger: () => void
@@ -11,10 +12,6 @@ type FileUploadProps = {
   onUpload: (file: File, previewUrl: string) => void
   onError: (message: string) => void
 }
-
-const ACCEPTED_TYPES = ['image/jpeg', 'image/png']
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB
-const MIN_DIMENSION = 300
 
 export const FileUpload = forwardRef<FileUploadHandle, FileUploadProps>(
   function FileUpload({ onUpload, onError }, ref) {
@@ -35,13 +32,13 @@ export const FileUpload = forwardRef<FileUploadHandle, FileUploadProps>(
       if (!file) return
 
       // Validate file type
-      if (!ACCEPTED_TYPES.includes(file.type)) {
+      if (!(ACCEPTED_IMAGE_TYPES as readonly string[]).includes(file.type)) {
         onError('invalidFileType')
         return
       }
 
       // Validate file size
-      if (file.size > MAX_FILE_SIZE) {
+      if (file.size > MAX_UPLOAD_SIZE) {
         onError('fileTooLarge')
         return
       }
@@ -49,7 +46,7 @@ export const FileUpload = forwardRef<FileUploadHandle, FileUploadProps>(
       // Validate image dimensions
       try {
         const { width, height } = await checkImageDimensions(file)
-        if (width < MIN_DIMENSION || height < MIN_DIMENSION) {
+        if (width < MIN_IMAGE_DIMENSION || height < MIN_IMAGE_DIMENSION) {
           onError('imageTooSmall')
           return
         }

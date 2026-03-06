@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { MAX_UPLOAD_SIZE } from '@/lib/config'
 
 // ── Image ──
 
@@ -120,7 +121,7 @@ export const captureReceiptSchema = z.object({
   image: z
     .instanceof(File)
     .refine((f) => f.type.startsWith('image/'), 'Must be an image type')
-    .refine((f) => f.size <= 10 * 1024 * 1024, 'File too large: maximum 10MB'),
+    .refine((f) => f.size <= MAX_UPLOAD_SIZE, 'File too large: maximum 10MB'),
 })
 
 export const extractReceiptSchema = z.object({
