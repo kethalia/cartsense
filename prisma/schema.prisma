@@ -23,6 +23,7 @@ model User {
   sessions         Session[]
   accounts         Account[]
   capturedReceipts CapturedReceipt[]
+  categories       Category[]
 }
 
 model Session {
@@ -92,9 +93,63 @@ model CapturedReceipt {
   rawExtraction    Json?                         // Full AI response for debugging
   verifiedAt       DateTime?                     // When user confirmed the data
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // ── Category & VAT ──
+  categoryId    String?                          // Receipt-level category
+  vatBreakdown  Json?                            // { "19": 23.81, "9": 4.50, ... }
+
+  user     User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category Category?         @relation("ReceiptCategory", fields: [categoryId], references: [id], onDelete: SetNull)
+  items    ReceiptItem[]
 
   @@unique([userId, imageHash])
   @@index([userId])
   @@index([capturedAt])
+  @@index([categoryId])
+}
+
+// ─── Category ───────────────────────────────────────────────────────
+
+model Category {
+  id        String   @id @default(cuid())
+  name      String                          // Display name (English)
+  nameRo    String?                         // Romanian display name
+  slug      String   @unique                // URL-safe identifier
+  type      String                          // "receipt" | "product"
+  color     String   @default("#6B7280")    // Hex color for chip
+  icon      String?                         // Lucide icon name
+  isCustom  Boolean  @default(false)        // User-created?
+  userId    String?                         // null = system category
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user     User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  receipts CapturedReceipt[] @relation("ReceiptCategory")
+  items    ReceiptItem[]     @relation("ItemCategory")
+
+  @@unique([slug, userId])
+  @@index([type])
+  @@index([userId])
+}
+
+// ─── Receipt Line Items ─────────────────────────────────────────────
+
+model ReceiptItem {
+  id         String   @id @default(cuid())
+  receiptId  String
+  name       String
+  quantity   Decimal  @db.Decimal(10, 3)   // Supports KG quantities like 0.456
+  unitPrice  Decimal  @db.Decimal(10, 2)
+  totalPrice Decimal  @db.Decimal(10, 2)
+  vatRate    Decimal? @db.Decimal(4, 2)    // 19.00, 9.00, 5.00, or null (exempt)
+  vatAmount  Decimal? @db.Decimal(10, 2)
+  categoryId String?                       // Product-level category
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  receipt  CapturedReceipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  category Category?       @relation("ItemCategory", fields: [categoryId], references: [id], onDelete: SetNull)
+
+  @@index([receiptId])
+  @@index([categoryId])
 }
