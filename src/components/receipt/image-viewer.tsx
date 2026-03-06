@@ -1,15 +1,11 @@
-'use client'
+"use client"
 
-import * as React from 'react'
-import { useTranslations } from 'next-intl'
-import { ZoomIn, ZoomOut, RotateCcw, X } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { MIN_ZOOM, MAX_ZOOM, ZOOM_STEP } from '@/lib/config'
+import * as React from "react"
+import { useTranslations } from "next-intl"
+import { ZoomIn, ZoomOut, RotateCcw, X } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
+import { MIN_ZOOM, MAX_ZOOM, ZOOM_STEP } from "@/lib/config"
 
 type ImageViewerProps = {
   open: boolean
@@ -19,8 +15,8 @@ type ImageViewerProps = {
 }
 
 export function ImageViewer(props: ImageViewerProps) {
-  const { open, onOpenChange, src, alt = 'Image' } = props
-  const t = useTranslations('Receipt')
+  const { open, onOpenChange, src, alt = "Image" } = props
+  const t = useTranslations("Receipt")
   const containerRef = React.useRef<HTMLDivElement>(null)
 
   const [scale, setScale] = React.useState(1)
@@ -61,10 +57,15 @@ export function ImageViewer(props: ImageViewerProps) {
     (e: React.PointerEvent) => {
       if (scale <= 1) return
       setDragging(true)
-      dragStart.current = { x: e.clientX, y: e.clientY, tx: translate.x, ty: translate.y }
+      dragStart.current = {
+        x: e.clientX,
+        y: e.clientY,
+        tx: translate.x,
+        ty: translate.y,
+      }
       ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
     },
-    [scale, translate]
+    [scale, translate],
   )
 
   const handlePointerMove = React.useCallback(
@@ -72,9 +73,12 @@ export function ImageViewer(props: ImageViewerProps) {
       if (!dragging) return
       const dx = e.clientX - dragStart.current.x
       const dy = e.clientY - dragStart.current.y
-      setTranslate({ x: dragStart.current.tx + dx, y: dragStart.current.ty + dy })
+      setTranslate({
+        x: dragStart.current.tx + dx,
+        y: dragStart.current.ty + dy,
+      })
     },
-    [dragging]
+    [dragging],
   )
 
   const handlePointerUp = React.useCallback(() => {
@@ -96,7 +100,7 @@ export function ImageViewer(props: ImageViewerProps) {
         className="max-h-[85dvh] w-[90vw] max-w-5xl border-none p-0 flex flex-col bg-black/95 overflow-hidden"
         showCloseButton={false}
       >
-        <DialogTitle className="sr-only">{t('receiptImage')}</DialogTitle>
+        <DialogTitle className="sr-only">{t("receiptImage")}</DialogTitle>
 
         {/* Toolbar */}
         <div className="flex items-center justify-between px-4 py-2 bg-black/80 backdrop-blur-sm z-10 shrink-0">
@@ -145,7 +149,9 @@ export function ImageViewer(props: ImageViewerProps) {
         <div
           ref={containerRef}
           className="flex-1 overflow-hidden select-none"
-          style={{ cursor: scale > 1 ? (dragging ? 'grabbing' : 'grab') : 'zoom-in' }}
+          style={{
+            cursor: scale > 1 ? (dragging ? "grabbing" : "grab") : "zoom-in",
+          }}
           onWheel={handleWheel}
           onPointerDown={handlePointerDown}
           onPointerMove={handlePointerMove}
@@ -161,7 +167,7 @@ export function ImageViewer(props: ImageViewerProps) {
               className="max-w-full max-h-full object-contain transition-transform duration-100"
               style={{
                 transform: `translate(${translate.x}px, ${translate.y}px) scale(${scale})`,
-                transformOrigin: 'center center',
+                transformOrigin: "center center",
               }}
             />
           </div>

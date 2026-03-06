@@ -1,9 +1,9 @@
-'use client'
+"use client"
 
-import { Home, Settings, LogOut } from 'lucide-react'
-import { useTranslations } from 'next-intl'
-import { useRouter } from 'next/navigation'
-import { useSession, signOut } from '@/lib/auth-client'
+import { Home, Settings, LogOut } from "lucide-react"
+import { useTranslations } from "next-intl"
+import { useRouter } from "next/navigation"
+import { useSession, signOut } from "@/lib/auth-client"
 import {
   Sidebar,
   SidebarContent,
@@ -16,13 +16,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
-} from '@/components/ui/sidebar'
-import { Link, usePathname } from '@/i18n/navigation'
-import { LocaleSwitcher } from '@/components/layout/locale-switcher'
-import { ThemeToggle } from '@/components/layout/theme-toggle'
+} from "@/components/ui/sidebar"
+import { Link, usePathname } from "@/i18n/navigation"
+import { LocaleSwitcher } from "@/components/layout/locale-switcher"
+import { ThemeToggle } from "@/components/layout/theme-toggle"
 
 export function AppSidebar() {
-  const t = useTranslations('Sidebar')
+  const t = useTranslations("Sidebar")
   const pathname = usePathname()
   const router = useRouter()
   const { data: session } = useSession()
@@ -31,24 +31,24 @@ export function AppSidebar() {
 
   const navItems = [
     {
-      title: t('dashboard'),
-      href: '/dashboard',
+      title: t("dashboard"),
+      href: "/dashboard",
       icon: Home,
     },
     {
-      title: t('settings'),
-      href: '/settings',
+      title: t("settings"),
+      href: "/settings",
       icon: Settings,
     },
   ]
 
-  const displayEmail = user?.email || ''
+  const displayEmail = user?.email || ""
 
   async function handleSignOut() {
     await signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.push('/')
+          router.push("/")
         },
       },
     })
@@ -62,7 +62,7 @@ export function AppSidebar() {
 
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>{t('navigation')}</SidebarGroupLabel>
+          <SidebarGroupLabel>{t("navigation")}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {navItems.map((item) => (
@@ -102,7 +102,7 @@ export function AppSidebar() {
               className="text-muted-foreground hover:text-foreground"
             >
               <LogOut />
-              <span>{t('signOut')}</span>
+              <span>{t("signOut")}</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

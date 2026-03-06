@@ -1,23 +1,23 @@
-'use client'
+"use client"
 
-import { useState } from 'react'
-import Image from 'next/image'
-import { useTranslations } from 'next-intl'
-import { useIsMobile } from '@/hooks/use-mobile'
-import { Button } from '@/components/ui/button'
+import { useState } from "react"
+import Image from "next/image"
+import { useTranslations } from "next-intl"
+import { useIsMobile } from "@/hooks/use-mobile"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogTitle,
-} from '@/components/ui/dialog'
+} from "@/components/ui/dialog"
 import {
   Drawer,
   DrawerContent,
   DrawerFooter,
   DrawerTitle,
-} from '@/components/ui/drawer'
-import { Loader2 } from 'lucide-react'
+} from "@/components/ui/drawer"
+import { Loader2 } from "lucide-react"
 
 type PhotoPreviewProps = {
   previewUrl: string
@@ -62,7 +62,7 @@ function PreviewActions({
           onClick={onClose}
           disabled={saving}
         >
-          {t('cancel')}
+          {t("cancel")}
         </Button>
         <Button
           variant="outline"
@@ -71,7 +71,7 @@ function PreviewActions({
           onClick={onRetake}
           disabled={saving}
         >
-          {t('retake')}
+          {t("retake")}
         </Button>
       </div>
       <Button
@@ -83,10 +83,10 @@ function PreviewActions({
         {saving ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {t('useThis')}
+            {t("useThis")}
           </>
         ) : (
-          t('useThis')
+          t("useThis")
         )}
       </Button>
     </div>
@@ -95,7 +95,7 @@ function PreviewActions({
 
 export function PhotoPreview(props: PhotoPreviewProps) {
   const { previewUrl, onConfirm, onRetake, onClose } = props
-  const t = useTranslations('Camera')
+  const t = useTranslations("Camera")
   const isMobile = useIsMobile()
   const [saving, setSaving] = useState(false)
 
@@ -112,7 +112,7 @@ export function PhotoPreview(props: PhotoPreviewProps) {
     return (
       <Drawer open onOpenChange={(open) => !open && onClose()}>
         <DrawerContent className="px-4 pb-8">
-          <DrawerTitle className="sr-only">{t('capture')}</DrawerTitle>
+          <DrawerTitle className="sr-only">{t("capture")}</DrawerTitle>
           <div className="pt-4">
             <PreviewImage src={previewUrl} />
           </div>
@@ -133,7 +133,7 @@ export function PhotoPreview(props: PhotoPreviewProps) {
   return (
     <Dialog open onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-2xl" showCloseButton={false}>
-        <DialogTitle className="sr-only">{t('capture')}</DialogTitle>
+        <DialogTitle className="sr-only">{t("capture")}</DialogTitle>
         <PreviewImage src={previewUrl} />
         <DialogFooter>
           <PreviewActions

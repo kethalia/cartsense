@@ -1,11 +1,11 @@
-import { headers } from 'next/headers'
-import { notFound, redirect } from 'next/navigation'
-import { setRequestLocale } from 'next-intl/server'
-import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/db'
-import { v4 as uuidv4 } from 'uuid'
-import { VerificationClient } from '@/components/receipt/verification-client'
-import type { ExtractedLineItem, PaymentType, ReceiptImage } from '@/schemas'
+import { headers } from "next/headers"
+import { notFound, redirect } from "next/navigation"
+import { setRequestLocale } from "next-intl/server"
+import { auth } from "@/lib/auth"
+import { prisma } from "@/lib/db"
+import { v4 as uuidv4 } from "uuid"
+import { VerificationClient } from "@/components/receipt/verification-client"
+import type { ExtractedLineItem, PaymentType, ReceiptImage } from "@/schemas"
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -20,7 +20,7 @@ export default async function ReceiptVerifyPage({ params }: Props) {
   })
 
   if (!session?.user) {
-    redirect('/auth')
+    redirect("/auth")
   }
 
   const receipt = await prisma.capturedReceipt.findUnique({
@@ -44,7 +44,8 @@ export default async function ReceiptVerifyPage({ params }: Props) {
     notFound()
   }
 
-  const hasExtractionData = receipt.extractionStatus === 'completed' && receipt.vendorName
+  const hasExtractionData =
+    receipt.extractionStatus === "completed" && receipt.vendorName
 
   const image: ReceiptImage = {
     imageData: receipt.imageData,
@@ -58,14 +59,19 @@ export default async function ReceiptVerifyPage({ params }: Props) {
       existingData={
         hasExtractionData
           ? {
-              vendorName: receipt.vendorName ?? '',
-              totalAmount: receipt.totalAmount !== null ? String(receipt.totalAmount) : '',
+              vendorName: receipt.vendorName ?? "",
+              totalAmount:
+                receipt.totalAmount !== null ? String(receipt.totalAmount) : "",
               receiptDate: receipt.receiptDate
-                ? receipt.receiptDate.toISOString().split('T')[0]
-                : new Date().toISOString().split('T')[0],
-              taxAmount: receipt.taxAmount !== null ? String(receipt.taxAmount) : '',
-              paymentType: (receipt.paymentType as PaymentType) ?? '',
-              lineItems: ((receipt.rawExtraction as { lineItems?: ExtractedLineItem[] })?.lineItems ?? []).map((i) => ({
+                ? receipt.receiptDate.toISOString().split("T")[0]
+                : new Date().toISOString().split("T")[0],
+              taxAmount:
+                receipt.taxAmount !== null ? String(receipt.taxAmount) : "",
+              paymentType: (receipt.paymentType as PaymentType) ?? "",
+              lineItems: (
+                (receipt.rawExtraction as { lineItems?: ExtractedLineItem[] })
+                  ?.lineItems ?? []
+              ).map((i) => ({
                 id: uuidv4(),
                 name: i.name,
                 quantity: String(i.quantity),

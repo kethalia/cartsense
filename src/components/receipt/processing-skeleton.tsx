@@ -1,16 +1,16 @@
-'use client'
+"use client"
 
-import { useTranslations } from 'next-intl'
-import { Loader2 } from 'lucide-react'
-import { Skeleton } from '@/components/ui/skeleton'
-import type { ReceiptImage } from '@/schemas'
+import { useTranslations } from "next-intl"
+import { Loader2 } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
+import type { ReceiptImage } from "@/schemas"
 
 type ProcessingSkeletonProps = {
   image: ReceiptImage
 }
 
 export function ProcessingSkeleton({ image }: ProcessingSkeletonProps) {
-  const t = useTranslations('Receipt')
+  const t = useTranslations("Receipt")
 
   return (
     <div className="space-y-6">
@@ -21,7 +21,7 @@ export function ProcessingSkeleton({ image }: ProcessingSkeletonProps) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`data:${image.mimeType};base64,${image.imageData}`}
-            alt={t('receiptImage')}
+            alt={t("receiptImage")}
             className="absolute inset-0 w-full h-full object-cover"
           />
         </div>
@@ -53,7 +53,7 @@ export function ProcessingSkeleton({ image }: ProcessingSkeletonProps) {
       {/* Processing indicator */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <Loader2 className="h-4 w-4 animate-spin" />
-        <span>{t('processing')}</span>
+        <span>{t("processing")}</span>
       </div>
     </div>
   )

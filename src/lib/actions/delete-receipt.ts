@@ -1,8 +1,8 @@
-'use server'
+"use server"
 
-import { z } from 'zod'
-import { authActionClient } from '@/lib/safe-action'
-import { prisma } from '@/lib/db'
+import { z } from "zod"
+import { authActionClient } from "@/lib/safe-action"
+import { prisma } from "@/lib/db"
 
 const deleteReceiptSchema = z.object({
   id: z.string().min(1),
@@ -18,7 +18,7 @@ export const deleteReceipt = authActionClient
     })
 
     if (!receipt) {
-      throw new Error('Receipt not found.')
+      throw new Error("Receipt not found.")
     }
 
     await prisma.capturedReceipt.delete({

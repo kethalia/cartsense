@@ -1,8 +1,17 @@
-'use client'
+"use client"
 
-import { useRef, useImperativeHandle, forwardRef, type ChangeEvent } from 'react'
-import { checkImageDimensions } from '@/lib/utils'
-import { ACCEPTED_IMAGE_TYPES, MAX_UPLOAD_SIZE, MIN_IMAGE_DIMENSION } from '@/lib/config'
+import {
+  useRef,
+  useImperativeHandle,
+  forwardRef,
+  type ChangeEvent,
+} from "react"
+import { checkImageDimensions } from "@/lib/utils"
+import {
+  ACCEPTED_IMAGE_TYPES,
+  MAX_UPLOAD_SIZE,
+  MIN_IMAGE_DIMENSION,
+} from "@/lib/config"
 
 export type FileUploadHandle = {
   trigger: () => void
@@ -21,7 +30,7 @@ export const FileUpload = forwardRef<FileUploadHandle, FileUploadProps>(
       trigger: () => {
         // Reset value so the same file can be re-selected
         if (inputRef.current) {
-          inputRef.current.value = ''
+          inputRef.current.value = ""
         }
         inputRef.current?.click()
       },
@@ -33,13 +42,13 @@ export const FileUpload = forwardRef<FileUploadHandle, FileUploadProps>(
 
       // Validate file type
       if (!(ACCEPTED_IMAGE_TYPES as readonly string[]).includes(file.type)) {
-        onError('invalidFileType')
+        onError("invalidFileType")
         return
       }
 
       // Validate file size
       if (file.size > MAX_UPLOAD_SIZE) {
-        onError('fileTooLarge')
+        onError("fileTooLarge")
         return
       }
 
@@ -47,11 +56,11 @@ export const FileUpload = forwardRef<FileUploadHandle, FileUploadProps>(
       try {
         const { width, height } = await checkImageDimensions(file)
         if (width < MIN_IMAGE_DIMENSION || height < MIN_IMAGE_DIMENSION) {
-          onError('imageTooSmall')
+          onError("imageTooSmall")
           return
         }
       } catch {
-        onError('invalidFileType')
+        onError("invalidFileType")
         return
       }
 
@@ -70,5 +79,5 @@ export const FileUpload = forwardRef<FileUploadHandle, FileUploadProps>(
         aria-hidden="true"
       />
     )
-  }
+  },
 )

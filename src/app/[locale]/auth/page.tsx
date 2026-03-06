@@ -1,5 +1,5 @@
-import { setRequestLocale } from 'next-intl/server'
-import { AuthScreen } from '@/components/auth/auth-screen'
+import { setRequestLocale } from "next-intl/server"
+import { AuthScreen } from "@/components/auth/auth-screen"
 
 type Props = {
   params: Promise<{ locale: string }>

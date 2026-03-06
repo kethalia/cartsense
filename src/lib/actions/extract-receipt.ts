@@ -1,9 +1,9 @@
-"use server";
+"use server"
 
-import { authActionClient } from "@/lib/safe-action";
-import { prisma } from "@/lib/db";
-import { extractReceiptSchema } from "@/schemas";
-import { extractReceiptData } from "@/lib/prompts/extract-receipt";
+import { authActionClient } from "@/lib/safe-action"
+import { prisma } from "@/lib/db"
+import { extractReceiptSchema } from "@/schemas"
+import { extractReceiptData } from "@/lib/prompts/extract-receipt"
 
 export const extractReceipt = authActionClient
   .inputSchema(extractReceiptSchema)
@@ -16,22 +16,22 @@ export const extractReceipt = authActionClient
         imageData: true,
         mimeType: true,
       },
-    });
+    })
 
     if (!receipt || receipt.userId !== userId) {
-      throw new Error("Receipt not found");
+      throw new Error("Receipt not found")
     }
 
     await prisma.capturedReceipt.update({
       where: { id: receiptId },
       data: { extractionStatus: "processing" },
-    });
+    })
 
     try {
       const result = await extractReceiptData(
         receipt.imageData,
         receipt.mimeType,
-      );
+      )
 
       await prisma.capturedReceipt.update({
         where: { id: receiptId },
@@ -45,16 +45,16 @@ export const extractReceipt = authActionClient
 
           rawExtraction: JSON.parse(JSON.stringify(result)),
         },
-      });
+      })
 
-      return { status: "success", data: result };
+      return { status: "success", data: result }
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Unknown extraction error";
+        error instanceof Error ? error.message : "Unknown extraction error"
 
       console.error("[extract-receipt] AI extraction failed:", errorMessage, {
         receiptId,
-      });
+      })
 
       await prisma.capturedReceipt.update({
         where: { id: receiptId },
@@ -62,8 +62,8 @@ export const extractReceipt = authActionClient
           extractionStatus: "failed",
           rawExtraction: { error: errorMessage },
         },
-      });
+      })
 
-      return { status: "failed", error: errorMessage };
+      return { status: "failed", error: errorMessage }
     }
-  });
+  })

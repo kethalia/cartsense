@@ -8,6 +8,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "format:check": "biome format .",
+    "format": "biome format --write .",
+    "typecheck": "tsc --noEmit",
     "postinstall": "prisma generate"
   },
   "keywords": [],
@@ -51,6 +54,7 @@
     ]
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.6",
     "@eslint/eslintrc": "^3.3.4",
     "@tailwindcss/postcss": "^4.2.1",
     "@types/node": "^25.3.3",

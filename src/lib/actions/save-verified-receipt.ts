@@ -1,8 +1,8 @@
-"use server";
+"use server"
 
-import { authActionClient } from "@/lib/safe-action";
-import { prisma } from "@/lib/db";
-import { saveVerifiedReceiptSchema } from "@/schemas";
+import { authActionClient } from "@/lib/safe-action"
+import { prisma } from "@/lib/db"
+import { saveVerifiedReceiptSchema } from "@/schemas"
 
 export const saveVerifiedReceipt = authActionClient
   .inputSchema(saveVerifiedReceiptSchema)
@@ -23,10 +23,10 @@ export const saveVerifiedReceipt = authActionClient
       const receipt = await prisma.capturedReceipt.findUnique({
         where: { id: receiptId },
         select: { id: true, userId: true },
-      });
+      })
 
       if (!receipt || receipt.userId !== userId) {
-        throw new Error("Receipt not found");
+        throw new Error("Receipt not found")
       }
 
       // Persist verified data (line items stored in rawExtraction JSON for now)
@@ -48,8 +48,8 @@ export const saveVerifiedReceipt = authActionClient
           id: true,
           verifiedAt: true,
         },
-      });
+      })
 
-      return { id: updated.id, verifiedAt: updated.verifiedAt };
+      return { id: updated.id, verifiedAt: updated.verifiedAt }
     },
-  );
+  )

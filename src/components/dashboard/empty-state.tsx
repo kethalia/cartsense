@@ -1,10 +1,10 @@
-'use client'
+"use client"
 
-import { Camera, ArrowDownRight } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { Camera, ArrowDownRight } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 export function EmptyState() {
-  const t = useTranslations('Dashboard')
+  const t = useTranslations("Dashboard")
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-6 py-24">
@@ -15,10 +15,10 @@ export function EmptyState() {
 
       {/* Encouraging message */}
       <h2 className="mb-2 text-center text-lg font-semibold text-foreground">
-        {t('emptyState')}
+        {t("emptyState")}
       </h2>
       <p className="mb-12 text-center text-sm text-muted-foreground">
-        {t('emptyStateHint')}
+        {t("emptyStateHint")}
       </p>
 
       {/* Subtle arrow pointing toward bottom-right FAB */}

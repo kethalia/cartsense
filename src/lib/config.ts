@@ -1,8 +1,8 @@
 // ── Image upload ──
 
-export const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png'] as const
+export const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png"] as const
 export const MAX_UPLOAD_SIZE = 10 * 1024 * 1024 // 10 MB
-export const BODY_SIZE_LIMIT = '11mb' // MAX_UPLOAD_SIZE + FormData overhead
+export const BODY_SIZE_LIMIT = "11mb" // MAX_UPLOAD_SIZE + FormData overhead
 export const MIN_IMAGE_DIMENSION = 300 // px
 
 // ── Image compression (server-side storage) ──
@@ -17,7 +17,7 @@ export const ZOOM_STEP = 0.5
 
 // ── AI extraction ──
 
-export const AI_MODEL = 'claude-sonnet-4-6'
+export const AI_MODEL = "claude-sonnet-4-6"
 export const AI_MAX_TOKENS = 20_000
 export const AI_TEMPERATURE = 0
 

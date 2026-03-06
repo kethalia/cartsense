@@ -1,17 +1,17 @@
-import Anthropic from '@anthropic-ai/sdk'
+import Anthropic from "@anthropic-ai/sdk"
 import {
   imageMimeTypeSchema,
   receiptToolResultSchema,
   type ExtractionResult,
   type ExtractedLineItem,
   type PaymentType,
-} from '@/schemas'
-import { AI_MODEL, AI_MAX_TOKENS, AI_TEMPERATURE } from '@/lib/config'
+} from "@/schemas"
+import { AI_MODEL, AI_MAX_TOKENS, AI_TEMPERATURE } from "@/lib/config"
 
 // ── Prompts ──
 
 const SYSTEM_PROMPT =
-  'You are a receipt data extraction specialist. You extract structured information from receipt images with complete precision. Read every line carefully before extracting.'
+  "You are a receipt data extraction specialist. You extract structured information from receipt images with complete precision. Read every line carefully before extracting."
 
 const USER_PROMPT = `
 Extract all data from this receipt image and return it by calling the extract_receipt tool.
@@ -63,96 +63,96 @@ After your analysis, call the extract_receipt tool with the extracted data. Your
 // ── Tool definition ──
 
 const EXTRACT_RECEIPT_TOOL: Anthropic.Messages.Tool = {
-  type: 'custom',
-  name: 'extract_receipt',
-  description: 'Submit extracted receipt data',
+  type: "custom",
+  name: "extract_receipt",
+  description: "Submit extracted receipt data",
   input_schema: {
-    type: 'object',
+    type: "object",
     properties: {
       merchant_name: {
-        type: 'string',
-        description: 'Exact store/business name from the receipt',
+        type: "string",
+        description: "Exact store/business name from the receipt",
       },
       merchant_address: {
-        type: 'string',
-        description: 'Full address if present on the receipt',
+        type: "string",
+        description: "Full address if present on the receipt",
       },
       transaction_date: {
-        type: 'string',
-        description: 'Date in YYYY-MM-DD format',
+        type: "string",
+        description: "Date in YYYY-MM-DD format",
       },
       transaction_time: {
-        type: 'string',
-        description: 'Time of transaction if present',
+        type: "string",
+        description: "Time of transaction if present",
       },
       receipt_number: {
-        type: 'string',
-        description: 'Receipt or transaction number if present',
+        type: "string",
+        description: "Receipt or transaction number if present",
       },
       items: {
-        type: 'array',
-        description: 'Every product/item on the receipt',
+        type: "array",
+        description: "Every product/item on the receipt",
         items: {
-          type: 'object',
+          type: "object",
           properties: {
             name: {
-              type: 'string',
-              description: 'Item name exactly as shown',
+              type: "string",
+              description: "Item name exactly as shown",
             },
             quantity: {
-              type: 'number',
-              description: 'Quantity purchased',
+              type: "number",
+              description: "Quantity purchased",
             },
             unit_price: {
-              type: 'number',
-              description: 'Price per unit in RON',
+              type: "number",
+              description: "Price per unit in RON",
             },
             total_price: {
-              type: 'number',
-              description: 'Line total (quantity × unit_price)',
+              type: "number",
+              description: "Line total (quantity × unit_price)",
             },
           },
-          required: ['name', 'quantity', 'unit_price', 'total_price'],
+          required: ["name", "quantity", "unit_price", "total_price"],
         },
       },
       subtotal: {
-        type: 'number',
-        description: 'Subtotal before tax and adjustments',
+        type: "number",
+        description: "Subtotal before tax and adjustments",
       },
       tax: {
-        type: 'number',
-        description: 'Total tax/TVA amount in RON',
+        type: "number",
+        description: "Total tax/TVA amount in RON",
       },
       discounts: {
-        type: 'number',
-        description: 'Any discounts or adjustments applied',
+        type: "number",
+        description: "Any discounts or adjustments applied",
       },
       total: {
-        type: 'number',
-        description: 'Final total amount in RON',
+        type: "number",
+        description: "Final total amount in RON",
       },
       payment_method: {
-        type: 'string',
-        description: 'Payment method: cash, card, or other',
+        type: "string",
+        description: "Payment method: cash, card, or other",
       },
       additional_info: {
-        type: 'string',
-        description: 'Any other relevant information from the receipt',
+        type: "string",
+        description: "Any other relevant information from the receipt",
       },
     },
-    required: ['merchant_name', 'transaction_date', 'items', 'total'],
+    required: ["merchant_name", "transaction_date", "items", "total"],
   },
 }
 
 // ── Helpers ──
 
 function isValidPaymentType(value: unknown): value is PaymentType {
-  return value === 'cash' || value === 'card' || value === 'other'
+  return value === "cash" || value === "card" || value === "other"
 }
 
 function getAnthropicClient(): Anthropic {
   if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error('AI extraction not configured')
+    throw new Error("AI extraction not configured")
   }
   return new Anthropic()
 }
@@ -184,21 +184,21 @@ export async function extractReceiptData(
     temperature: AI_TEMPERATURE,
     system: SYSTEM_PROMPT,
     tools: [EXTRACT_RECEIPT_TOOL],
-    tool_choice: { type: 'tool', name: 'extract_receipt' },
+    tool_choice: { type: "tool", name: "extract_receipt" },
     messages: [
       {
-        role: 'user',
+        role: "user",
         content: [
           {
-            type: 'image',
+            type: "image",
             source: {
-              type: 'base64',
+              type: "base64",
               media_type: mimeResult.data,
               data: imageBase64,
             },
           },
           {
-            type: 'text',
+            type: "text",
             text: USER_PROMPT,
           },
         ],
@@ -208,17 +208,17 @@ export async function extractReceiptData(
 
   // Find tool_use block
   const toolUseBlock = response.content.find(
-    (block) => block.type === 'tool_use' && block.name === 'extract_receipt',
+    (block) => block.type === "tool_use" && block.name === "extract_receipt",
   )
 
-  if (!toolUseBlock || toolUseBlock.type !== 'tool_use') {
-    throw new Error('AI did not call the extraction tool')
+  if (!toolUseBlock || toolUseBlock.type !== "tool_use") {
+    throw new Error("AI did not call the extraction tool")
   }
 
   // Validate with Zod
   const parsed = receiptToolResultSchema.safeParse(toolUseBlock.input)
   if (!parsed.success) {
-    const issues = parsed.error.issues.map((i) => i.message).join(', ')
+    const issues = parsed.error.issues.map((i) => i.message).join(", ")
     throw new Error(`Invalid AI output: ${issues}`)
   }
 
