@@ -48,29 +48,27 @@ export default async function ReceiptVerifyPage({ params }: Props) {
   const mode = receipt.verifiedAt || hasExtractionData ? 'edit' : 'verify'
 
   return (
-    <div className="p-4 md:p-6">
-      <VerificationClient
-        receiptId={id}
-        imageData={receipt.imageData}
-        mimeType={receipt.mimeType}
-        mode={mode}
-        existingData={
-          hasExtractionData
-            ? {
-                vendorName: receipt.vendorName ?? '',
-                totalAmount: receipt.totalAmount !== null ? String(receipt.totalAmount) : '',
-                receiptDate: receipt.receiptDate
-                  ? receipt.receiptDate.toISOString().split('T')[0]
-                  : new Date().toISOString().split('T')[0],
-                taxAmount: receipt.taxAmount !== null ? String(receipt.taxAmount) : '',
-                paymentType: (receipt.paymentType as 'cash' | 'card' | 'other') ?? '',
-                confidence: receipt.confidence ?? undefined,
-                lineItems: extractLineItems(receipt.rawExtraction),
-              }
-            : undefined
-        }
-      />
-    </div>
+    <VerificationClient
+      receiptId={id}
+      imageData={receipt.imageData}
+      mimeType={receipt.mimeType}
+      mode={mode}
+      existingData={
+        hasExtractionData
+          ? {
+              vendorName: receipt.vendorName ?? '',
+              totalAmount: receipt.totalAmount !== null ? String(receipt.totalAmount) : '',
+              receiptDate: receipt.receiptDate
+                ? receipt.receiptDate.toISOString().split('T')[0]
+                : new Date().toISOString().split('T')[0],
+              taxAmount: receipt.taxAmount !== null ? String(receipt.taxAmount) : '',
+              paymentType: (receipt.paymentType as 'cash' | 'card' | 'other') ?? '',
+              confidence: receipt.confidence ?? undefined,
+              lineItems: extractLineItems(receipt.rawExtraction),
+            }
+          : undefined
+      }
+    />
   )
 }
 
