@@ -124,7 +124,9 @@
     "confidence": "Confidence: {value}%",
     "edit": "Edit",
     "capturedOn": "Captured",
-    "verifiedOn": "Verified"
+    "verifiedOn": "Verified",
+    "retry": "Retry",
+    "enterManually": "Enter manually"
   },
   "Common": {
     "appName": "CartSense",

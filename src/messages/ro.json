@@ -124,7 +124,9 @@
     "confidence": "Încredere: {value}%",
     "edit": "Editează",
     "capturedOn": "Capturat",
-    "verifiedOn": "Verificat"
+    "verifiedOn": "Verificat",
+    "retry": "Reîncearcă",
+    "enterManually": "Completează manual"
   },
   "Common": {
     "appName": "CartSense",

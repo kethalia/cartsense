@@ -1,12 +1,11 @@
 'use server'
 
-import { z } from 'zod'
 import sharp from 'sharp'
 import { createHash } from 'crypto'
 import { authActionClient } from '@/lib/safe-action'
 import { prisma } from '@/lib/db'
+import { captureReceiptSchema } from '@/schemas'
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10 MB
 const MAX_STORED_BYTES = 4.5 * 1024 * 1024 // 4.5 MB target (fits Claude's 5 MB limit)
 
 /**
@@ -47,13 +46,6 @@ async function compressForStorage(
 
   return { base64: output.toString('base64'), mimeType: 'image/jpeg', bytes: output.length }
 }
-
-const captureReceiptSchema = z.object({
-  image: z
-    .instanceof(File)
-    .refine((f) => f.type.startsWith('image/'), 'Must be an image type')
-    .refine((f) => f.size <= MAX_FILE_SIZE, 'File too large: maximum 10MB'),
-})
 
 export const captureReceipt = authActionClient
   .schema(captureReceiptSchema)

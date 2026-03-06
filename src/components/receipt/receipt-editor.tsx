@@ -13,7 +13,7 @@ import type {
   VerifiedReceiptData,
   LineItem,
   PaymentType,
-} from '@/types/receipt'
+} from '@/schemas'
 
 // ── Helpers ──
 

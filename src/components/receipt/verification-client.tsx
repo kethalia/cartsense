@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useAction } from 'next-safe-action/hooks'
 import { toast } from 'sonner'
+import { RefreshCw } from 'lucide-react'
+import { Button } from '@/components/ui/button'
 import { extractReceipt } from '@/actions/extract-receipt'
 import { saveVerifiedReceipt } from '@/actions/save-verified-receipt'
 import { ProcessingSkeleton } from '@/components/receipt/processing-skeleton'
 import { ReceiptEditor, type ReceiptEditorMode } from '@/components/receipt/receipt-editor'
-import type { ExtractionResult, ReceiptFormData, VerifiedReceiptData } from '@/types/receipt'
+import type { ExtractionResult, ReceiptFormData, VerifiedReceiptData } from '@/schemas'
 
 type ExistingData = {
   vendorName: string
@@ -50,6 +52,7 @@ export function VerificationClient({
   const [aiData, setAiData] = useState<ExtractionResult | null>(null)
   const [initialFormData, setInitialFormData] = useState<ReceiptFormData | null>(null)
   const [processing, setProcessing] = useState(!existingData)
+  const [extractionError, setExtractionError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
 
   const extractAction = useAction(extractReceipt)
@@ -86,31 +89,35 @@ export function VerificationClient({
     }
   }, [existingData])
 
+  const runExtraction = useCallback(async () => {
+    setProcessing(true)
+    setExtractionError(null)
+
+    try {
+      const result = await extractAction.executeAsync({ receiptId })
+
+      if (result?.data?.status === 'success' && result.data.data) {
+        setAiData(result.data.data)
+      } else {
+        const error = result?.data?.error ?? t('aiFailed')
+        console.error('[verification] extraction failed:', error)
+        setExtractionError(error)
+      }
+    } catch (err) {
+      console.error('[verification] extraction threw:', err)
+      setExtractionError(t('aiError'))
+    } finally {
+      setProcessing(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [receiptId, t])
+
   // Trigger AI extraction on mount (only in verify mode without existing data)
   useEffect(() => {
     if (existingData) return
-
-    const run = async () => {
-      try {
-        const result = await extractAction.executeAsync({ receiptId })
-
-        if (result?.data?.status === 'success' && result.data.data) {
-          setAiData(result.data.data)
-        } else {
-          console.error('[verification] extraction failed:', result?.data?.error ?? result?.serverError)
-          toast.error(result?.data?.error ?? t('aiFailed'))
-        }
-      } catch (err) {
-        console.error('[verification] extraction threw:', err)
-        toast.error(t('aiError'))
-      } finally {
-        setProcessing(false)
-      }
-    }
-
-    run()
+    runExtraction()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [receiptId, existingData])
+  }, [existingData])
 
   const handleSave = useCallback(
     async (data: VerifiedReceiptData) => {
@@ -139,6 +146,28 @@ export function VerificationClient({
 
   if (processing) {
     return <ProcessingSkeleton imageData={imageData} mimeType={mimeType} />
+  }
+
+  // Extraction failed — show error with Retry and manual entry options
+  if (extractionError && !aiData) {
+    return (
+      <div className="flex flex-col items-start gap-4">
+        <p className="text-sm text-destructive">{extractionError}</p>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="gap-1.5" onClick={runExtraction}>
+            <RefreshCw className="h-3.5 w-3.5" />
+            {t('retry')}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setExtractionError(null)}
+          >
+            {t('enterManually')}
+          </Button>
+        </div>
+      </div>
+    )
   }
 
   return (

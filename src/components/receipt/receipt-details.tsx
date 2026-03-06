@@ -10,7 +10,7 @@ import { ImageViewer } from '@/components/receipt/image-viewer'
 import { ReceiptEditor } from '@/components/receipt/receipt-editor'
 import { saveVerifiedReceipt } from '@/actions/save-verified-receipt'
 import { cn } from '@/lib/utils'
-import type { PaymentType, VerifiedReceiptData, ReceiptFormData } from '@/types/receipt'
+import type { PaymentType, VerifiedReceiptData, ReceiptFormData } from '@/schemas'
 
 type ReceiptLineItem = {
   name: string
