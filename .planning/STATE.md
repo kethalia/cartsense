@@ -72,6 +72,9 @@ progress:
 | Stacked cards rewritten to reference pattern | 02-04 | 2026-03-05 | offset/rotation/scale with array reorder matches reference impl |
 | Claude 3 Haiku for free tier extraction | 02-04 | 2026-03-05 | claude-3-haiku-20240307 is the available Haiku model |
 | Product line items in manual entry | 02-04 | 2026-03-05 | In-memory only; DB schema deferred to Phase 3 |
+| Biome format-only (linter disabled) | quick-1 | 2026-03-06 | ESLint handles linting, Biome only for formatting |
+| Native flat config for eslint-config-next v16 | quick-1 | 2026-03-06 | FlatCompat wrapper caused circular JSON serialization crash |
+| React Compiler rules as warnings | quick-1 | 2026-03-06 | Pre-existing patterns (hydration guards, RHF watch) are valid |
 
 ## Performance Metrics
 
@@ -87,6 +90,7 @@ progress:
 | 02-02 | 3 min | 2 | 5 |
 | 02-03 | 3 min | 2 | 8 |
 | 02-04 | multi-session | 3 | 14 |
+| quick-1 | 5 min | 2 | 75 |
 
 ## Blockers
 
@@ -94,8 +98,8 @@ None
 
 ## Last Session
 
-- **Timestamp:** 2026-03-05T15:37:31Z
-- **Stopped At:** Completed 02-04-PLAN.md (Phase 2 complete)
+- **Timestamp:** 2026-03-06T12:38:51Z
+- **Stopped At:** Completed quick task 1 (CI checks: lint, format, typecheck, build)
 - **Resume:** Ready for Phase 3 (Spending Analytics)
 
 ---
