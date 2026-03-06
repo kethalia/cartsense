@@ -1,28 +1,28 @@
-import { headers } from 'next/headers'
-import { notFound, redirect } from 'next/navigation'
-import { setRequestLocale } from 'next-intl/server'
-import { auth } from '@/lib/auth'
-import { prisma } from '@/lib/db'
-import { ReceiptDetails } from '@/components/receipt/receipt-details'
-import type { ExtractedLineItem, PaymentType } from '@/schemas'
+import { headers } from "next/headers";
+import { notFound, redirect } from "next/navigation";
+import { setRequestLocale } from "next-intl/server";
+import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
+import { ReceiptDetails } from "@/components/receipt/receipt-details";
+import type { ExtractedLineItem, PaymentType, Receipt } from "@/schemas";
 
 type Props = {
-  params: Promise<{ locale: string; id: string }>
-}
+  params: Promise<{ locale: string; id: string }>;
+};
 
 export default async function ReceiptDetailsPage({ params }: Props) {
-  const { locale, id } = await params
-  setRequestLocale(locale)
+  const { locale, id } = await params;
+  setRequestLocale(locale);
 
   const session = await auth.api.getSession({
     headers: await headers(),
-  })
+  });
 
   if (!session?.user) {
-    redirect('/auth')
+    redirect("/auth");
   }
 
-  const receipt = await prisma.capturedReceipt.findUnique({
+  const row = await prisma.capturedReceipt.findUnique({
     where: { id, userId: session.user.id },
     select: {
       id: true,
@@ -37,25 +37,21 @@ export default async function ReceiptDetailsPage({ params }: Props) {
       capturedAt: true,
       verifiedAt: true,
     },
-  })
+  });
 
-  if (!receipt) {
-    notFound()
+  if (!row) {
+    notFound();
   }
 
-  return (
-    <ReceiptDetails
-      id={id}
-      imageData={receipt.imageData}
-      mimeType={receipt.mimeType}
-      vendorName={receipt.vendorName}
-      totalAmount={receipt.totalAmount ? Number(receipt.totalAmount) : null}
-      receiptDate={receipt.receiptDate}
-      taxAmount={receipt.taxAmount ? Number(receipt.taxAmount) : null}
-      paymentType={receipt.paymentType as PaymentType | null}
-      capturedAt={receipt.capturedAt}
-      verifiedAt={receipt.verifiedAt}
-      lineItems={(receipt.rawExtraction as { lineItems?: ExtractedLineItem[] })?.lineItems ?? []}
-    />
-  )
+  const receipt: Receipt = {
+    ...row,
+    totalAmount: row.totalAmount ? Number(row.totalAmount) : null,
+    taxAmount: row.taxAmount ? Number(row.taxAmount) : null,
+    paymentType: row.paymentType as PaymentType | null,
+    lineItems:
+      (row.rawExtraction as { lineItems?: ExtractedLineItem[] })?.lineItems ??
+      [],
+  };
+
+  return <ReceiptDetails receipt={receipt} />;
 }

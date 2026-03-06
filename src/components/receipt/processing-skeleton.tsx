@@ -3,13 +3,13 @@
 import { useTranslations } from 'next-intl'
 import { Loader2 } from 'lucide-react'
 import { Skeleton } from '@/components/ui/skeleton'
+import type { ReceiptImage } from '@/schemas'
 
 type ProcessingSkeletonProps = {
-  imageData: string
-  mimeType: string
+  image: ReceiptImage
 }
 
-export function ProcessingSkeleton({ imageData, mimeType }: ProcessingSkeletonProps) {
+export function ProcessingSkeleton({ image }: ProcessingSkeletonProps) {
   const t = useTranslations('Receipt')
 
   return (
@@ -20,7 +20,7 @@ export function ProcessingSkeleton({ imageData, mimeType }: ProcessingSkeletonPr
         <div className="relative aspect-square w-full overflow-hidden rounded-lg border bg-muted">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`data:${mimeType};base64,${imageData}`}
+            src={`data:${image.mimeType};base64,${image.imageData}`}
             alt={t('receiptImage')}
             className="absolute inset-0 w-full h-full object-cover"
           />

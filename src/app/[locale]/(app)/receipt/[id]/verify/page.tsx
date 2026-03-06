@@ -5,7 +5,7 @@ import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { v4 as uuidv4 } from 'uuid'
 import { VerificationClient } from '@/components/receipt/verification-client'
-import type { ExtractedLineItem, PaymentType } from '@/schemas'
+import type { ExtractedLineItem, PaymentType, ReceiptImage } from '@/schemas'
 
 type Props = {
   params: Promise<{ locale: string; id: string }>
@@ -44,16 +44,17 @@ export default async function ReceiptVerifyPage({ params }: Props) {
     notFound()
   }
 
-  // Determine mode: edit if already verified or has extraction data, verify if fresh
   const hasExtractionData = receipt.extractionStatus === 'completed' && receipt.vendorName
-  const mode = receipt.verifiedAt || hasExtractionData ? 'edit' : 'verify'
+
+  const image: ReceiptImage = {
+    imageData: receipt.imageData,
+    mimeType: receipt.mimeType,
+  }
 
   return (
     <VerificationClient
       receiptId={id}
-      imageData={receipt.imageData}
-      mimeType={receipt.mimeType}
-      mode={mode}
+      image={image}
       existingData={
         hasExtractionData
           ? {

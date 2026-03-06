@@ -15,35 +15,26 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ImageViewer } from "@/components/receipt/image-viewer";
-import type { ExtractedLineItem, PaymentType } from "@/schemas";
+import type { Receipt } from "@/schemas";
 
-export type ReceiptDetailsProps = {
-  id: string;
-  imageData: string;
-  mimeType: string;
-  vendorName: string | null;
-  totalAmount: number | null;
-  receiptDate: Date | null;
-  taxAmount: number | null;
-  paymentType: PaymentType | null;
-  capturedAt: Date;
-  verifiedAt: Date | null;
-  lineItems: ExtractedLineItem[];
+type ReceiptDetailsProps = {
+  receipt: Receipt;
 };
 
-export function ReceiptDetails({
-  id,
-  imageData,
-  mimeType,
-  vendorName,
-  totalAmount,
-  receiptDate,
-  taxAmount,
-  paymentType,
-  capturedAt,
-  verifiedAt,
-  lineItems,
-}: ReceiptDetailsProps) {
+export function ReceiptDetails({ receipt }: ReceiptDetailsProps) {
+  const {
+    id,
+    imageData,
+    mimeType,
+    vendorName,
+    totalAmount,
+    receiptDate,
+    taxAmount,
+    paymentType,
+    capturedAt,
+    verifiedAt,
+    lineItems,
+  } = receipt;
   const t = useTranslations("Receipt");
   const format = useFormatter();
   const [viewerOpen, setViewerOpen] = React.useState(false);

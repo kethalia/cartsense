@@ -75,6 +75,45 @@ export const extractionResultSchema = z.object({
 
 export type ExtractionResult = z.infer<typeof extractionResultSchema>;
 
+// ── Receipt image pair (always travel together) ──
+
+export const receiptImageSchema = z.object({
+  imageData: z.string(),
+  mimeType: z.string(),
+});
+
+export type ReceiptImage = z.infer<typeof receiptImageSchema>;
+
+// ── Receipt summary (dashboard card) ──
+
+export const receiptSummarySchema = z.object({
+  id: z.string(),
+  imageData: z.string(),
+  mimeType: z.string(),
+  fileSize: z.number().nullable(),
+  capturedAt: z.date(),
+});
+
+export type ReceiptSummary = z.infer<typeof receiptSummarySchema>;
+
+// ── Full receipt (UI view model — what pages pass to components) ──
+
+export const receiptSchema = z.object({
+  id: z.string(),
+  imageData: z.string(),
+  mimeType: z.string(),
+  vendorName: z.string().nullable(),
+  totalAmount: z.number().nullable(),
+  receiptDate: z.date().nullable(),
+  taxAmount: z.number().nullable(),
+  paymentType: paymentTypeSchema.nullable(),
+  capturedAt: z.date(),
+  verifiedAt: z.date().nullable(),
+  lineItems: z.array(extractedLineItemSchema),
+});
+
+export type Receipt = z.infer<typeof receiptSchema>;
+
 // ── Editable line item (string values for form inputs) ──
 
 export const itemFormDataSchema = z.object({

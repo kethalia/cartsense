@@ -38,41 +38,10 @@ import {
   ItemActions,
 } from "@/components/ui/item";
 import { deleteReceipt } from "@/lib/actions/delete-receipt";
+import type { ReceiptSummary } from "@/schemas";
 
-type ReceiptCardProps = {
-  id: string;
-  imageData: string;
-  mimeType: string;
-  fileSize: number | null;
-  capturedAt: Date;
-};
-
-function ReceiptImageView({
-  dataUri,
-  label,
-}: {
-  dataUri: string;
-  label: string;
-}) {
-  return (
-    <Image
-      src={dataUri}
-      alt={label}
-      width={800}
-      height={1200}
-      className="h-auto max-h-[85vh] w-full rounded-md object-contain"
-      unoptimized
-    />
-  );
-}
-
-export function ReceiptCard({
-  id,
-  imageData,
-  mimeType,
-  fileSize,
-  capturedAt,
-}: ReceiptCardProps) {
+export function ReceiptCard({ receipt }: { receipt: ReceiptSummary }) {
+  const { id, imageData, mimeType, fileSize, capturedAt } = receipt;
   const t = useTranslations("Dashboard");
   const format = useFormatter();
   const router = useRouter();
@@ -164,7 +133,7 @@ export function ReceiptCard({
           <DrawerContent className="px-4 pb-8">
             <DrawerTitle className="sr-only">{t("view")}</DrawerTitle>
             <div className="pt-4">
-              <ReceiptImageView dataUri={dataUri} label={t("view")} />
+              <Image src={dataUri} alt={t("view")} width={800} height={1200} className="h-auto max-h-[85vh] w-full rounded-md object-contain" unoptimized />
             </div>
             <DrawerFooter className="px-0">
               <Button
@@ -182,7 +151,7 @@ export function ReceiptCard({
         <Dialog open={viewOpen} onOpenChange={setViewOpen}>
           <DialogContent className="max-w-3xl" showCloseButton={false}>
             <DialogTitle className="sr-only">{t("view")}</DialogTitle>
-            <ReceiptImageView dataUri={dataUri} label={t("view")} />
+            <Image src={dataUri} alt={t("view")} width={800} height={1200} className="h-auto max-h-[85vh] w-full rounded-md object-contain" unoptimized />
             <DialogFooter>
               <Button
                 variant="outline"

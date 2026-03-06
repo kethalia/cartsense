@@ -20,9 +20,9 @@ import { ImageViewer } from "@/components/receipt/image-viewer";
 import {
   paymentTypeSchema,
   receiptFormDataSchema,
-  type ExtractionResult,
   type ReceiptFormData,
   type ReceiptData,
+  type ReceiptImage,
 } from "@/schemas";
 import { combineLineItems } from "@/lib/utils";
 
@@ -52,59 +52,28 @@ function formToReceiptData(data: ReceiptFormData): ReceiptData {
 
 // ── Main Component ──
 
-type ReceiptEditorProps = {
-  mode?: "verify" | "edit";
-  aiData?: ExtractionResult | null;
-  initialData?: ReceiptFormData | null;
-  imageData: string;
-  mimeType: string;
+export type ReceiptEditorProps = {
+  image: ReceiptImage;
+  initialData: ReceiptFormData;
   onSave: (data: ReceiptData) => void;
   saving?: boolean;
 };
 
-export function ReceiptEditor({
-  mode = "verify",
-  aiData,
-  initialData,
-  imageData,
-  mimeType,
-  onSave,
-  saving,
-}: ReceiptEditorProps) {
+export function ReceiptEditor(props: ReceiptEditorProps) {
+  const { image, initialData, onSave, saving } = props;
   const t = useTranslations("Receipt");
   const [viewerOpen, setViewerOpen] = React.useState(false);
-  const dataUri = `data:${mimeType};base64,${imageData}`;
+  const dataUri = `data:${image.mimeType};base64,${image.imageData}`;
 
   const form = useForm<ReceiptFormData>({
     resolver: zodResolver(receiptFormDataSchema),
-    defaultValues: initialData
-      ? {
-          ...initialData,
-          lineItems: initialData.lineItems.map((i) => ({
-            ...i,
-            id: i.id || uuidv4(),
-          })),
-        }
-      : {
-          vendorName: aiData?.vendorName ?? "",
-          totalAmount:
-            aiData && aiData.totalAmount !== null
-              ? String(aiData.totalAmount)
-              : "",
-          receiptDate:
-            aiData?.receiptDate ?? new Date().toISOString().split("T")[0],
-          taxAmount:
-            aiData && aiData?.taxAmount !== null
-              ? String(aiData.taxAmount)
-              : "",
-          paymentType: aiData?.paymentType ?? "",
-          lineItems: aiData?.lineItems.map((item) => ({
-            id: uuidv4(),
-            name: item.name,
-            quantity: String(item.quantity),
-            unitPrice: String(item.unitPrice),
-          })),
-        },
+    defaultValues: {
+      ...initialData,
+      lineItems: initialData.lineItems.map((i) => ({
+        ...i,
+        id: i.id || uuidv4(),
+      })),
+    },
   });
 
   const { fields, append, remove, replace } = useFieldArray({
@@ -399,11 +368,7 @@ export function ReceiptEditor({
           className="w-full sm:w-auto"
           disabled={saving}
         >
-          {saving
-            ? t("saving")
-            : mode === "edit"
-              ? t("updateReceipt")
-              : t("saveReceipt")}
+          {saving ? t("saving") : t("saveReceipt")}
         </Button>
       </form>
 

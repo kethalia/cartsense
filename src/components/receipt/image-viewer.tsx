@@ -18,7 +18,8 @@ type ImageViewerProps = {
   alt?: string
 }
 
-export function ImageViewer({ open, onOpenChange, src, alt = 'Image' }: ImageViewerProps) {
+export function ImageViewer(props: ImageViewerProps) {
+  const { open, onOpenChange, src, alt = 'Image' } = props
   const t = useTranslations('Receipt')
   const containerRef = React.useRef<HTMLDivElement>(null)
 

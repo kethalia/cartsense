@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useAction } from "next-safe-action/hooks";
+import { v4 as uuidv4 } from "uuid";
 import { toast } from "sonner";
 import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,44 +12,56 @@ import { extractReceipt } from "@/lib/actions/extract-receipt";
 import { saveVerifiedReceipt } from "@/lib/actions/save-verified-receipt";
 import { ProcessingSkeleton } from "@/components/receipt/processing-skeleton";
 import { ReceiptEditor } from "@/components/receipt/receipt-editor";
-import type { ExtractionResult, ReceiptFormData, ReceiptData } from "@/schemas";
+import type { ExtractionResult, ReceiptFormData, ReceiptData, ReceiptImage } from "@/schemas";
+
+/** Transform AI extraction result → form data at the boundary */
+function extractionToFormData(ai: ExtractionResult): ReceiptFormData {
+  return {
+    vendorName: ai.vendorName ?? "",
+    totalAmount: ai.totalAmount !== null ? String(ai.totalAmount) : "",
+    receiptDate: ai.receiptDate ?? new Date().toISOString().split("T")[0],
+    taxAmount: ai.taxAmount !== null ? String(ai.taxAmount) : "",
+    paymentType: ai.paymentType ?? "",
+    lineItems: ai.lineItems.map((item) => ({
+      id: uuidv4(),
+      name: item.name,
+      quantity: String(item.quantity),
+      unitPrice: String(item.unitPrice),
+    })),
+  };
+}
+
+/** Empty form data for manual entry */
+const emptyFormData: ReceiptFormData = {
+  vendorName: "",
+  totalAmount: "",
+  receiptDate: new Date().toISOString().split("T")[0],
+  taxAmount: "",
+  paymentType: "",
+  lineItems: [],
+};
 
 type VerificationClientProps = {
   receiptId: string;
-  imageData: string;
-  mimeType: string;
-  /** 'verify' = fresh receipt, 'edit' = re-editing existing */
-  mode?: "verify" | "edit";
+  image: ReceiptImage;
   /** Pre-filled form data from DB (skips AI extraction) */
   existingData?: ReceiptFormData;
 };
 
-export function VerificationClient({
-  receiptId,
-  imageData,
-  mimeType,
-  mode = "verify",
-  existingData,
-}: VerificationClientProps) {
+export function VerificationClient(props: VerificationClientProps) {
+  const { receiptId, image, existingData } = props;
   const router = useRouter();
   const t = useTranslations("Receipt");
 
-  const [aiData, setAiData] = useState<ExtractionResult | null>(null);
-  const [initialFormData, setInitialFormData] =
-    useState<ReceiptFormData | null>(null);
+  const [formData, setFormData] = useState<ReceiptFormData | null>(
+    existingData ?? null,
+  );
   const [processing, setProcessing] = useState(!existingData);
   const [extractionError, setExtractionError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   const extractAction = useAction(extractReceipt);
   const saveAction = useAction(saveVerifiedReceipt);
-
-  // If we have existing data, use it directly as form data
-  useEffect(() => {
-    if (existingData) {
-      setInitialFormData(existingData);
-    }
-  }, [existingData]);
 
   const runExtraction = useCallback(async () => {
     setProcessing(true);
@@ -58,7 +71,7 @@ export function VerificationClient({
       const result = await extractAction.executeAsync({ receiptId });
 
       if (result?.data?.status === "success" && result.data.data) {
-        setAiData(result.data.data);
+        setFormData(extractionToFormData(result.data.data));
       } else {
         const error = result?.data?.error ?? t("aiFailed");
         console.error("[verification] extraction failed:", error);
@@ -73,7 +86,7 @@ export function VerificationClient({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [receiptId, t]);
 
-  // Trigger AI extraction on mount (only in verify mode without existing data)
+  // Trigger AI extraction on mount (only without existing data)
   useEffect(() => {
     if (existingData) return;
     runExtraction();
@@ -106,11 +119,11 @@ export function VerificationClient({
   );
 
   if (processing) {
-    return <ProcessingSkeleton imageData={imageData} mimeType={mimeType} />;
+    return <ProcessingSkeleton image={image} />;
   }
 
   // Extraction failed — show error with Retry and manual entry options
-  if (extractionError && !aiData) {
+  if (extractionError && !formData) {
     return (
       <div className="flex flex-col items-start gap-4">
         <p className="text-sm text-destructive">{extractionError}</p>
@@ -127,7 +140,7 @@ export function VerificationClient({
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setExtractionError(null)}
+            onClick={() => setFormData(emptyFormData)}
           >
             {t("enterManually")}
           </Button>
@@ -138,11 +151,8 @@ export function VerificationClient({
 
   return (
     <ReceiptEditor
-      mode={mode}
-      aiData={aiData}
-      initialData={initialFormData}
-      imageData={imageData}
-      mimeType={mimeType}
+      image={image}
+      initialData={formData ?? emptyFormData}
       onSave={handleSave}
       saving={saving}
     />
