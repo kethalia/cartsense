@@ -90,6 +90,7 @@
   "Receipt": {
     "processing": "Analyzing receipt...",
     "receiptImage": "Receipt",
+    "viewFullImage": "View full image",
     "receiptDetails": "Receipt Details",
     "vendorName": "Vendor Name",
     "totalAmount": "Total Amount",

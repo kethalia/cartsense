@@ -15,14 +15,14 @@ export function ProcessingSkeleton({ imageData, mimeType }: ProcessingSkeletonPr
   return (
     <div className="space-y-6">
       {/* ── Top: Image + skeleton form side by side ── */}
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-6">
-        {/* Image */}
-        <div className="overflow-hidden rounded-lg border bg-muted">
+      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-6">
+        {/* Image — aspect-square to match editor */}
+        <div className="relative aspect-square w-full md:w-auto md:self-start overflow-hidden rounded-lg border bg-muted">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={`data:${mimeType};base64,${imageData}`}
             alt={t('receiptImage')}
-            className="w-full h-auto object-contain"
+            className="absolute inset-0 w-full h-full object-cover"
           />
         </div>
 

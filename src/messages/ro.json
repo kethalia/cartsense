@@ -90,6 +90,7 @@
   "Receipt": {
     "processing": "Se analizează bonul...",
     "receiptImage": "Bon",
+    "viewFullImage": "Vezi imaginea completă",
     "receiptDetails": "Detalii bon",
     "vendorName": "Numele magazinului",
     "totalAmount": "Suma totală",

@@ -2,9 +2,10 @@
 
 import * as React from 'react'
 import { useTranslations } from 'next-intl'
-import { Plus, Trash2, Merge } from 'lucide-react'
+import { Plus, Trash2, Merge, Expand } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { ImageViewer } from '@/components/receipt/image-viewer'
 import { cn } from '@/lib/utils'
 import type {
   ExtractionResult,
@@ -264,24 +265,38 @@ export function ReceiptEditor({
   }, [form, isValid, onSave])
 
   const confidence = aiData?.confidence
+  const [viewerOpen, setViewerOpen] = React.useState(false)
+  const dataUri = `data:${mimeType};base64,${imageData}`
 
   return (
     <div className="space-y-6">
       {/* ── Top: Image + Form side by side (desktop), stacked (mobile) ── */}
-      <div className="grid grid-cols-1 md:grid-cols-[1fr_1fr] gap-6 md:items-stretch">
-        {/* Image */}
-        <div className="overflow-hidden rounded-lg border bg-muted flex flex-col">
+      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-6">
+        {/* Image — aspect-square, sized to match form height */}
+        <div className="relative aspect-square w-full md:w-auto md:self-start overflow-hidden rounded-lg border bg-muted">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
-            src={`data:${mimeType};base64,${imageData}`}
+            src={dataUri}
             alt={t('receiptImage')}
-            className="w-full h-full object-contain"
+            className="absolute inset-0 w-full h-full object-cover"
           />
+          {/* Expand button */}
+          <Button
+            type="button"
+            variant="secondary"
+            size="icon"
+            className="absolute top-2 right-2 h-8 w-8 bg-background/80 backdrop-blur-sm hover:bg-background/95 shadow-sm"
+            onClick={() => setViewerOpen(true)}
+          >
+            <Expand className="h-4 w-4" />
+            <span className="sr-only">{t('viewFullImage')}</span>
+          </Button>
+          {/* Confidence badge */}
           {confidence != null && (
-            <div className="px-3 py-2 border-t bg-background">
+            <div className="absolute bottom-2 left-2">
               <span
                 className={cn(
-                  'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium',
+                  'inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium shadow-sm',
                   confidence >= 0.8
                     ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                     : confidence >= 0.5
@@ -461,6 +476,14 @@ export function ReceiptEditor({
       >
         {saving ? t('saving') : mode === 'edit' ? t('updateReceipt') : t('saveReceipt')}
       </Button>
+
+      {/* ── Image viewer modal ── */}
+      <ImageViewer
+        open={viewerOpen}
+        onOpenChange={setViewerOpen}
+        src={dataUri}
+        alt={t('receiptImage')}
+      />
     </div>
   )
 }
