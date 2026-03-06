@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import { setRequestLocale } from 'next-intl/server'
 import { auth } from '@/lib/auth'
 import { prisma } from '@/lib/db'
-import { extractLineItemsForForm } from '@/utils'
+import { extractLineItemsForForm } from '@/lib/utils'
 import { VerificationClient } from '@/components/receipt/verification-client'
 
 type Props = {

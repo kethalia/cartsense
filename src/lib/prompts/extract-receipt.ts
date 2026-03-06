@@ -6,7 +6,7 @@ import {
   type ExtractionResult,
   type PaymentType,
 } from '@/schemas'
-import { mapToolItems } from '@/utils'
+import { mapToolItems } from '@/lib/utils'
 
 // ── Prompts ──
 
