@@ -95,7 +95,7 @@ export function ImageViewer({ open, onOpenChange, src, alt = 'Image' }: ImageVie
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="h-[100dvh] max-h-[100dvh] w-screen max-w-none rounded-none border-none p-0 sm:rounded-none flex flex-col bg-black/95"
+        className="max-h-[85dvh] w-[90vw] max-w-5xl border-none p-0 flex flex-col bg-black/95 overflow-hidden"
         showCloseButton={false}
       >
         <DialogTitle className="sr-only">{t('receiptImage')}</DialogTitle>
