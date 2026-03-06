@@ -271,9 +271,9 @@ export function ReceiptEditor({
   return (
     <div className="space-y-6">
       {/* ── Top: Image + Form side by side (desktop), stacked (mobile) ── */}
-      <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-6">
-        {/* Image — aspect-square, sized to match form height */}
-        <div className="relative aspect-square w-full md:w-auto md:self-start overflow-hidden rounded-lg border bg-muted">
+      <div className="grid grid-cols-1 md:grid-cols-[320px_1fr] gap-6">
+        {/* Image — aspect-square, fixed width on desktop */}
+        <div className="relative aspect-square w-full overflow-hidden rounded-lg border bg-muted">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={dataUri}
