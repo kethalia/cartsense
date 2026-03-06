@@ -1,5 +1,6 @@
 "use client"
 
+import { SearchX } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useState } from "react"
 import { DateGroupHeader } from "@/components/dashboard/date-group-header"
@@ -28,8 +29,15 @@ export interface ReceiptWithCategory {
   mimeType: string
 }
 
+export type MatchContext = Record<
+  string,
+  { field: string; matchedText: string }[]
+>
+
 interface Props {
   receipts: ReceiptWithCategory[]
+  matchContext?: MatchContext
+  isFiltered?: boolean
 }
 
 interface DateGroup {
@@ -64,8 +72,13 @@ function groupReceiptsByDate(receipts: ReceiptWithCategory[]): DateGroup[] {
     }))
 }
 
-export function ReceiptList({ receipts: initialReceipts }: Props) {
+export function ReceiptList({
+  receipts: initialReceipts,
+  matchContext,
+  isFiltered,
+}: Props) {
   const t = useTranslations("ReceiptList")
+  const tSearch = useTranslations("Search")
   const [receipts, setReceipts] =
     useState<ReceiptWithCategory[]>(initialReceipts)
   const [pickerState, setPickerState] = useState<{
@@ -73,10 +86,14 @@ export function ReceiptList({ receipts: initialReceipts }: Props) {
     receiptId: string | null
   }>({ open: false, receiptId: null })
 
-  const groups = groupReceiptsByDate(receipts)
+  // When filtering, use initialReceipts directly (from search results)
+  // When not filtering, use local state (supports optimistic category updates)
+  const displayReceipts = isFiltered ? initialReceipts : receipts
+
+  const groups = groupReceiptsByDate(displayReceipts)
 
   const selectedReceipt = pickerState.receiptId
-    ? receipts.find((r) => r.id === pickerState.receiptId)
+    ? displayReceipts.find((r) => r.id === pickerState.receiptId)
     : null
 
   function handleCategoryClick(receiptId: string) {
@@ -109,7 +126,24 @@ export function ReceiptList({ receipts: initialReceipts }: Props) {
     setPickerState({ open: false, receiptId: null })
   }
 
-  if (receipts.length === 0) return null
+  // No-results state for filtered search
+  if (isFiltered && displayReceipts.length === 0) {
+    return (
+      <div className="flex flex-col items-center gap-3 py-16 text-center">
+        <SearchX className="h-12 w-12 text-muted-foreground/50" />
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-muted-foreground">
+            {tSearch("noResults")}
+          </p>
+          <p className="text-xs text-muted-foreground/70">
+            {tSearch("adjustFilters")}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (displayReceipts.length === 0) return null
 
   return (
     <>
@@ -122,6 +156,7 @@ export function ReceiptList({ receipts: initialReceipts }: Props) {
                 <ReceiptListCard
                   key={receipt.id}
                   receipt={receipt}
+                  matchContext={matchContext?.[receipt.id]}
                   onCategoryClick={handleCategoryClick}
                 />
               ))}

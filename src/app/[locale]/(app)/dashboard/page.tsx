@@ -1,12 +1,12 @@
 import { headers } from "next/headers"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 import { CaptureFlow } from "@/components/capture/capture-flow"
+import { DashboardContent } from "@/components/dashboard/dashboard-content"
 import { EmptyState } from "@/components/dashboard/empty-state"
-import { ReceiptList } from "@/components/dashboard/receipt-list"
 import { auth } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 
-type Props = {
+interface Props {
   params: Promise<{ locale: string }>
 }
 
@@ -83,7 +83,7 @@ export default async function DashboardPage({ params }: Props) {
       {hasReceipts ? (
         <div className="space-y-4">
           <h1 className="text-2xl font-semibold">{t("receipts")}</h1>
-          <ReceiptList receipts={receipts} />
+          <DashboardContent receipts={receipts} />
         </div>
       ) : (
         <EmptyState />

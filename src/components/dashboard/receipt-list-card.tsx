@@ -27,12 +27,18 @@ interface ReceiptData {
 
 interface Props {
   receipt: ReceiptData
+  matchContext?: { field: string; matchedText: string }[]
   onCategoryClick?: (receiptId: string) => void
 }
 
-export function ReceiptListCard({ receipt, onCategoryClick }: Props) {
+export function ReceiptListCard({
+  receipt,
+  matchContext,
+  onCategoryClick,
+}: Props) {
   const locale = useLocale()
   const t = useTranslations("ReceiptList")
+  const tSearch = useTranslations("Search")
 
   const {
     id,
@@ -64,6 +70,11 @@ export function ReceiptListCard({ receipt, onCategoryClick }: Props) {
 
   const dataUri = `data:${mimeType};base64,${imageData}`
 
+  // Find vendor match for highlighting
+  const vendorMatch = matchContext?.find((m) => m.field === "vendorName")
+  // Find product name matches
+  const productMatches = matchContext?.filter((m) => m.field === "itemName")
+
   return (
     <div className="group flex items-center gap-3 rounded-lg border border-border/50 bg-card p-3 transition-colors hover:bg-accent/50">
       {/* Thumbnail */}
@@ -82,7 +93,13 @@ export function ReceiptListCard({ receipt, onCategoryClick }: Props) {
             href={`/receipt/${id}`}
             className="truncate text-sm font-medium hover:underline"
           >
-            {vendorName ?? t("noAmount")}
+            {vendorMatch && vendorName ? (
+              <span className="rounded-sm bg-yellow-100 px-0.5 dark:bg-yellow-800/30">
+                {vendorName}
+              </span>
+            ) : (
+              (vendorName ?? t("noAmount"))
+            )}
           </Link>
           <CategoryChip
             category={category}
@@ -96,6 +113,18 @@ export function ReceiptListCard({ receipt, onCategoryClick }: Props) {
           <span>·</span>
           <span className="tabular-nums">{time}</span>
         </div>
+
+        {/* Product name matches */}
+        {productMatches && productMatches.length > 0 && (
+          <div className="mt-0.5 text-xs text-muted-foreground">
+            {productMatches.slice(0, 2).map((match, i) => (
+              <span key={match.matchedText + i}>
+                {i > 0 && ", "}
+                {tSearch("matchedProduct", { product: match.matchedText })}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )
