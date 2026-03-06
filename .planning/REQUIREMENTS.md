@@ -28,12 +28,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Categorization
 
-- [ ] **CAT-01**: System auto-categorizes receipts into 15+ standard expense categories
+- [x] **CAT-01**: System auto-categorizes receipts into 15+ standard expense categories
 - [ ] **CAT-02**: User can manually override auto-categorization
-- [ ] **CAT-03**: User can create custom expense categories
+- [x] **CAT-03**: User can create custom expense categories
 - [ ] **CAT-04**: User can flag receipts as business vs personal expenses
 - [ ] **CAT-05**: User can search receipts by vendor, amount, category, or date
-- [ ] **CAT-06**: System correctly handles Romanian VAT, including standard (19%), reduced (e.g., 9%, 5%), and VAT-exempt lines, with support for multiple VAT rates per receipt and VAT breakdown at receipt level
+- [x] **CAT-06**: System correctly handles Romanian VAT, including standard (19%), reduced (e.g., 9%, 5%), and VAT-exempt lines, with support for multiple VAT rates per receipt and VAT breakdown at receipt level
 - [ ] **CAT-07**: AI learns user categorization preferences over time
 - [ ] **CAT-08**: System detects and flags duplicate receipts
 
@@ -133,12 +133,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RCPT-05 | Phase 3: Enhanced Processing | Pending | User can upload multiple receipts in batch for processing |
 | RCPT-06 | Phase 3: Enhanced Processing | Pending | System recognizes major Romanian vendors |
 | RCPT-08 | Phase 3: Enhanced Processing | Pending | System enhances receipt photo quality |
-| CAT-01 | Phase 3: Enhanced Processing | Pending | System auto-categorizes receipts into 15+ standard expense categories |
+| CAT-01 | Phase 3: Enhanced Processing | Complete | System auto-categorizes receipts into 15+ standard expense categories |
 | CAT-02 | Phase 3: Enhanced Processing | Pending | User can manually override auto-categorization |
-| CAT-03 | Phase 3: Enhanced Processing | Pending | User can create custom expense categories |
+| CAT-03 | Phase 3: Enhanced Processing | Complete | User can create custom expense categories |
 | CAT-04 | Phase 3: Enhanced Processing | Pending | User can flag receipts as business vs personal expenses |
 | CAT-05 | Phase 3: Enhanced Processing | Pending | User can search receipts by vendor, amount, category, or date |
-| CAT-06 | Phase 3: Enhanced Processing | Pending | System handles Romanian VAT (19% standard rate) correctly |
+| CAT-06 | Phase 3: Enhanced Processing | Complete | System handles Romanian VAT (19% standard rate) correctly |
 | UX-01 | Phase 4: PWA & Offline | Pending | App works as PWA installable on mobile |
 | UX-02 | Phase 4: PWA & Offline | Pending | App works offline for basic receipt capture |
 | UX-03 | Phase 4: PWA & Offline | Pending | Data syncs automatically when connection restored |
