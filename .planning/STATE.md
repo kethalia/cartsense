@@ -96,6 +96,12 @@ progress:
 
 None
 
+### Quick Tasks Completed
+
+| # | Description | Date | Commit | Directory |
+|---|-------------|------|--------|-----------|
+| 1 | Set up basic CI checks: linter, format (Biome), typecheck, and build on every PR | 2026-03-06 | 6ab6368 | [1-set-up-basic-ci-checks-linter-format-bio](./quick/1-set-up-basic-ci-checks-linter-format-bio/) |
+
 ## Last Session
 
 - **Timestamp:** 2026-03-06T12:38:51Z
