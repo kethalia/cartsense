@@ -6,7 +6,7 @@ const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 const nextConfig: NextConfig = {
   experimental: {
     serverActions: {
-      bodySizeLimit: '15mb', // Receipt images are base64-encoded (~33% larger than original)
+      bodySizeLimit: '11mb', // Raw file upload (no base64 bloat) — 10MB max + FormData overhead
     },
   },
 
